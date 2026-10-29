@@ -1,0 +1,55 @@
+{
+  "dataset_id": "ds-sample-small",
+  "name": "Toy Benchmark (2 Warehouses, 2 Orders, 1 SKU)",
+  "description": "Standardized toy problem matching the hand-calculated example in docs/mathematical-model.md",
+  "parameters": {
+    "split_penalty": 10.0,
+    "unassigned_penalty": 100.0
+  },
+  "warehouses": [
+    {
+      "warehouse_id": "WH-01",
+      "name": "Warehouse Alpha",
+      "location_code": "NORTH",
+      "daily_capacity": 8,
+      "handling_cost_per_unit": 0.50,
+      "inventory": {
+        "SKU-A": 10
+      }
+    },
+    {
+      "warehouse_id": "WH-02",
+      "name": "Warehouse Beta",
+      "location_code": "SOUTH",
+      "daily_capacity": 8,
+      "handling_cost_per_unit": 0.50,
+      "inventory": {
+        "SKU-A": 10
+      }
+    }
+  ],
+  "orders": [
+    {
+      "order_id": "ORD-001",
+      "destination_zone": "ZONE-1",
+      "items": {
+        "SKU-A": 6
+      },
+      "shipping_costs": {
+        "WH-01": 5.0,
+        "WH-02": 7.0
+      }
+    },
+    {
+      "order_id": "ORD-002",
+      "destination_zone": "ZONE-2",
+      "items": {
+        "SKU-A": 5
+      },
+      "shipping_costs": {
+        "WH-01": 6.0,
+        "WH-02": 11.0
+      }
+    }
+  ]
+}
