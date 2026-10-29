@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  repository-hygiene:
+    name: Repository Hygiene & Schema Verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Validate JSON Sample Fixtures
+        run: |
+          echo "Validating sample benchmark JSON fixtures..."
+          for file in $(find data/samples -name "*.json"); do
+            echo "Checking $file"
+            python -m json.tool "$file" > /dev/null
+          done
+          echo "All JSON fixtures are valid."
+
+      - name: Validate Internal Relative Markdown Links
+        run: |
+          python -c '
+          import os, re, sys
+
+          broken_links = []
+          md_files = []
+          for root, _, files in os.walk("."):
+              if ".git" in root:
+                  continue
+              for f in files:
+                  if f.endswith(".md"):
+                      md_files.append(os.path.join(root, f))
+
+          link_pattern = re.compile(r"\[([^\]]+)\]\((?!http|#|mailto:)([^)]+)\)")
+
+          for file_path in md_files:
+              base_dir = os.path.dirname(file_path)
+              with open(file_path, "r", encoding="utf-8") as f:
+                  content = f.read()
+              for label, target in link_pattern.findall(content):
+                  target_path = target.split("#")[0]
+                  if not target_path:
+                      continue
+                  resolved = os.path.normpath(os.path.join(base_dir, target_path))
+                  if not os.path.exists(resolved):
+                      broken_links.append((file_path, target, resolved))
+
+          if broken_links:
+              print("Broken markdown links detected:")
+              for src, tgt, res in broken_links:
+                  print(f"  In {src}: \"{tgt}\" -> resolved as \"{res}\" (NOT FOUND)")
+              sys.exit(1)
+          else:
+              print(f"Verified internal markdown links across {len(md_files)} files: OK")
+          '
+
+      - name: Check Essential Configuration Files
+        run: |
+          test -f README.md || (echo "Missing README.md" && exit 1)
+          test -f CLAUDE.md || (echo "Missing CLAUDE.md" && exit 1)
+          test -f CONTRIBUTING.md || (echo "Missing CONTRIBUTING.md" && exit 1)
+          test -f CHANGELOG.md || (echo "Missing CHANGELOG.md" && exit 1)
+          test -f .gitignore || (echo "Missing .gitignore" && exit 1)
+          test -f .editorconfig || (echo "Missing .editorconfig" && exit 1)
+          test -f .gitattributes || (echo "Missing .gitattributes" && exit 1)
+          echo "All essential project and repository files are present."
