@@ -68,22 +68,53 @@ graph TD
 ```mermaid
 sequenceDiagram
     autonumber
+
     actor User as Logistics Planner
     participant FE as Web Frontend (TV4)
     participant BE as REST API (TV5)
-    participant DB as SQLite DB (TV5)
-    participant OPT as Solver Engine (TV3)
+    participant DB as SQLite Database (TV5)
+    participant SOLVER as Solver Engine (TV3)
 
-    User->>FE: Selects order batch & parameters
-    FE->>BE: POST /api/v1/allocations/run (payload)
-    BE->>BE: Validate input schemas (Pydantic)
-    BE->>OPT: invoke_solver(batch_data, algorithm="MILP")
-    OPT->>OPT: Build model & execute branch-and-cut
-    OPT-->>BE: Return Solution (cost, allocations, status)
-    BE->>DB: Save allocation run record
-    BE-->>FE: 200 OK (AllocationResult JSON)
-    FE->>User: Display cost comparison & warehouse maps
+    User->>FE: Select order batch, algorithm (BASELINE or MILP) and parameters
+    FE->>BE: POST /api/v1/allocations/run
+    Note over FE,BE: dataset_id or inline payload + parameters.time_limit_seconds
+
+    activate BE
+    BE->>BE: Validate request schema (Pydantic)
+    opt Schema validation fails
+        BE-->>FE: 400 Bad Request with structured field errors
+        FE-->>User: Highlight invalid fields
+    end
+
+    BE->>DB: Load dataset, inventory and cost matrices
+    DB-->>BE: Warehouses, orders, shipping costs
+
+    BE->>SOLVER: invoke_solver(batch_data, algorithm, time_limit_seconds)
+    activate SOLVER
+    alt algorithm = MILP
+        SOLVER->>SOLVER: Build model and run branch-and-cut
+        Note over SOLVER: Stops at proven optimality or at time_limit_seconds
+    else algorithm = BASELINE
+        SOLVER->>SOLVER: Build model and run greedy / nearest-warehouse heuristic
+    end
+    SOLVER-->>BE: Solution (cost, allocations, status)
+    deactivate SOLVER
+
+    alt status = OPTIMAL or FEASIBLE_SUBOPTIMAL
+        BE->>DB: Persist allocation run and allocation lines
+        DB-->>BE: Confirm commit
+        BE-->>FE: 200 OK - AllocationResult JSON
+        FE->>User: Show cost breakdown, split shipments and warehouse utilization
+    else status = INFEASIBLE
+        BE-->>FE: 422 Unprocessable Entity with unsatisfied order IDs
+        FE-->>User: Flag unmet demand per SKU
+    else solver exceeded time_limit_seconds
+        BE-->>FE: 504 Gateway Timeout
+    end
+    deactivate BE
 ```
+
+Status semantics (`OPTIMAL`, `FEASIBLE_SUBOPTIMAL`, `INFEASIBLE`) and error payloads follow the [API Contract](api-contract.md) §4.
 
 ---
 
