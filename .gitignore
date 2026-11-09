@@ -1,10 +1,4 @@
-# Environments and Dependencies
-.env
-.env.*
-!.env.example
-*.env
-
-# Python
+# Python cache & build files
 __pycache__/
 *.py[cod]
 *$py.class
@@ -29,69 +23,19 @@ share/python-wheels/
 MANIFEST
 
 # Virtual Environments
-venv/
 .venv/
-ENV/
 env/
+venv/
+ENV/
 env.bak/
 venv.bak/
 
-# Testing and Coverage
-.pytest_cache/
-.coverage
-.coverage.*
-htmlcov/
-.tox/
-.nox/
-coverage.xml
-*.cover
-nosetests.xml
-
-# Node / Frontend (Pending tech stack confirmation)
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-.next/
-out/
-dist/
-.cache/
-
-# Databases & Local Storage
-*.sqlite
-*.sqlite3
-*.db
-*.db-journal
-
-# Data Security & Local Scratchpad
-data/raw/*
-!data/raw/.gitkeep
-data/processed/*
-!data/processed/.gitkeep
-# Keep sample datasets tracked
-!data/samples/
-
-# OS Specific
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# IDEs and Editors
+# IDE & Editor files (VS Code / PyCharm)
+.vscode/
 .idea/
-.vscode/*
-!.vscode/settings.json
-!.vscode/extensions.json
 *.swp
 *.swo
-*~
 
-# Logs and Temporary Files
-*.log
-logs/
-tmp/
-temp/
+# Operating System files
+.DS_Store
+Thumbs.db

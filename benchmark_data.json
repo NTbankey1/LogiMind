@@ -1,0 +1,63 @@
+{
+    "warehouses": [
+        {
+            "warehouse_id": "WH_THU_DUC",
+            "capacity": 1000,
+            "current_occupancy": 850,
+            "location": {
+                "lat": 10.8494,
+                "lng": 106.7725
+            }
+        },
+        {
+            "warehouse_id": "WH_BINH_THANH",
+            "capacity": 500,
+            "current_occupancy": 200,
+            "location": {
+                "lat": 10.8105,
+                "lng": 106.7091
+            }
+        },
+        {
+            "warehouse_id": "WH_TAN_BINH",
+            "capacity": 800,
+            "current_occupancy": 300,
+            "location": {
+                "lat": 10.8014,
+                "lng": 106.6548
+            }
+        }
+    ],
+    "orders": [
+        {
+            "order_id": "ORD_2026_001",
+            "items": [
+                {
+                    "sku": "LAPTOP_ASUS",
+                    "quantity": 10
+                },
+                {
+                    "sku": "MOUSE_LOGITECH",
+                    "quantity": 20
+                }
+            ],
+            "destination": {
+                "lat": 10.8050,
+                "lng": 106.7120
+            }
+        },
+        {
+            "order_id": "ORD_2026_002",
+            "items": [
+                {
+                    "sku": "SMARTPHONE_IPHONE",
+                    "quantity": 200
+                }
+            ],
+            "destination": {
+                "lat": 10.8500,
+                "lng": 106.7700
+            }
+        }
+    ]
+}
