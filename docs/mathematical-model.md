@@ -1,8 +1,8 @@
 # Mô hình toán học phân bổ đơn hàng
 
-Tài liệu bàn giao cho TV3 gồm định nghĩa dữ liệu, mô hình nhị phân, Baseline và ví dụ có đáp án. Phạm vi nghiệp vụ và yêu cầu hệ thống nằm trong [Yêu cầu hệ thống](requirements.md).
-
 Mô hình chính trình bày theo chính sách B: tối thiểu hóa chi phí giao cộng tiền phạt của đơn chưa phân bổ. B là phương án đề xuất trong bản TV1; nhóm cần duyệt chính sách và cách đặt phạt trước khi chốt kết quả thực nghiệm. Chính sách A được trình bày riêng tại mục 4.
+
+Phương án TV1 đề nghị xác nhận: dùng B có phạt làm luồng chính, chi phí lấy theo nguyên đơn từ ma trận, bộ mô phỏng chuẩn ghi rõ phạt 100 nghìn đồng mỗi đơn và thử độ nhạy ở 50, 200. Chưa có xác nhận nhóm đã chấp thuận những quyết định này. Bảng quyết định nằm ở đầu `requirements.md`.
 
 ## 1. Tập hợp và tham số
 
@@ -29,6 +29,32 @@ Chữ hoa biểu diễn tập hợp; chữ thường là phần tử của tập
 Ví dụ $q_{1,2}=3$ nghĩa là đơn 1 cần **3 sản phẩm của mặt hàng 2**. Số 2 là chỉ số mặt hàng, số 3 là số lượng. $s_{1,2}=15$ nghĩa là kho 1 còn 15 sản phẩm của mặt hàng 2. $C_1=45$ nghĩa là kho 1 nhận tối đa 45 đơn trong đợt.
 
 Mỗi đơn có ít nhất một mặt hàng có nhu cầu dương. Chi phí và phạt dùng cùng đơn vị tiền; ví dụ bên dưới dùng nghìn đồng. Một đơn luôn có tải xử lý bằng 1. Mô hình không gộp nhu cầu của các mặt hàng khác loại thành một giới hạn tồn kho chung.
+
+### 1.1. Cách tính chi phí vận chuyển
+
+$c_{ij}$ là chi phí giao toàn bộ đơn i từ kho j, đã có trong ma trận đầu vào. Tổng chi phí giao chỉ cộng những cặp được chọn:
+
+$$
+C_{\mathrm{ship}}=\sum_{(i,j)\in E}c_{ij}x_{ij}.
+$$
+
+Không nhân thêm $c_{ij}$ với $\sum_k q_{ik}$. Ví dụ A cần 2 sản phẩm X và 1 sản phẩm Y, có $c_{A,K2}=14$, gán A cho K2 đóng góp 14 nghìn đồng, không phải 42. Nhu cầu hàng chỉ đi vào ràng buộc tồn kho trong mô hình này.
+
+Đây là giả định chi phí theo nguyên đơn, không có ghép tuyến hoặc phí mở kho. Ma trận được nhập hoặc sinh sẵn có seed; bản tối thiểu không suy chi phí từ tọa độ, quãng đường hay trọng lượng. Không trình bày số mô phỏng như báo giá vận tải thực tế.
+
+### 1.2. Cách đặt phạt trong thí nghiệm
+
+Đề nghị bộ mô phỏng chuẩn ghi rõ $P_i=100$ nghìn đồng cho mọi đơn. Các kịch bản độ nhạy dùng $P_i=50$ và $P_i=200$ trên cùng dữ liệu còn lại. Đây là lựa chọn tham số thí nghiệm để quan sát đánh đổi, chưa được hiệu chỉnh theo tổn thất thực tế. Với dữ liệu khác, nhận $P_i$ theo đơn và không tự điền giá trị thiếu.
+
+Phạt được tính một lần mỗi đơn chưa phân bổ:
+
+$$
+C_{\mathrm{penalty}}=\sum_{i\in I}P_i u_i.
+$$
+
+Ví dụ một đơn có ba sản phẩm và phạt 100 thì bỏ nguyên đơn chịu phạt 100, không phải 300. Trong ví dụ mục 7.3, đổi phạt chung thành 50 cho mục tiêu tối ưu $20+50=70$; phạt 100 cho 120; phạt 200 cho 220. Cả ba trường hợp đều chọn giao B và C từ K1. Không phải mọi bộ dữ liệu đều giữ nguyên lựa chọn khi thay phạt.
+
+Ví dụ khác: một đơn cần 1 sản phẩm X; mỗi kho có tồn X = 1 và công suất 1; chi phí từ K1 = 120, K2 = 150. Khi phạt 100, tối ưu là chưa giao và Z = 100; khi phạt 200, tối ưu là giao từ K1 và Z = 120. Ví dụ này kiểm tra trực tiếp ý nghĩa của chính sách B.
 
 ### Tiền xử lý
 
@@ -127,7 +153,7 @@ $$
 
 Nếu không thể giao toàn bộ, A không có lời giải hợp lệ. Tổng tồn toàn mạng đủ và tổng công suất đủ chỉ là các điều kiện cần, không đảm bảo có nghiệm vì không tách đơn và tồn phân tán giữa các kho.
 
-## 5. Baseline để TV3 triển khai
+## 5. Baseline
 
 Baseline không tìm tối ưu toàn cục. Phương pháp chọn kho rẻ nhất còn đủ nguồn lực theo thứ tự mã đơn. Sắp mã theo chuỗi tăng dần, phân biệt hoa/thường; mã số dạng chuỗi như `O10`, `O2` được sắp theo thứ tự chuỗi, không theo số. Nếu cần thứ tự khác phải đổi và ghi rõ cho mọi lần chạy.
 
@@ -280,8 +306,6 @@ Giao A từ K1 hoặc giao B từ K1 đều cho $Z=110$. Cả hai nghiệm đề
 
 ## 8. Đầu ra và kiểm tra độc lập
 
-TV3 cần trả tối thiểu:
-
 | Trường đề xuất | Nội dung |
 |---|---|
 | `algorithm`, `policy` | Phương pháp và chính sách |
@@ -297,7 +321,7 @@ Tên trường là đề xuất giao tiếp, cần TV3 và TV5 thống nhất v�
 
 Phân biệt `OPTIMAL` (đã chứng minh tối ưu), `FEASIBLE` (có nghiệm chưa chứng minh tối ưu), `INFEASIBLE` (đã chứng minh vô nghiệm), `NO_SOLUTION_FOUND` (chưa tìm được nghiệm) và `ERROR`. Lý do dừng như giới hạn thời gian được ghi riêng. Không gán `OPTIMAL` cho Baseline; Baseline có thể trả `FEASIBLE`, hoặc `PARTIAL` trong A khi chưa giao hết.
 
-Bộ kiểm tra độc lập của TV6 phải:
+Bộ kiểm tra độc lập phải:
 
 1. Kiểm tra đủ các mã đơn, không lặp, không gán một đơn nhiều kho và chỉ dùng cặp thuộc $E$.
 2. Với A, kiểm tra mọi đơn có kho; với B, kiểm tra $u_i$ khớp đơn chưa phân bổ.
@@ -320,6 +344,6 @@ Mức sử dụng công suất là số đơn được gán chia $C_j$, nhân 10
 ## 10. Tài liệu nguồn
 
 - [Tutorial chọn đề tài Smart Logistics](https://docs.google.com/document/d/1ena1ZD8g8Emt3urDTUhlCquVawd5Pzar/edit), mục 3.1.
-- [Sheet Group8](https://docs.google.com/spreadsheets/d/12-hYpDkxA5CjfREcG9PdfLOMHeQJNFWAp2yo4mcxxlo/edit?gid=1350773495#gid=1350773495), phạm vi, phương pháp, đánh giá và phân công TV1–TV3.
+- [Sheet Group8](https://docs.google.com/spreadsheets/d/12-hYpDkxA5CjfREcG9PdfLOMHeQJNFWAp2yo4mcxxlo/edit?gid=1350773495#gid=1350773495)
 
 Các số liệu minh họa là dữ liệu giả định để kiểm chứng mô hình, chưa phải kết quả đo hiệu quả thực tế.

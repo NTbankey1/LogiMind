@@ -4,6 +4,20 @@ LogiMind hỗ trợ phân bổ đơn hàng giữa 2–3 kho có giới hạn t�
 
 Tài liệu này mô tả yêu cầu nghiệp vụ và điều kiện nghiệm thu. Công thức, ví dụ tính tay và hướng dẫn triển khai thuật toán nằm trong [Mô hình toán học](mathematical-model.md).
 
+## Phương án TV1 đề nghị nhóm xác nhận
+
+| Nội dung | Quy tắc đề nghị dùng cho bản triển khai |
+|---|---|
+| Chính sách | B có phạt là luồng chính; A dùng để kiểm tra trường hợp bắt buộc giao hết |
+| Chi phí vận chuyển | Đọc ma trận chi phí giao **nguyên đơn** từ một kho; không nhân thêm với số sản phẩm |
+| Đơn vị tiền | Dữ liệu minh họa dùng nghìn đồng; khi chạy lưu `money_unit`, dùng chung cho chi phí, phạt và kết quả |
+| Mức phạt thử nghiệm | Bộ mô phỏng chuẩn khai báo `penalty = 100` cho mỗi đơn; chạy thêm mức 50 và 200 trên cùng dữ liệu để xem độ nhạy |
+| Mức phạt dữ liệu khác | Nhập theo đơn; thiếu giá trị thì báo lỗi, không tự điền 100 |
+| Ý nghĩa tối ưu | Giảm tổng chi phí giao và phạt; không cam kết tối đa hóa số đơn được giao |
+| Thiếu chi phí | Loại riêng cặp đơn–kho đó và cảnh báo; không thay bằng 0 |
+
+Đây là phương án cụ thể TV1 đề nghị dùng, chưa phải biên bản xác nhận của nhóm. Khi nhóm đồng ý, ghi người xác nhận và ngày xác nhận trong PR. Các số 50, 100, 200 là tham số thử nghiệm trên dữ liệu mô phỏng, không phải mức tổn thất đã khảo sát tại doanh nghiệp.
+
 ## 1. Người sử dụng và bài toán
 
 Nhân viên điều phối nhập tập đơn của một đợt, chạy phân bổ và xem kho xử lý từng đơn. Quản lý kho xem lượng tồn và công suất đã sử dụng.
@@ -34,7 +48,7 @@ Ngoài phạm vi: tối ưu tuyến xe nhiều điểm, dự báo nhu cầu, tha
 
 Bản bàn giao đề xuất B làm chính sách chính, phù hợp với nội dung đã trình bày trong Word. A là biến thể đối chiếu. Đây chưa phải xác nhận nhóm đã duyệt chính sách; nhóm cần thống nhất trước khi chốt thực nghiệm.
 
-Trong B, `penalty` phải có trong dữ liệu từng đơn. Không tự coi đơn chưa giao có chi phí bằng 0, không tự đặt mức phạt 100 cho mọi dữ liệu. Giá trị 100 chỉ dùng trong các ví dụ.
+Trong B, `penalty` phải có trong dữ liệu từng đơn. Bộ sinh dữ liệu mô phỏng chuẩn ghi rõ mức 100 theo cấu hình thí nghiệm; không áp dụng ngầm mức này cho dữ liệu người dùng tải lên. Đơn chưa giao đóng góp tiền phạt vào mục tiêu.
 
 Nếu mức phạt thấp hơn chi phí giao, mô hình có thể để đơn chưa phân bổ dù còn nguồn lực. Nếu nhóm muốn ưu tiên giao nhiều đơn nhất, cần đổi sang mục tiêu hai bước được mô tả trong tài liệu mô hình và ghi rõ thay đổi này.
 
@@ -50,7 +64,17 @@ Tên trường dưới đây là đề xuất thống nhất giữa TV2, TV3 và
 | Danh mục hàng | `sku_id` | Mã mặt hàng duy nhất |
 | Tồn kho | `warehouse_id`, `sku_id`, `stock` | Số lượng khả dụng đầu đợt |
 | Chi phí | `order_id`, `warehouse_id`, `shipping_cost` | Chi phí giao nguyên đơn từ kho |
-| Cấu hình chạy | `policy`, `time_limit_seconds`, `seed` | Chính sách, giới hạn thời gian và seed nếu sinh dữ liệu |
+| Cấu hình chạy | `policy`, `money_unit`, `time_limit_seconds`, `seed` | Chính sách, đơn vị tiền, giới hạn thời gian và seed nếu sinh dữ liệu |
+
+### Cách tính chi phí và tiền phạt
+
+`shipping_cost[i,j]` là toàn bộ chi phí giao một lần cho nguyên đơn i từ kho j. Ví dụ đơn A có 2 sản phẩm X và 1 sản phẩm Y, ma trận ghi K1 = 10 và K2 = 14, thì giao từ K2 tính 14 nghìn đồng, không tính `14 × 3`. Trong đợt phân bổ, chi phí cố định theo ma trận; không giảm giá khi nhiều đơn cùng kho, không cộng tiền mở kho và không tính tuyến xe ghép đơn.
+
+Ma trận được nhập hoặc sinh sẵn bằng dữ liệu mô phỏng có seed. Bản tối thiểu không tính chi phí từ khoảng cách, trọng lượng, nhiên liệu hay API bản đồ. Nếu sau này bổ sung cách sinh từ khoảng cách thì cần đặc tả riêng đơn vị, hệ số và cách làm tròn; thuật toán vẫn nhận ma trận chi phí cuối cùng.
+
+Tiền phạt chỉ cộng một lần cho mỗi đơn chưa phân bổ. Với P = 100, giao hai đơn hết 20 và còn một đơn chưa giao thì chi phí giao = 20, tiền phạt = 100, tổng mục tiêu = 120. Không nhân phạt với số dòng hàng hoặc số sản phẩm. Mức phạt chung giúp so sánh các đơn ngang nhau trong thí nghiệm; chưa bổ sung mức ưu tiên khách hàng.
+
+Mọi chi phí và phạt phải dùng chung đơn vị. Khi nhập khác đơn vị, phải quy đổi trước khi chạy và ghi lại cách quy đổi. Chạy độ nhạy chỉ thay mức phạt, giữ nguyên đơn, tồn kho, công suất và ma trận chi phí; không sinh lại dữ liệu cho từng mức phạt.
 
 ### Quy tắc kiểm tra
 
@@ -121,5 +145,3 @@ Trước khi triển khai cần xác nhận: chính sách A/B, cách đặt mứ
 
 - [Tutorial chọn đề tài Smart Logistics](https://docs.google.com/document/d/1ena1ZD8g8Emt3urDTUhlCquVawd5Pzar/edit), mục 3.1 và các mục 6–9.
 - [Đăng ký và phân công nhóm 8](https://docs.google.com/spreadsheets/d/12-hYpDkxA5CjfREcG9PdfLOMHeQJNFWAp2yo4mcxxlo/edit?gid=1350773495#gid=1350773495).
-
-Hai tài liệu Markdown được chuyển soạn từ phần phân tích TV1 và thống nhất thuật ngữ để phục vụ triển khai. Các quy tắc còn ở mức đề xuất đã được ghi rõ ở trên.
