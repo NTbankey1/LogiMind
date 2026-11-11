@@ -25,7 +25,7 @@
 - **Primary Scope:**
   - Formulate business context, requirements, and logistics constraints.
   - Define indices, decision variables, parameters, objective functions, and mathematical constraints.
-  - Specify the unassigned order policy and handle edge/infeasible conditions.
+  - Specify the order-assignment policy (Policy A selected) and handle edge/infeasible conditions.
 - **Key Deliverables:**
   - `docs/mathematical-model.md` (Formal formulation).
   - Business rules section in `docs/requirements.md`.
@@ -59,7 +59,7 @@
   - Implement MILP Optimization model using Python solver libraries (PuLP / OR-Tools / SciPy).
   - Measure execution time, optimality gap, and warehouse utilization.
 - **Key Deliverables:**
-  - Algorithm module in `src/algorithms/`.
+  - Algorithm module in `src/logimind/algorithms/`.
   - Solver abstraction interface / callable adapter.
   - Benchmark comparison report (Baseline vs. MILP).
   - Unit tests for optimization correctness.
@@ -73,10 +73,10 @@
 ### TV4 — Frontend
 - **Primary Scope:**
   - Design and build user interface for scenario configuration and visualization.
-  - Implement order allocation summary dashboard (cost breakdown, split shipment rates).
+  - Implement order allocation summary dashboard (cost breakdown, warehouse utilization).
   - Visualize warehouse capacity utilization and order routing.
 - **Key Deliverables:**
-  - Frontend web application in `src/frontend/` (or UI module).
+  - Frontend web application in `frontend/` (or UI module).
   - Interactive allocation dashboard and charts.
   - Responsive layout and clear error status feedback.
 - **Dependencies:** TV5 (API endpoints and mock responses).
@@ -91,7 +91,7 @@
   - Implement relational database persistence using SQLite.
   - Implement input data validation, error handling, and solver timeout guards.
 - **Key Deliverables:**
-  - Backend API application in `src/backend/`.
+  - Backend API application in `src/logimind/backend/`.
   - Database schema models and migration scripts.
   - Standardized API endpoints adhering to `docs/api-contract.md`.
 - **Dependencies:** TV3 (Algorithm adapter) & TV2 (Data schemas).

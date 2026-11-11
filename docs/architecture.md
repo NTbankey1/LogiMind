@@ -1,5 +1,10 @@
 # System Architecture: LogiMind
 
+> **Status:** Proposed architecture. Only the documentation set, curated data
+> fixtures, and the legacy `scripts/validate_orders.py` prototype exist today.
+> Paths in this document describe the intended layout; no `src/logimind/`
+> package, frontend application, or test suite has been implemented yet.
+
 ## 1. Architectural Philosophy
 
 LogiMind follows a decoupled, modular 3-tier architecture:
@@ -51,6 +56,24 @@ graph TD
 
 ---
 
+### 2.1 Repository mapping (planned)
+
+No package or frontend directory exists yet. When implementation begins, code
+belongs in these locations:
+
+| Component | Intended location |
+| :--- | :--- |
+| Optimization engine (baseline + MILP) | `src/logimind/algorithms/` |
+| FastAPI backend and service layer | `src/logimind/backend/` |
+| Data access and persistence models | `src/logimind/data/` |
+| React + Vite frontend | `frontend/` |
+| Benchmark datasets | `data/samples/` |
+| Machine-readable dataset schemas | `data/schema/` |
+| Maintenance and generation utilities | `scripts/` |
+| Automated tests | `tests/unit/`, `tests/integration/`, `tests/e2e/` |
+| Technical documentation | `docs/` |
+| Legacy prototype (not Policy A) | `scripts/validate_orders.py`, `data/samples/benchmark_data.json` |
+
 ## 3. Technology Stack Evaluation (Proposed vs. Pending ADR)
 
 | Component | Proposed Technology | Evaluation Criteria | Status |
@@ -58,7 +81,7 @@ graph TD
 | **Optimization Engine** | Python (`PuLP` or `Google OR-Tools`) | Expressive LP/MILP modeling, open-source CBC/GLPK solver support, academic community standard. | Proposed (Pending ADR-001) |
 | **Backend Framework** | Python (`FastAPI`) | High performance, automatic OpenAPI documentation, native Pydantic validation, direct synergy with Python solver libraries. | Proposed (Pending ADR-002) |
 | **Database** | `SQLite` | Zero-configuration, file-based, embeddable, perfect for student projects and deterministic demo evaluations. | Proposed (Pending ADR-003) |
-| **Frontend Framework** | `React` + `Vite` (or Vue 3) | Fast component rendering, responsive charts (Recharts / Chart.js), rapid local build cycle. | Proposed (Pending ADR-004) |
+| **Frontend Framework** | `React` + `Vite` (or Vue 3) | Fast component rendering, responsive charts (Recharts / Chart.js), rapid local build cycle. | Proposed (no ADR yet) |
 | **Testing Harness** | `pytest` + `playwright` (or request tests) | Standard Python testing, fixtures, parameterized tests for optimization edge cases. | Proposed |
 
 ---
@@ -104,7 +127,7 @@ sequenceDiagram
         BE->>DB: Persist allocation run and allocation lines
         DB-->>BE: Confirm commit
         BE-->>FE: 200 OK - AllocationResult JSON
-        FE->>User: Show cost breakdown, split shipments and warehouse utilization
+        FE->>User: Show cost breakdown, order assignments and warehouse utilization
     else status = INFEASIBLE
         BE-->>FE: 422 Unprocessable Entity with unsatisfied order IDs
         FE-->>User: Flag unmet demand per SKU

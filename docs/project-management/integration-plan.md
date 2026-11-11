@@ -15,11 +15,11 @@
 | Module boundaries and handoff checklist | [integration-guide.md](../integration-guide.md) |
 | Planned components and data flow | [architecture.md](../architecture.md) |
 | API endpoints and payloads | [api-contract.md](../api-contract.md) *(Proposed)* |
-| Data entities | [data-dictionary.md](../data-dictionary.md) *(Draft)*, [legacy data dictionary](../../data-dictionary.md) |
+| Data entities | [data-dictionary.md](../data-dictionary.md) *(Draft; Appendix A covers the legacy prototype)* |
 | Test tiers and edge cases | [testing-strategy.md](../testing-strategy.md) |
 | Technical decisions | [ADR index](../decisions/README.md) — ADR-001..003 are `PROPOSED` |
 
-If any of these documents conflict, the conflict is a blocker to resolve **before** implementation integration. Known conflicts are listed in [PROJECT_STATUS §4](PROJECT_STATUS.md#4-blockers-and-dependencies).
+If any of these documents conflict, the conflict is a blocker to resolve **before** implementation integration. Known conflicts are listed in [project-status §4](project-status.md#4-blockers-and-dependencies).
 
 ---
 
@@ -42,7 +42,7 @@ flowchart TD
     TV6 -->|Acceptance evidence| Lead["Project Lead / Stakeholders"]
 ```
 
-**Actual implementation status:** only TV1 documents and partial TV2 data exist. TV3, TV4, and TV5 have no implementation in their assigned directories. The root-level `validate_orders.py` is a standalone prototype, not an integrated module.
+**Actual implementation status:** only TV1 documents and partial TV2 data exist. TV3, TV4, and TV5 have no implementation in their assigned directories. The legacy `scripts/validate_orders.py` is a standalone prototype, not an integrated module.
 
 ---
 
@@ -104,7 +104,7 @@ Use this checklist at G1–G5. “Current” reflects the repository on the veri
 - [ ] Split-shipment policy is reflected in the schema or explicitly excluded
 - [ ] Fixture identifiers, versions, and expected outcomes are documented
 
-**Current:** not verified. `benchmark_data.json`, `sample_small.json`, root `data-dictionary.md`, and `docs/data-dictionary.md` disagree. See [PROJECT_STATUS §4](PROJECT_STATUS.md#4-blockers-and-dependencies).
+**Current:** not verified. `data/samples/benchmark_data.json`, `data/samples/sample_small.json`, and `docs/data-dictionary.md` still describe different schemas. The repository cleanup consolidated the former root dictionary into Appendix A, but reconciling the canonical data contract remains TV2 work. See [project-status §4](project-status.md#4-blockers-and-dependencies).
 
 ### 5.2 Solver adapter contract
 
@@ -166,14 +166,14 @@ Use this checklist at G1–G5. “Current” reflects the repository on the veri
 
 | Blocker | Effect on integration | Resolution owner | Evidence |
 | :--- | :--- | :--- | :--- |
-| Business rules unresolved | G0 cannot open; all downstream contracts unstable | TV1 / Project Lead | [PROJECT_STATUS B-01](PROJECT_STATUS.md#4-blockers-and-dependencies) |
-| No canonical schema | Data cannot cross module boundaries | TV2 | PROJECT_STATUS B-02 |
-| API/model mismatch | Frontend/backend/solver disagree | TV1, TV3, TV4, TV5 | PROJECT_STATUS B-03 |
-| No solver adapter | Backend cannot invoke optimization | TV3 | PROJECT_STATUS B-04 |
-| No backend/SQLite | UI and E2E cannot integrate | TV5 | PROJECT_STATUS B-05 |
-| No frontend | E2E cannot start | TV4 | PROJECT_STATUS B-06 |
-| No test harness/CI test job | Integration evidence cannot be produced | TV6 | PROJECT_STATUS B-07 |
-| No task ownership | Blockers are not escalated or evidenced | Project Lead | PROJECT_STATUS B-08 |
+| Business rules unresolved | G0 cannot open; all downstream contracts unstable | TV1 / Project Lead | [project-status B-01](project-status.md#4-blockers-and-dependencies) |
+| No canonical schema | Data cannot cross module boundaries | TV2 | project-status B-02 |
+| API/model mismatch | Frontend/backend/solver disagree | TV1, TV3, TV4, TV5 | project-status B-03 |
+| No solver adapter | Backend cannot invoke optimization | TV3 | project-status B-04 |
+| No backend/SQLite | UI and E2E cannot integrate | TV5 | project-status B-05 |
+| No frontend | E2E cannot start | TV4 | project-status B-06 |
+| No test harness/CI test job | Integration evidence cannot be produced | TV6 | project-status B-07 |
+| No task ownership | Blockers are not escalated or evidenced | Project Lead | project-status B-08 |
 
 ---
 
@@ -194,9 +194,9 @@ Use this checklist at G1–G5. “Current” reflects the repository on the veri
 
 ## 8. Related documents
 
-- [Project Status](PROJECT_STATUS.md)
-- [Task Tracker](TASK_TRACKER.md)
-- [Test Plan](TEST_PLAN.md)
+- [Project Status](project-status.md)
+- [Task Tracker](task-tracker.md)
+- [Test Plan](test-plan.md)
 - [Integration Guide](../integration-guide.md)
 - [Architecture](../architecture.md)
 - [API Contract](../api-contract.md)

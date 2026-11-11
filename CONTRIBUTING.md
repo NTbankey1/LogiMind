@@ -103,9 +103,10 @@ pytest tests/ -v
 
 # Validate JSON benchmark or sample fixtures
 python -m json.tool data/samples/sample_small.json > /dev/null
+python -m json.tool data/samples/benchmark_data.json > /dev/null
 
 # Smoke-check the order-allocation script
-python validate_orders.py
+python scripts/validate_orders.py
 ```
 
 If a component has no tests yet, state that explicitly in the PR instead of claiming the change was verified. Do not report a test as passing unless you ran it locally or in CI.

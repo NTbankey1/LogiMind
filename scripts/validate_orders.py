@@ -1,6 +1,8 @@
+import argparse
 import json
 import math
-from typing import List, Dict, Optional
+from pathlib import Path
+from typing import List, Dict
 from dataclasses import dataclass
 
 @dataclass
@@ -119,7 +121,33 @@ class LogisticsManager:
         print("\n--- HOÀN TẤT QUÁ TRÌNH PHÂN BỔ ---")
 
 
-if __name__ == "__main__":
-    manager = LogisticsManager("benchmark_data.json")
+DEFAULT_DATA_FILE = (
+    Path(__file__).resolve().parent.parent / "data" / "samples" / "benchmark_data.json"
+)
+
+
+def main() -> int:
+    """Run the legacy allocation prototype on the bundled benchmark data."""
+    parser = argparse.ArgumentParser(
+        description=(
+            "Legacy LogiMind allocation prototype (nearest-warehouse heuristic). "
+            "This is not the Policy A optimization engine."
+        )
+    )
+    parser.add_argument(
+        "data_file",
+        nargs="?",
+        default=str(DEFAULT_DATA_FILE),
+        help=f"Prototype dataset path (default: {DEFAULT_DATA_FILE})",
+    )
+    args = parser.parse_args()
+
+    manager = LogisticsManager(args.data_file)
     if manager.load_data():
         manager.validate_and_allocate()
+        return 0
+    return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
