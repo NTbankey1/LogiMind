@@ -1,38 +1,42 @@
 # Source Code Directory: `src/`
 
-This directory is reserved for application, optimization, and service source code for the LogiMind system.
+Reserved for the Python application package. **No package source exists yet.**
+The legacy prototype is intentionally kept out of this directory at
+[`scripts/validate_orders.py`](../scripts/validate_orders.py).
 
----
-
-## 1. Planned Codebase Organization
-
-Following architecture discussions in [docs/architecture.md](../docs/architecture.md), the proposed internal package layout is:
+## Intended layout
 
 ```text
 src/
-├── algorithms/           # Managed by TV3 (Optimization Algorithms)
-│   ├── __init__.py
-│   ├── base.py           # Abstract solver interface (callable contract)
-│   ├── baseline.py       # Heuristic solvers (Greedy / Nearest)
-│   ├── milp_solver.py    # MILP PuLP / OR-Tools formulation
-│   └── metrics.py        # Cost calculation & comparison utilities
-├── backend/              # Managed by TV5 (Backend & Database)
-│   ├── __init__.py
-│   ├── main.py           # FastAPI application entry point
-│   ├── config.py         # App configuration & environment loader
-│   ├── api/              # API route controllers (/health, /allocations)
-│   ├── models/           # SQLAlchemy / SQLModel database entities
-│   └── services/         # Business logic & solver orchestration
-└── frontend/             # Managed by TV4 (Frontend UI)
-    ├── package.json      # Frontend package configuration (if React/Vite)
-    ├── index.html
-    └── src/              # UI components, state management, and visualizations
+└── logimind/
+    ├── __init__.py
+    ├── algorithms/        # TV3: baseline heuristics, MILP model, solver adapter, metrics
+    ├── backend/           # TV5: FastAPI application, routes, services, configuration
+    └── data/              # TV2/TV5: schema models, dataset loaders, persistence helpers
 ```
 
----
+The React + Vite frontend is a separate application under `frontend/`. It must
+not be placed inside the Python package.
 
-## 2. Implementation Rules for Contributors
+## Rules for implementation
 
-1. **Adhere to Contracts:** All data exchanges between frontend and backend must strictly conform to [docs/api-contract.md](../docs/api-contract.md).
-2. **Encapsulate Algorithms:** The optimization engine must be callable as an isolated Python package without direct coupling to web or HTTP frameworks.
-3. **Deterministic Logic:** Always provide fixed seeds or tie-breaking policies to ensure allocation results are reproducible during grading and tests.
+1. **Create the package only when real code is added.** Do not commit empty
+   `__init__.py` files, fake modules, or placeholder services.
+2. **Dependencies:** add a `pyproject.toml` when the package needs packaging,
+   runtime dependencies, or tool configuration. Do not add one for decoration.
+3. **Imports:** use absolute imports rooted at `logimind` (for example
+   `from logimind.algorithms.baseline import allocate`).
+4. **Contracts:** consume the canonical Policy A dataset contract from
+   [`docs/data-dictionary.md`](../docs/data-dictionary.md) and the API contract
+   from [`docs/api-contract.md`](../docs/api-contract.md). Do not invent field
+   names or business rules.
+5. **Determinism:** accept fixed seeds and use a documented tie-breaking rule so
+   benchmark runs are reproducible.
+6. **Testing:** add unit tests under [`tests/unit/`](../tests/README.md) in the
+   same pull request as the implementation.
+
+## Current status
+
+`src/` contains only this README. TV3 (algorithms), TV5 (backend), and shared
+data-access code are not implemented. See
+[`docs/architecture.md`](../docs/architecture.md) for the proposed component map.

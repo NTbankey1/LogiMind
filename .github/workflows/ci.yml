@@ -31,6 +31,10 @@ jobs:
           done
           echo "All JSON fixtures are valid."
 
+      - name: Smoke-check legacy allocation prototype
+        run: |
+          python scripts/validate_orders.py
+
       - name: Validate Internal Relative Markdown Links
         run: |
           python -c '

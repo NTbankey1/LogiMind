@@ -1,37 +1,50 @@
-# Test Suite Directory: `tests/`
+# Test Suite: `tests/`
 
-This directory houses automated test suites for the LogiMind project, maintained by **TV6** in collaboration with all module leads.
+Automated tests for LogiMind, maintained by **TV6** with the module owners.
+**No automated test suite exists yet**; this directory currently contains only
+this README. Do not claim test coverage for planned components.
 
----
-
-## 1. Planned Test Structure
+## Intended layout
 
 ```text
 tests/
-├── conftest.py             # Shared pytest fixtures, sample problem factories
-├── unit/                   # Fast, isolated unit tests
-│   ├── test_baseline.py    # Test baseline heuristic logic (TV3)
-│   ├── test_milp.py        # Test MILP solver mathematical validity (TV3)
-│   └── test_schemas.py     # Test Pydantic model validation (TV5)
-├── integration/            # Component interaction tests
-│   ├── test_api.py         # Test backend endpoints against SQLite (TV5 & TV6)
-│   └── test_solver_api.py  # Test backend calling solver wrapper (TV5 & TV3)
-└── e2e/                    # End-to-end benchmark scenarios
-    ├── test_invariants.py  # Mathematical invariant assertion across all runs (TV6)
-    └── test_benchmarks.py  # Performance & cost reduction verification (TV6)
+├── unit/           # Fast, isolated tests (algorithms, validation, persistence)
+├── integration/    # API + database + solver interactions
+└── e2e/            # End-to-end benchmark and invariant scenarios
 ```
 
----
+Create subdirectories only when they contain real tests. The test methodology,
+invariants, and required edge cases are defined in
+[`docs/testing-strategy.md`](../docs/testing-strategy.md) and
+[`docs/project-management/test-plan.md`](../docs/project-management/test-plan.md).
 
-## 2. Test Execution Guidelines
+## Running tests (once they exist)
 
-Once Python dependencies are established:
+From the repository root:
+
 ```bash
-# Execute entire test suite
-pytest tests/ -v
-
-# Run with test coverage report
-pytest --cov=src tests/
+python -m pytest tests/ -v
 ```
 
-See [docs/testing-strategy.md](../docs/testing-strategy.md) for testing invariants and edge-case requirements.
+`pytest` is not a current dependency because there are no tests yet. When the
+first test suite is added, add the test dependency and a `pyproject.toml`
+configuration in the same pull request.
+
+## Rules
+
+- A test may only assert behavior that an actual implementation provides.
+- Use curated fixtures from `data/samples/`; do not invent hidden test data.
+- For optimization tests, assert validity invariants (one warehouse per order,
+  per-SKU stock, order-count capacity, total cost recomputation) and objective
+  values rather than one arbitrary optimal assignment.
+- Distinguish a mathematically infeasible instance from invalid input; they are
+  different failure modes.
+- Keep tests deterministic: fixed seeds and a documented tie-breaking rule.
+- Do not commit generated test output, caches, or databases.
+
+## Current verification
+
+Until an automated suite exists, CI performs repository-hygiene checks: JSON
+syntax for `data/samples/*.json`, internal Markdown links, essential-file
+presence, and a smoke run of the legacy prototype. See
+[`.github/workflows/ci.yml`](../.github/workflows/ci.yml).
