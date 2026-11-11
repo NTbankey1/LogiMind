@@ -281,6 +281,13 @@ class TestDatasetSchemaAndValidation(unittest.TestCase):
         is_valid, _ = validate_dataset_data(corrupt_order, self.schema)
         self.assertFalse(is_valid)
 
+    def test_unknown_metadata_field_fails(self):
+        corrupt = copy.deepcopy(self.small_valid_data)
+        corrupt["metadata"]["created_at"] = "2026-11-11"
+        is_valid, errors = validate_dataset_data(corrupt, self.schema)
+        self.assertFalse(is_valid)
+        self.assertTrue(any("metadata" in e for e in errors))
+
     def test_duplicate_json_object_keys_fail(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "duplicate_keys.json"

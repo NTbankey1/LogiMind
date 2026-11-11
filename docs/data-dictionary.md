@@ -210,10 +210,10 @@ optimization work owned by TV3 on medium and large instances.
 
 - `schema_version` is a literal string. Any change to required fields, types, or
   semantics requires a new version value and a new schema file revision.
-- Within version `"1.0"`, additive metadata under `metadata` is allowed; all
-  other object levels reject unknown fields.
-- Dataset files must be updated, revalidated, and rechecked for feasibility when
-  the version changes. Never silently reinterpret an old file.
+- Within version `"1.0"`, `metadata` accepts only `generator` (string) and `seed`
+  (integer); unknown fields are rejected at every object level, including
+  `metadata`. Dataset files must be updated, revalidated, and rechecked for
+  feasibility when the version changes. Never silently reinterpret an old file.
 
 ---
 

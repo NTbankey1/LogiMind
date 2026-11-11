@@ -41,7 +41,7 @@ payments, HR, WMS/ERP integration, and real-time data feeds. See
 | Dataset generator | **Implemented** | [scripts/generate_dataset.py](scripts/generate_dataset.py) (deterministic, feasible by construction) |
 | Dataset validator | **Implemented** | [scripts/validate_dataset.py](scripts/validate_dataset.py) (schema + semantic checks) |
 | Feasibility oracle | **Implemented (small instances)** | [scripts/check_feasibility.py](scripts/check_feasibility.py) |
-| Automated TV2 tests | **Implemented** | [tests/test_datasets.py](tests/test_datasets.py) (59 tests) |
+| Automated TV2 tests | **Implemented** | [tests/test_datasets.py](tests/test_datasets.py) (60 tests) |
 | CI | **Configured** | [.github/workflows/ci.yml](.github/workflows/ci.yml): repository hygiene + TV2 dataset job |
 | Allocation policy | **Decided: Policy A** | [ADR-004](docs/decisions/0004-allocation-policy-a.md) |
 | Legacy allocation prototype | **Implemented (not Policy A)** | `validate_orders.py`, `benchmark_data.json` |
