@@ -12,7 +12,7 @@ Welcome to the technical and architectural documentation index for the **LogiMin
 | [Requirements](requirements.md) | TV1 & TV6 | Functional (FR) and Non-Functional (NFR) requirements specification. |
 | [Mathematical Model](mathematical-model.md) | TV1 | Sets, parameters, decision variables, constraints, objective function, and examples. |
 | [Architecture](architecture.md) | TV5 & Tech Lead | System architecture, component communication, tech stack roadmap, and flow diagrams. |
-| [API Contract](api-contract.md) | TV4 & TV5 | Request/response schemas, validation rules, error codes, and invocation protocols. |
+| [API Contract](api-contract.md) | TV4 & TV5 | Policy A request/response schemas, status semantics, validation rules, and error codes. |
 | [Data Dictionary](data-dictionary.md) | TV2 | Entity definitions, field types, constraints, and the legacy prototype appendix. |
 | [Testing Strategy](testing-strategy.md) | TV6 | Testing tiers, coverage expectations, edge cases, and automated validation. |
 | [Integration Guide](integration-guide.md) | TV6 & Tech Lead | Hand-off checklists, cross-module dependencies, and milestone synchronization. |

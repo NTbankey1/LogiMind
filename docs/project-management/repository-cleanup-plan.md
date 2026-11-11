@@ -5,6 +5,10 @@
 > **Scope:** Repository organization only. No change to the Policy A mathematical
 > model, solver behavior, or canonical data semantics.
 >
+> **Historical record:** Policy B references in this cleanup log describe the
+> pre-decision state and are not current policy. Policy A ([ADR-004](../decisions/0004-allocation-policy-a.md))
+> is the active contract.
+>
 > **Post-merge note (TV2 PR #11):** The cleanup moved the legacy fixture to
 > `data/samples/`. During the TV2 merge it was separated into
 > `data/legacy/benchmark_data.json` so that every `data/samples/*.json` file

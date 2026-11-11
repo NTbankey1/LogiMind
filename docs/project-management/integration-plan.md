@@ -52,9 +52,9 @@ Gates are sequential. A gate opens only when its exit evidence is present in the
 
 | Gate | Entry criteria | Required artifacts | Verification | Exit criteria | Current status |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **G0 — Rules and schema** | TV1 model and TV2 data drafts exist | Approved policy A/B; resolved capacity/SKU/cost/penalty/split decisions; canonical data schema | Project Lead review; TV1/TV2 sign-off; documented decision | Rules are unambiguous and one schema is authoritative | **Blocked** — six conflicts unresolved |
-| **G1 — Contracts frozen** | G0 complete | Signed-off `ProblemInput`/`SolutionOutput` contract; API contract revision; status/error enums | TV1/TV3/TV5/TV4 review; example payloads validated | Contracts are versioned and no known mismatch remains | **Blocked** — API/model conflicts and proposed statuses |
-| **G2 — Fixtures ready** | G0, G1 complete | Canonical fixtures: feasible, infeasible, tight-resource, tie-break, scale; schema validator | TV2 runs validator; TV6 independently checks schema and edge cases | All fixtures pass validation; expected outcomes documented | **Blocked** — no validator; schemas conflict |
+| **G0 — Rules and schema** | TV1 Policy A model and TV2 canonical data contract exist | Policy A decision ([ADR-004](../decisions/0004-allocation-policy-a.md)); canonical schema and dictionary; capacity/SKU/cost rules documented | Project Lead decision; TV1/TV2 publication | Rules are unambiguous and one schema is authoritative | **In Progress** — published; TV3/TV5/TV6 adoption pending |
+| **G1 — Contracts frozen** | G0 complete | Policy A API contract with `OPTIMAL`/`FEASIBLE`/`INFEASIBLE`/`NO_SOLUTION_FOUND`/`ERROR`; canonical dataset payload | TV1/TV3/TV5/TV4 review; example payloads validated | Contracts are versioned and no known mismatch remains | **In Progress** — aligned; implementation sign-off pending |
+| **G2 — Fixtures ready** | G0, G1 complete | Ten canonical fixtures; schema validator; feasibility oracle | TV2 runs validator; TV6 independently checks schema and edge cases | All fixtures pass validation; expected outcomes documented | **Completed (TV2)** — TV6 independent checks pending |
 | **G3 — Solver ready** | G1, G2 complete | Baseline, MILP, solver adapter, unit tests, benchmark report | TV3 test run; TV6 independent invariant checks | Solver consumes canonical input and returns contractual output | **Not Started** |
 | **G4 — Backend ready** | G3 complete | FastAPI endpoints, SQLite schema/migrations, persistence, timeout handling, contract tests | TV5 tests; TV6 contract tests against fixtures | API matches frozen contract and persists/reloads results | **Not Started** |
 | **G5 — Frontend ready** | G1, G4 complete | UI against mock API, then live API; documented start command; E2E flow | TV4 demo; TV6 E2E walkthrough | User can select data, run allocation, and inspect results | **Not Started** |
@@ -128,7 +128,7 @@ Use this checklist at G1–G5. “Current” reflects the repository on the veri
 - [ ] Response includes the metrics required by the approved model/requirements
 - [ ] Request/response examples are executable against the implementation
 
-**Current:** [api-contract.md](../api-contract.md) is `Proposed`; no backend exists. Split shipments, handling cost, and status names conflict with the model.
+**Current:** [api-contract.md](../api-contract.md) is Policy A aligned with the five required statuses and no split/penalty/handling fields. No backend exists yet; TV5 implementation and TV1/TV3/TV4/TV5 sign-off remain open.
 
 ### 5.4 Persistence
 
@@ -145,7 +145,7 @@ Use this checklist at G1–G5. “Current” reflects the repository on the veri
 - [ ] UI runs in mock mode without a backend
 - [ ] UI switches to the live API without code changes beyond configuration
 - [ ] Validation, infeasible, timeout, and server-error states are visible
-- [ ] Allocation, cost breakdown, utilization, and unassigned/split views use documented fields only
+- [ ] Allocation, cost breakdown, utilization, and status views use documented Policy A fields only (one warehouse per order)
 - [ ] E2E flow is documented for TV6
 
 **Current:** no frontend files or package manifest.
@@ -172,7 +172,7 @@ Use this checklist at G1–G5. “Current” reflects the repository on the veri
 | No solver adapter | Backend cannot invoke optimization | TV3 | project-status B-04 |
 | No backend/SQLite | UI and E2E cannot integrate | TV5 | project-status B-05 |
 | No frontend | E2E cannot start | TV4 | project-status B-06 |
-| No test harness/CI test job | Integration evidence cannot be produced | TV6 | project-status B-07 |
+| TV3/TV5 test harness and required CI check missing (TV2 suite exists) | Integration evidence incomplete | TV6 | project-status B-07 |
 | No task ownership | Blockers are not escalated or evidenced | Project Lead | project-status B-08 |
 
 ---

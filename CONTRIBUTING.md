@@ -35,7 +35,7 @@ Create one branch per task, not per person. Use the pattern `<type>/<short-descr
 | :--- | :--- | :--- |
 | `feat/` | New features or modules | `feat/milp-solver-adapter`, `feat/allocation-dashboard` |
 | `fix/` | Bug fixes and constraint corrections | `fix/capacity-overflow-check`, `fix/api-infeasible-response` |
-| `docs/` | Documentation only | `docs/clarify-split-penalty`, `docs/api-timeout-behavior` |
+| `docs/` | Documentation only | `docs/clarify-infeasibility-status`, `docs/api-timeout-behavior` |
 | `test/` | Test suites, fixtures, and test data | `test/infeasible-capacity-fixtures` |
 | `refactor/` | Internal restructuring with no behavior change | `refactor/extract-allocation-service` |
 | `chore/` | Tooling, CI, dependencies, housekeeping | `chore/ci-json-validation` |
@@ -65,7 +65,7 @@ All commits follow [Conventional Commits](https://www.conventionalcommits.org/):
 | :--- | :--- | :--- |
 | `feat` | New capability | `feat(optimizer): add allocation logic` |
 | `fix` | Bug or constraint correction | `fix(optimizer): prevent capacity overflow in baseline` |
-| `docs` | Documentation only | `docs: clarify split-shipment penalty` |
+| `docs` | Documentation only | `docs: clarify infeasibility status` |
 | `test` | Adding or updating tests | `test(optimizer): add infeasible capacity fixture` |
 | `refactor` | No behavior change | `refactor(api): extract allocation service` |
 | `chore` | Maintenance and tooling | `chore(ci): validate benchmark JSON fixtures` |

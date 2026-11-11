@@ -14,8 +14,8 @@ LogiMind is at the **foundation, specification, and prototype stage**. The repos
 | Area | Current state | Evidence |
 | :--- | :--- | :--- |
 | Repository foundation | Scaffolded | PR #1; commit `cb5f5ad` |
-| Requirements and mathematical model | Draft / proposed | PR #5; [requirements](../requirements.md), [mathematical model](../mathematical-model.md) |
-| Architecture and API contract | Proposed | [architecture](../architecture.md), [api-contract](../api-contract.md), ADRs `PROPOSED` |
+| Requirements and mathematical model | Policy A selected; documents present | PR #5; [requirements](../requirements.md), [mathematical model](../mathematical-model.md), [ADR-004](../decisions/0004-allocation-policy-a.md) |
+| Architecture and API contract | Policy A aligned; implementation pending | [architecture](../architecture.md), [api-contract](../api-contract.md); ADR-001/002/003 still `PROPOSED` |
 | Data layer | Implemented by TV2 (PR #11 pending review) | Canonical [schema](../../data/schema/dataset.schema.json), [data dictionary](../data-dictionary.md), ten `data/samples/` fixtures; legacy prototype input under `data/legacy/` |
 | Optimization engine | Not started in `src/` | Only the legacy `scripts/validate_orders.py` prototype |
 | Backend and SQLite | Not started | No backend source or migration files |
@@ -39,7 +39,7 @@ Role ownership below follows [team-responsibilities](../team-responsibilities.md
 | **TV3** | Optimization algorithms | None in the assigned location. A legacy `scripts/validate_orders.py` prototype exists (nearest warehouse, aggregate capacity), but no issue/PR links it to TV3. | Baseline package, MILP formulation, solver adapter, metrics, unit tests, benchmark report under `src/logimind/algorithms/` | **Not Started** | `src/` contains only [README](../../src/README.md); [integration-guide](../integration-guide.md) defines the expected adapter |
 | **TV4** | Frontend | None | UI application, cost comparison, capacity utilization, error states, API integration, E2E flow | **Not Started** | No frontend files or package manifest; no ADR-004 |
 | **TV5** | Backend and database | None | FastAPI service, SQLite schema/migrations, endpoint implementation, validation, timeout handling, integration tests | **Not Started** | `src/` contains only README; ADR-002 and ADR-003 remain `PROPOSED` ([ADR index](../decisions/README.md)) |
-| **TV6** | Integration, overall testing, reporting | Draft [testing-strategy](../testing-strategy.md) and [integration-guide](../integration-guide.md); CI hygiene workflow; this project-management documentation set | Executed test suites; CI test job; contract/integration/E2E tests; bug tracking workflow; benchmark report; final report/demo | **In Progress** (documentation only) | [.github/workflows/ci.yml](../../.github/workflows/ci.yml); [testing-strategy §4](../testing-strategy.md); [integration-guide](../integration-guide.md) |
+| **TV6** | Integration, overall testing, reporting | [testing-strategy](../testing-strategy.md); [integration-guide](../integration-guide.md); CI hygiene workflow; TV2 60-test suite and dataset/feasibility CI job; this project-management documentation set | TV3/TV5 application tests; contract/integration/E2E tests; required-status-check rule; bug tracking workflow; benchmark report; final report/demo | **In Progress** (documentation + TV2 tests) | [.github/workflows/ci.yml](../../.github/workflows/ci.yml); [tests/test_datasets.py](../../tests/test_datasets.py); [testing-strategy §4](../testing-strategy.md) |
 
 ### Verified facts vs. unknowns
 
@@ -97,13 +97,13 @@ Role ownership below follows [team-responsibilities](../team-responsibilities.md
 
 | ID | Blocker | Affected work | Dependency / owner | Current evidence |
 | :--- | :--- | :--- | :--- | :--- |
-| B-01 | Business rules unresolved (policy A/B, capacity unit, `c_ij`, `P_i`, split, handling cost) | TV2 schema, TV3 solver, TV5 API, TV4 UI, TV6 tests | TV1 with team approval | [model §3–§4](../mathematical-model.md); [requirements §2–§3](../requirements.md); canonical Policy A contract in [data-dictionary.md](../data-dictionary.md) (legacy appendix included) |
+| B-01 | Policy decision needs team ratification and downstream adoption (Policy A selected) | TV2 schema, TV3 solver, TV5 API, TV4 UI, TV6 tests | TV1/Project Lead; TV3/TV4/TV5 | Policy A recorded in [ADR-004](../decisions/0004-allocation-policy-a.md); canonical contract in [data-dictionary.md](../data-dictionary.md) |
 | B-02 | No canonical data schema | TV2 fixtures, TV3 input, TV5 persistence, TV6 tests | TV2 after B-01 | Resolved for TV2 by the canonical Policy A [schema](../../data/schema/dataset.schema.json) and [dictionary](../data-dictionary.md); TV3/TV5/TV6 adoption remains open. |
-| B-03 | API contract not signed off and conflicts with model | TV4 frontend, TV5 backend, TV6 contract tests | TV1, TV3, TV4, TV5 | [api-contract.md](../api-contract.md) says "Proposed"; split/handling/status mismatches |
+| B-03 | API contract aligned but not implemented/signed off | TV4 frontend, TV5 backend, TV6 contract tests | TV1, TV3, TV4, TV5 | [api-contract.md](../api-contract.md) is Policy A aligned; no backend implementation yet |
 | B-04 | No solver adapter / implementation | TV5 backend integration, TV6 integration tests | TV3 | [integration-guide](../integration-guide.md) names `solve_allocation(...)`, but no code exists |
 | B-05 | No backend or database implementation | TV4 UI integration, TV6 API/E2E tests | TV5 | `src/` contains only README; ADR-002/003 `PROPOSED` |
 | B-06 | No frontend implementation | TV6 E2E tests | TV4 | No frontend files |
-| B-07 | No automated tests or test job in CI | Acceptance and release evidence | TV6 with module owners | [testing-strategy §4](../testing-strategy.md); CI workflow |
+| B-07 | TV3/TV5 application tests and a required CI status check are missing (TV2 60-test suite and CI job exist) | Acceptance and release evidence | TV6 with module owners | [testing-strategy §4](../testing-strategy.md); [.github/workflows/ci.yml](../../.github/workflows/ci.yml) |
 | B-08 | No task ownership or issue history | Project coordination and progress tracking | Project Lead | 0 Issues, 0 milestones; roster `TBD` in [team-responsibilities](../team-responsibilities.md) |
 > **Update 2026-11-11:** Policy A is recorded in [ADR-004](../decisions/0004-allocation-policy-a.md). The canonical TV2 schema and dictionary resolve B-02 for TV2; adoption by TV3/TV5/TV6 remains open.
 
@@ -114,11 +114,11 @@ Role ownership below follows [team-responsibilities](../team-responsibilities.md
 
 | Risk ID | Description | Severity | Impact | Dependency | Mitigation proposal | Responsible role |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **R-01** | Business rules remain unresolved, causing incompatible implementations | Critical | Rework across TV1–TV6; invalid benchmark results | TV1 approval; team decision | Hold a decision session; record outcome as an ADR; freeze rules before Gate 1 | TV1 / Project Lead |
-| **R-02** | No canonical data schema; three schemas coexist | High | Solver/API/UI cannot exchange data; tests cannot be trusted | B-01, TV2 | Choose one schema; publish fixture examples; add schema validator | TV2 |
+| **R-01** | Policy A is selected but not yet ratified/adopted by every module | High | Incompatible implementations if a module keeps pre-Policy-A behavior | TV1/Project Lead; TV3/TV4/TV5 | Record team ratification; track adoption in project-status and PR reviews | TV1 / Project Lead |
+| **R-02** | Canonical schema published but not yet consumed by all modules | High | Solver/API/UI divergence and invalid fixtures | B-01, TV2 | Consume `data/schema/dataset.schema.json`; run `scripts/validate_dataset.py` in module tests | TV2, TV3, TV5 |
 | **R-03** | No implementation in TV3, TV4, TV5 assigned locations | High | Project cannot reach integration or demo | Module owners | Create milestones with acceptance criteria; report progress via PRs | TV3, TV4, TV5 |
-| **R-04** | API/model/status semantics conflict | High | Integration defects; contract tests fail | B-01, B-03 | Freeze `ProblemInput`/`SolutionOutput`, API envelope, error/status enums; sign off | TV1, TV3, TV4, TV5 |
-| **R-05** | No automated tests; CI is hygiene-only | High | Quality unknown; regressions undetected | TV6, module owners | Add pytest suite; add CI test job; require it as a status check | TV6 |
+| **R-04** | API/model/status semantics not yet implemented/signed off | High | Integration defects; contract tests fail | B-03 | Implement the Policy A API contract; obtain TV1/TV3/TV4/TV5 sign-off | TV1, TV3, TV4, TV5 |
+| **R-05** | No TV3/TV5 test suites; only TV2 tests exist | High | Solver/API regressions undetected | TV6, module owners | Add unit/integration/E2E tests; require the TV2 CI job as a status check | TV6, TV3, TV5 |
 | **R-06** | No Issues/milestones/assignees | High | Progress and accountability invisible; blockers persist | Project Lead | Create six workstream issues with acceptance criteria and dependencies | Project Lead |
 | **R-07** | `.gitignore` regression allows `.env`, databases, raw data | High | Secret leakage; repository bloat | Repository maintainer | Restore ignore rules; run `git check-ignore` verification and a secret scan | Project Lead / maintainer |
 | **R-08** | Ruleset has a PR bypass actor and no required status checks | Medium–High | Approval/CI can be bypassed, reducing protection | Project Lead | Review bypass list; require CI checks; enable last-push approval | Project Lead |

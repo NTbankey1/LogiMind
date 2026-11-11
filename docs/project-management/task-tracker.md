@@ -13,7 +13,7 @@ The following scope is taken from [docs/team-responsibilities.md](../team-respon
 
 | Role | Responsibility | Documented primary deliverables | Documented dependencies | Identity |
 | :--- | :--- | :--- | :--- | :--- |
-| **TV1** | Business analysis and mathematical modeling | `docs/mathematical-model.md`; business rules in `docs/requirements.md`; toy-problem hand calculation; unassigned-order policy | None (initiates modeling) | Name / handle / deadline: `TBD` |
+| **TV1** | Business analysis and mathematical modeling | `docs/mathematical-model.md`; business rules in `docs/requirements.md`; toy-problem hand calculation; Policy A decision | None (initiates modeling) | Name / handle / deadline: `TBD` |
 | **TV2** | Data and test datasets | `docs/data-dictionary.md`; `data/samples/` fixtures; dataset generator and schema validator under `scripts/` | TV1 parameter definitions | Name / handle / deadline: `TBD` |
 | **TV3** | Optimization algorithms | Baseline and MILP implementation under `src/logimind/algorithms/`; solver adapter; benchmark comparison; unit tests | TV1 model; TV2 datasets | Name / handle / deadline: `TBD` |
 | **TV4** | Frontend | UI application under `frontend/`; allocation dashboard; capacity/cost views; error feedback | TV5 API and mock responses | Name / handle / deadline: `TBD` |
@@ -53,7 +53,7 @@ Status vocabulary: **Completed**, **In Progress**, **Blocked**, **Not Started**,
 | TV3-01 | Baseline heuristic implementation | Implements the documented order/tie-break rule; consumes canonical input; returns assignments and metrics | **Not Started** | TV1-01, TV2-01 | [model §5](../mathematical-model.md); `src/` has only README |
 | TV3-02 | MILP implementation | Implements the approved policy; respects stock and capacity constraints; reports status and objective components | **Not Started** | TV1-01, TV2-01, TV3-01 | [model §3](../mathematical-model.md) |
 | TV3-03 | Solver adapter | Stable callable contract as specified by the integration guide; deterministic inputs/outputs; error and timeout behavior | **Not Started** | TV3-01, TV3-02 | [integration-guide §3.3](../integration-guide.md) |
-| TV3-04 | Algorithm tests and benchmark report | Unit tests cover invariants and edge cases; MILP cost is not worse than baseline on standard fixtures; runtime/status recorded | **Not Started** | TV3-01–TV3-03; TV6 test harness | [testing-strategy](../testing-strategy.md); `tests/` has only README |
+| TV3-04 | Algorithm tests and benchmark report | Unit tests cover invariants and edge cases; MILP cost is not worse than baseline on standard fixtures; runtime/status recorded | **Not Started** | TV3-01–TV3-03; TV6 test harness | [testing-strategy](../testing-strategy.md); TV2 suite exists, TV3 tests pending |
 
 ### TV4 — Frontend
 
@@ -61,10 +61,10 @@ Status vocabulary: **Completed**, **In Progress**, **Blocked**, **Not Started**,
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | TV4-01 | Frontend application scaffold | Application starts with documented command; no backend coupling required for mock mode | **Not Started** | TV5 API contract | No frontend files or manifest; [integration-guide §3.4](../integration-guide.md) |
 | TV4-02 | Allocation dashboard | User can select/upload a dataset, trigger a run, and inspect assignments, costs, utilization, and errors | **Not Started** | TV4-01, TV5 API | [requirements FR01–FR07](../requirements.md) |
-| TV4-03 | API integration | UI consumes the approved API contract and handles validation, infeasibility, and timeout responses | **Not Started** | TV4-02, TV5 implementation, TV1/TV5 sign-off | [api-contract](../api-contract.md) is `Proposed` |
+| TV4-03 | API integration | UI consumes the approved API contract and handles validation, infeasibility, timeout, and no-solution responses | **Not Started** | TV4-02, TV5 implementation, TV1/TV5 sign-off | [api-contract](../api-contract.md) is Policy A aligned; TV5 implementation pending |
 | TV4-04 | E2E readiness evidence | Documented UI flow can be executed against the live backend for TV6 E2E testing | **Not Started** | TV4-03, TV5 implementation | [integration-guide §3.4](../integration-guide.md) |
 
-*Split-shipment UI is conditional: the requirement conflicts with the mathematical model and must be resolved before TV4-02 acceptance.*
+*Policy A is decided: TV4 must display exactly one warehouse per order and no split/penalty views.*
 
 ### TV5 — Backend and database
 
@@ -73,7 +73,7 @@ Status vocabulary: **Completed**, **In Progress**, **Blocked**, **Not Started**,
 | TV5-01 | API implementation | Endpoints match the approved API contract, including envelope, validation, and error semantics | **Not Started** | TV1-01, TV2-01, TV3-03 | [api-contract](../api-contract.md) is `Proposed` |
 | TV5-02 | SQLite persistence | Schema/models and migrations persist runs, allocations, configuration, and metrics; database files are never committed | **Not Started** | TV2-01, TV5-01 | ADR-003 is `PROPOSED`; `.gitignore` on `main` does not ignore DB files |
 | TV5-03 | Solver integration and timeout guard | Backend calls the solver adapter with a configurable timeout and returns documented statuses/errors | **Not Started** | TV3-03, TV5-01 | [integration-guide §3.5](../integration-guide.md) |
-| TV5-04 | Backend tests | Contract and integration tests pass against SQLite and fixtures | **Not Started** | TV5-01–TV5-03; TV6 harness | `tests/` has only README |
+| TV5-04 | Backend tests | Contract and integration tests pass against SQLite and fixtures | **Not Started** | TV5-01–TV5-03; TV6 harness | TV2 suite exists, TV5 tests pending |
 
 ### TV6 — Integration, testing, reporting
 
@@ -81,8 +81,8 @@ Status vocabulary: **Completed**, **In Progress**, **Blocked**, **Not Started**,
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | TV6-01 | Project-management documentation set | Status, tracker, integration plan, and test plan exist and are consistent with repository evidence | **In Progress** | None | This file; [project-status](project-status.md); [integration-plan](integration-plan.md); [test-plan](test-plan.md) |
 | TV6-02 | Requirements traceability and test plan | T1–T9 and EDGE-01–05 mapped to test IDs, levels, prerequisites, and evidence | **In Progress** | TV1 requirements baseline | [test-plan](test-plan.md) |
-| TV6-03 | Test harness | `pytest` structure, fixtures, and helpers exist; tests can run locally and in CI | **Not Started** | TV1-01, TV2-01 | `tests/` has only README |
-| TV6-04 | CI test job | CI installs dependencies and runs the test suite; failures block merge | **Not Started** | TV6-03; Project Lead ruleset update | [ci.yml](../../.github/workflows/ci.yml) runs hygiene only |
+| TV6-03 | Test harness | `pytest` structure, fixtures, and helpers exist; tests can run locally and in CI | **In Progress** | TV1-01, TV2-01 | TV2 `tests/test_datasets.py` exists; broader harness pending |
+| TV6-04 | CI test job | CI installs dependencies and runs the test suite; failures block merge | **In Progress** | TV6-03; Project Lead ruleset update | [ci.yml](../../.github/workflows/ci.yml) runs hygiene + TV2 dataset/test job; required-status-check rule pending |
 | TV6-05 | Contract, integration, and E2E tests | Tests cover solver adapter, API, SQLite persistence, and the full dataset → API → solver → DB → UI flow | **Not Started** | TV3-03, TV5-01–TV5-03, TV4-04 | [testing-strategy](../testing-strategy.md) |
 | TV6-06 | Bug tracking and verification workflow | Bugs have reproduction steps, severity, expected/actual, and closure evidence; issue templates are used | **Not Started** | Project Lead to enable issue workflow | `.github/ISSUE_TEMPLATE/` exists; 0 issues created |
 | TV6-07 | Benchmark and final report | Baseline/MILP comparison, test summary, known limitations, demo script, and final report are produced from executed evidence | **Not Started** | TV1–TV5 deliverables; TV6-05 | [team-responsibilities](../team-responsibilities.md) |
@@ -120,6 +120,6 @@ TV6-02/03/04 (traceability, harness, CI job) can start before TV3–TV5 complete
 1. Which GitHub account owns each TV role.
 2. Team ratification of Policy A, selected by the Project Lead in [ADR-004](../decisions/0004-allocation-policy-a.md), and the remaining business-rule conflicts listed in project-status §4.
 3. Downstream adoption of the canonical Policy A data schema; the TV2 schema and dictionary are published, but TV3/TV5/TV6 have not yet been updated.
-4. Whether split shipments and handling costs belong in the objective and API.
+4. TV3/TV4/TV5 sign-off on the Policy A API contract and status semantics.
 5. Target sprint dates and milestone definitions.
 6. Ownership of the legacy prototype (`scripts/validate_orders.py`) and datasets (`data/samples/`, `data/legacy/`).

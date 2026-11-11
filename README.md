@@ -28,7 +28,7 @@ planned but not implemented.
 | Automated TV2 tests | **Implemented** | [tests/test_datasets.py](tests/test_datasets.py), 60 tests |
 | CI | **Hygiene + TV2 dataset/feasibility job** | [.github/workflows/ci.yml](.github/workflows/ci.yml) |
 | Requirements and mathematical model | **Present; Policy A canonical** | [requirements](docs/requirements.md), [mathematical model](docs/mathematical-model.md) |
-| Architecture and API contract | **Proposed** | [architecture](docs/architecture.md), [API contract](docs/api-contract.md) |
+| Architecture and API contract | **Policy A aligned; implementation pending** | [architecture](docs/architecture.md), [API contract](docs/api-contract.md) |
 | ADR-001/002/003 (solver, backend, database) | **Proposed** | [decisions](docs/decisions/README.md) |
 | Optimization engine (`src/logimind/`) | **Not started** | See the intended layout in [src/README.md](src/README.md) |
 | Backend and SQLite | **Not started** | No backend source or migrations |
@@ -82,7 +82,7 @@ data/legacy/benchmark_data.json  ->  scripts/validate_orders.py  ->  console out
 
 ```text
 React + Vite frontend (frontend/)
-        |  HTTP (proposed API contract)
+        |  HTTP (Policy A API contract)
         v
 FastAPI backend (src/logimind/backend/)  <-->  SQLite
         |
@@ -274,16 +274,16 @@ Assignee names, GitHub handles, and deadlines remain **TBD**.
 - The legacy prototype and `data/legacy/benchmark_data.json` use a flat schema
   with aggregate capacity and Euclidean costs. They are documented in Appendix A
   of the data dictionary and are not valid Policy A solver input.
-- `docs/api-contract.md`, `docs/project-overview.md`, and
-  `docs/testing-strategy.md` still mention split shipments, penalties, or
-  handling costs. These conflicts are recorded as project blockers (B-01/B-03,
-  EDGE-03) and are owned by TV1/TV5/TV6; they are not part of the canonical TV2
-  contract.
+- `docs/api-contract.md`, `docs/project-overview.md`,
+  `docs/architecture.md`, `docs/integration-guide.md`, and
+  `docs/testing-strategy.md` are aligned to Policy A. Their implementation
+  (TV3 solver, TV4 frontend, TV5 backend) is still pending; no split/penalty
+  fields are accepted by the canonical contract.
 - No solver, backend, database, or frontend exists.
 - ADR-001, ADR-002, and ADR-003 remain `PROPOSED`.
 - The exhaustive oracle verifies existence, not optimality, and can return
   `UNKNOWN` at its state limit.
-- TV3/TV5/TV6 still need to adopt the canonical Policy A schema and fixtures.
+- TV3/TV5/TV6 still need to implement and verify the canonical Policy A contract.
 
 ---
 
@@ -300,8 +300,8 @@ Assignee names, GitHub handles, and deadlines remain **TBD**.
 | [scripts/README.md](scripts/README.md) | Validator, generator, feasibility checker, legacy prototype |
 | [src/README.md](src/README.md) | Intended Python package layout |
 | [tests/README.md](tests/README.md) | Test suite and planned broader layout |
-| [docs/architecture.md](docs/architecture.md) | Proposed components, paths, and data flow |
-| [docs/api-contract.md](docs/api-contract.md) | Proposed REST endpoints and payloads |
+| [docs/architecture.md](docs/architecture.md) | Proposed components, Policy A statuses, and data flow |
+| [docs/api-contract.md](docs/api-contract.md) | Policy A request/response contract and solver statuses |
 | [docs/testing-strategy.md](docs/testing-strategy.md) | Test tiers, invariants, edge cases |
 | [docs/integration-guide.md](docs/integration-guide.md) | Module handoff checklists |
 | [docs/team-responsibilities.md](docs/team-responsibilities.md) | Role matrix (assignees TBD) |

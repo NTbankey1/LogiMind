@@ -57,30 +57,35 @@ Source: [requirements.md §7](../requirements.md) (T1–T9). “Preparable now�
 | Test ID | Requirement | Source | Level | Module under test | Preparable now? | Prerequisite | Expected evidence | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **T1** | Small hand-calculated example matches cost and valid allocation, or exhaustive verification | requirements T1 | Unit + System | TV3 solver / independent checker | Test case design only | Approved model; solver; canonical fixture | Reproduced objective and assignment vs. hand calculation | **Blocked** |
-| **T2** | Sufficient stock and capacity; policy B may still depend on penalty | requirements T2 | Unit + Integration | Solver policy B | Test case design only | Approved policy/penalty; fixtures | Allocation and objective match expected policy behavior | **Blocked** |
+| **T2** | Sufficient stock and capacity; all orders can be assigned | requirements T2 | Unit + Integration | Solver (Policy A) | Test case design only | Solver; canonical fixtures | Every order assigned to one warehouse; objective matches shipping cost | **Blocked** |
 | **T3** | Cheapest warehouse missing one SKU is not assigned the whole order | requirements T3 | Unit | Baseline/MILP | Test case design only | Solver; per-SKU inventory | Assignment avoids invalid warehouse; invariant check | **Blocked** |
-| **T4** | Cheapest warehouse at capacity is not exceeded; use another warehouse or leave unassigned | requirements T4 | Unit + Integration | Solver capacity constraint | Test case design only | Capacity semantics; solver | Capacity usage ≤ limit; expected alternative/unassigned result | **Blocked** |
+| **T4** | Cheapest warehouse at capacity is not exceeded; use another warehouse | requirements T4 | Unit + Integration | Solver capacity constraint | Test case design only | Capacity semantics; solver | Capacity usage ≤ `capacity_orders`; order assigned to an alternate eligible warehouse | **Blocked** |
 | **T5** | Tight stock and capacity simultaneously respected | requirements T5 | Unit + Invariant | Solver | Test case design only | Solver; validator | All inventory/capacity invariants hold | **Blocked** |
-| **T6** | Inability to fulfill all orders is reported correctly | requirements T6 | Unit + System | Solver + API status | Test case design only | Solver; API; status contract | Policy A infeasible evidence; policy B unassigned/penalty evidence | **Blocked** |
+| **T6** | Inability to fulfill all orders is reported correctly | requirements T6 | Unit + System | Solver + API status | Test case design only | Solver; API; status contract | `INFEASIBLE` only with proof; `NO_SOLUTION_FOUND` on timeout without proof | **Blocked** |
 | **T7** | Invalid data is rejected with correct code/field; execution stops | requirements T7 | Unit + Contract | Data validator/API | Test case design **yes** | Canonical schema; validation implementation | Validation error payload; no solver run | **Blocked** |
 | **T8** | Equal costs break ties by warehouse ID; MILP may return multiple optima | requirements T8 | Unit | Baseline/MILP | Test case design only | Solver; tie-break rule | Deterministic baseline result; valid MILP optima | **Blocked** |
-| **T9** | Larger scale records time, status, and solution quality under a time limit | requirements T9 | Performance/System | Solver/API | Test case design only | Solver; scale fixture; timeout config | Runtime, status, objective/gap, environment | **Blocked** |
+| **T9** | Larger scale records time, status, and solution quality under a time limit | requirements T9 | Performance/System | Solver/API | Test case design only | Solver; scale fixture; timeout config | Runtime, status (including `FEASIBLE`/`NO_SOLUTION_FOUND`), objective/gap, environment | **Blocked** |
 
 ---
 
-## 5. Edge-case mapping — EDGE-01 to EDGE-05
+## 5. Edge-case mapping — EDGE-01 to EDGE-10
 
 Source: [testing-strategy.md §3](../testing-strategy.md).
 
 | Test ID | Edge case | Expected behavior | Level | Preparable now? | Prerequisite | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **EDGE-01** | Global stock-out: demand for a SKU exceeds network inventory | Report infeasibility or exact unfulfilled slack with penalty | System + Invariant | Test data design only | Solver; canonical inventory; status contract | **Blocked** |
+| **EDGE-01** | Global stock-out: demand for a SKU exceeds network inventory | `INFEASIBLE` with proof; `NO_SOLUTION_FOUND` if search stopped without proof | System + Invariant | Test data design only | Solver; canonical inventory; status contract | **Blocked** |
 | **EDGE-02** | Warehouse bottleneck: nearest warehouse has stock but zero capacity | Divert to secondary warehouse with capacity | Unit + Integration | Test data design only | Solver; capacity fixture | **Blocked** |
-| **EDGE-03** | Split-shipment trade-off: high split penalty vs. distance savings | Depends on split policy (single warehouse vs. split allowed) | Unit + System | **No** | Team decision on split policy; solver | **Blocked — policy conflict** |
+| **EDGE-03** | Tight combined capacity and inventory: only a specific complete assignment works | Solver finds the assignment or proves `INFEASIBLE`; no split/unassigned fallback | Unit + System | Test data design only | Solver; tight fixtures (`edge_tight_capacity`, `edge_tight_inventory`) | **Blocked** |
 | **EDGE-04** | Zero-demand order | Input validation rejects with documented error (testing-strategy currently says HTTP 400) | Contract | Test case design **yes** | API/schema validation | **Blocked** |
 | **EDGE-05** | Equal cost/capacity tie | Deterministic allocation across repeated runs | Unit | Test case design only | Solver; tie-break rule | **Blocked** |
+| **EDGE-06** | A route is omitted from `shipping_costs` | Omitted warehouse is never used | Unit + Invariant | Test data design only | Solver; canonical fixture | **Blocked** |
+| **EDGE-07** | Only one warehouse has a route and enough stock/capacity | Order is forced to that warehouse | Unit + Integration | Test data design only | Solver; canonical fixture | **Blocked** |
+| **EDGE-08** | Time limit reached with no complete solution | `NO_SOLUTION_FOUND`, not `INFEASIBLE` | System | Test case design only | Solver; timeout configuration | **Blocked** |
+| **EDGE-09** | Time limit reached after a complete solution | `FEASIBLE` with complete allocations | System | Test case design only | Solver; timeout configuration | **Blocked** |
+| **EDGE-10** | Structurally valid but mathematically infeasible dataset | `INFEASIBLE` with proof; dataset remains valid | System + Contract | Test data design **yes** | Canonical fixture; solver/checker | **Blocked** |
 
-> EDGE-03 cannot be accepted until TV1/Project Lead resolves the conflict between “one order, one warehouse” in [requirements.md:17](../requirements.md) / the binary model and the split-shipment language in [api-contract.md:108-109](../api-contract.md), [project-overview.md:15](../project-overview.md), and [testing-strategy.md:56](../testing-strategy.md).
+> Policy A is decided in [ADR-004](../decisions/0004-allocation-policy-a.md); split-shipment and penalty test cases are not part of the current strategy.
 
 ---
 
@@ -151,8 +156,8 @@ Every executed test must record:
 ### 8.3 Exit criteria for final acceptance
 
 - **T1–T9:** all executed with recorded evidence; any exception is documented and approved.
-- **EDGE-01–05:** all executed, or explicitly deferred with an approved reason (EDGE-03 cannot pass until the split policy is decided).
-- **Invariants:** no inventory, capacity, duplicate-assignment, or split-policy violation.
+- **EDGE-01–10:** all executed, or explicitly deferred with an approved reason per [testing-strategy.md §4](../testing-strategy.md).
+- **Invariants:** exactly one warehouse per order, no split/unassigned order, no inventory or capacity violation.
 - **API:** contract, validation, infeasibility, and timeout behavior match the approved contract.
 - **Persistence:** saved runs reload with identical configuration and metrics.
 - **E2E:** dataset selection → solve → results are demonstrated against the live stack.
@@ -191,7 +196,7 @@ No numeric coverage target is set because the repository does not define one; co
 - Canonical fixture format and edge-case definitions with TV2.
 - Mock API availability for TV4 before backend completion.
 - Definition of “done” evidence for each handoff in [integration-guide](../integration-guide.md).
-- Split-policy decision affecting EDGE-03 and TV4 views.
+- Implementation of the Policy A API contract by TV3/TV4/TV5.
 
 ---
 
