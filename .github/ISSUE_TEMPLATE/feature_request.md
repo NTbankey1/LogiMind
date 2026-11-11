@@ -1,25 +1,25 @@
 ---
-name: Feature Request
-about: Propose a new feature, algorithm enhancement, or UI capability
-title: '[FEAT] <Short description>'
+name: Đề xuất tính năng
+about: Đề xuất tính năng mới, cải tiến thuật toán hoặc khả năng giao diện
+title: '[FEAT] <Mô tả ngắn>'
 labels: ['enhancement']
 assignees: ''
 ---
 
-### Problem or Opportunity
-Describe the user problem or algorithmic enhancement being proposed.
+### Vấn đề hoặc cơ hội
+Mô tả vấn đề người dùng hoặc cải tiến thuật toán đang được đề xuất.
 
-### Proposed Solution
-Describe the solution or feature design you would like to implement.
+### Giải pháp đề xuất
+Mô tả giải pháp hoặc thiết kế tính năng bạn muốn triển khai.
 
-### Impacted Roles
-- [ ] TV1 — Mathematical Modeling
-- [ ] TV2 — Data & Datasets
-- [ ] TV3 — Algorithms (MILP/Baseline)
-- [ ] TV4 — Frontend UI
-- [ ] TV5 — Backend & Database
-- [ ] TV6 — QA & Integration
+### Các vai trò bị ảnh hưởng
+- [ ] TV1 — Mô hình toán học
+- [ ] TV2 — Dữ liệu & bộ dữ liệu
+- [ ] TV3 — Thuật toán (MILP/Baseline)
+- [ ] TV4 — Giao diện người dùng (Frontend)
+- [ ] TV5 — Backend & cơ sở dữ liệu
+- [ ] TV6 — QA & tích hợp
 
-### Acceptance Criteria
-- [ ] Requirement 1
-- [ ] Requirement 2
+### Tiêu chí chấp nhận
+- [ ] Yêu cầu 1
+- [ ] Yêu cầu 2

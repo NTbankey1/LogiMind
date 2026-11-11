@@ -1,41 +1,41 @@
-## Summary
-<!-- Provide a concise overview of what this pull request introduces or changes. -->
+## Tóm tắt
+<!-- Nêu ngắn gọn nội dung hoặc thay đổi mà pull request này mang lại. -->
 
-## Related Issue / Task
-<!-- Link the related issue or task (e.g., Closes #12, or TV1 Mathematical Model task). -->
-- Resolves: 
+## Issue / nhiệm vụ liên quan
+<!-- Liên kết issue hoặc nhiệm vụ liên quan (ví dụ: Closes #12, hoặc nhiệm vụ TV1 Mô hình toán học). -->
+- Giải quyết:
 
-## Scope of Changes
-<!-- Select the primary scope of this change -->
-- [ ] TV1 — Mathematical Modeling & Business Logic
-- [ ] TV2 — Data, Schemas & Datasets
-- [ ] TV3 — Optimization Algorithms (Baseline / MILP)
-- [ ] TV4 — Frontend UI
-- [ ] TV5 — Backend API & Database
-- [ ] TV6 — Integration, Testing & Quality Assurance
-- [ ] Project-wide Documentation / Chore
+## Phạm vi thay đổi
+<!-- Chọn phạm vi chính của thay đổi này -->
+- [ ] TV1 — Mô hình toán học & logic nghiệp vụ
+- [ ] TV2 — Dữ liệu, schema & bộ dữ liệu
+- [ ] TV3 — Thuật toán tối ưu (Baseline / MILP)
+- [ ] TV4 — Giao diện người dùng (Frontend)
+- [ ] TV5 — API Backend & cơ sở dữ liệu
+- [ ] TV6 — Tích hợp, kiểm thử & đảm bảo chất lượng
+- [ ] Tài liệu / công việc chung toàn dự án
 
-## Implementation Details
-<!-- Briefly describe key technical decisions, equations added, or code modified. -->
+## Chi tiết triển khai
+<!-- Mô tả ngắn gọn các quyết định kỹ thuật chính, công thức được thêm hoặc code được sửa. -->
 
-## Tests Performed
-<!-- Detail the manual or automated tests executed to verify these changes. -->
-- [ ] Automated test suite: `pytest` (Output: ________)
-- [ ] Mathematical feasibility verification (Capacity & inventory invariants respected)
-- [ ] Manual test / API call verification
+## Kiểm thử đã thực hiện
+<!-- Mô tả chi tiết các kiểm thử thủ công hoặc tự động đã chạy để xác minh thay đổi. -->
+- [ ] Bộ test tự động: `pytest` (Kết quả: ________)
+- [ ] Kiểm chứng tính khả thi toán học (ràng buộc công suất & tồn kho được tôn trọng)
+- [ ] Kiểm thử thủ công / kiểm tra API call
 
-## Screenshots / Sample Output (If applicable)
-<!-- Paste terminal output, API JSON response, or frontend screenshots. -->
+## Ảnh chụp màn hình / output mẫu (nếu có)
+<!-- Dán output terminal, response JSON từ API hoặc ảnh chụp giao diện. -->
 
-## Documentation Updated
-- [ ] Documentation updated in `docs/` or `README.md`
-- [ ] No documentation updates required
+## Tài liệu đã cập nhật
+- [ ] Đã cập nhật tài liệu trong `docs/` hoặc `README.md`
+- [ ] Không cần cập nhật tài liệu
 
-## Pre-Merge Checklist
-- [ ] Branch is up to date with `main`
-- [ ] Commit messages follow Conventional Commits (`feat:`, `fix:`, `docs:`, etc.)
-- [ ] No secrets, `.env` files, or binary artifacts committed
-- [ ] Code formatted according to `.editorconfig`
+## Checklist trước khi merge
+- [ ] Branch đã cập nhật với `main`
+- [ ] Commit message tuân thủ Conventional Commits (`feat:`, `fix:`, `docs:`, ...)
+- [ ] Không commit secret, file `.env` hoặc artifact nhị phân
+- [ ] Code được định dạng theo `.editorconfig`
 
-## Risks & Limitations
-<!-- Are there any known limitations, unhandled edge cases, or solver timeouts? -->
+## Rủi ro & hạn chế
+<!-- Có hạn chế đã biết, edge case chưa xử lý hoặc solver timeout không? -->

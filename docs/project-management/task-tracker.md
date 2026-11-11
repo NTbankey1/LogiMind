@@ -1,125 +1,125 @@
-# LogiMind Task Tracker
+# Theo dõi nhiệm vụ LogiMind
 
-> **Owner:** Project Lead / TV6
-> **Last verified:** 2026-11-09
-> **Status source:** Repository artifacts, commits, PRs, and CI runs on `origin/main` at `7424ba4`.
-> **Assignment rule:** This tracker records the responsibilities already documented in [Team Responsibilities](../team-responsibilities.md). It does **not** change assignments. Names, GitHub handles, and deadlines remain `TBD` until the team confirms them.
+> **Chủ sở hữu:** Project Lead / TV6
+> **Kiểm chứng lần cuối:** 2026-11-11
+> **Nguồn trạng thái:** artifact trong repository, commit, PR và CI trên `main` tại `f7f5862`.
+> **Quy tắc phân công:** tài liệu này ghi lại trách nhiệm đã có trong [Phân công thành viên](../team-responsibilities.md). Tài liệu **không** thay đổi phân công. Tên, GitHub handle và deadline vẫn là `TBD` cho đến khi nhóm xác nhận.
 
 ---
 
-## 1. Existing team responsibilities
+## 1. Trách nhiệm hiện có của nhóm
 
-The following scope is taken from [docs/team-responsibilities.md](../team-responsibilities.md). The source document lists every role as `Planning` and every assignee as `TBD`.
+Phạm vi dưới đây lấy từ [docs/team-responsibilities.md](../team-responsibilities.md). Tài liệu nguồn ghi mọi vai trò là "Đang lập kế hoạch" và mọi người phụ trách là `TBD`.
 
-| Role | Responsibility | Documented primary deliverables | Documented dependencies | Identity |
+| Vai trò | Trách nhiệm | Hạng mục bàn giao chính đã ghi | Phụ thuộc đã ghi | Danh tính |
 | :--- | :--- | :--- | :--- | :--- |
-| **TV1** | Business analysis and mathematical modeling | `docs/mathematical-model.md`; business rules in `docs/requirements.md`; toy-problem hand calculation; Policy A decision | None (initiates modeling) | Name / handle / deadline: `TBD` |
-| **TV2** | Data and test datasets | `docs/data-dictionary.md`; `data/samples/` fixtures; dataset generator and schema validator under `scripts/` | TV1 parameter definitions | Name / handle / deadline: `TBD` |
-| **TV3** | Optimization algorithms | Baseline and MILP implementation under `src/logimind/algorithms/`; solver adapter; benchmark comparison; unit tests | TV1 model; TV2 datasets | Name / handle / deadline: `TBD` |
-| **TV4** | Frontend | UI application under `frontend/`; allocation dashboard; capacity/cost views; error feedback | TV5 API and mock responses | Name / handle / deadline: `TBD` |
-| **TV5** | Backend and database | FastAPI application under `src/logimind/backend/`; SQLite models/migrations; API endpoints; validation and timeout handling | TV3 adapter; TV2 schemas | Name / handle / deadline: `TBD` |
-| **TV6** | Integration, testing, reporting | `tests/` suites; CI quality gates; integration tests; benchmark report; final report and demo | TV1–TV5 deliverables | Name / handle / deadline: `TBD` |
+| **TV1** | Phân tích nghiệp vụ và mô hình toán học | `docs/mathematical-model.md`; quy tắc nghiệp vụ trong `docs/requirements.md`; tính tay bài toán nhỏ; quyết định Policy A | Không (khởi tạo mô hình) | Tên / handle / deadline: `TBD` |
+| **TV2** | Dữ liệu và bộ dữ liệu kiểm thử | `docs/data-dictionary.md`; fixture trong `data/samples/`; generator và validator schema trong `scripts/` | Định nghĩa tham số của TV1 | Tên / handle / deadline: `TBD` |
+| **TV3** | Thuật toán tối ưu | Cài đặt baseline và MILP trong `src/logimind/algorithms/`; adapter bộ giải; so sánh benchmark; unit test | Mô hình TV1; bộ dữ liệu TV2 | Tên / handle / deadline: `TBD` |
+| **TV4** | Frontend | Ứng dụng UI trong `frontend/`; dashboard phân bổ; hiển thị công suất/chi phí; phản hồi lỗi | API và mock response của TV5 | Tên / handle / deadline: `TBD` |
+| **TV5** | Backend và cơ sở dữ liệu | Ứng dụng FastAPI trong `src/logimind/backend/`; model/migration SQLite; endpoint API; kiểm tra dữ liệu và timeout | Adapter TV3; schema TV2 | Tên / handle / deadline: `TBD` |
+| **TV6** | Tích hợp, kiểm thử, báo cáo | Bộ test trong `tests/`; cổng chất lượng CI; integration test; báo cáo benchmark; báo cáo và demo cuối kỳ | Hạng mục bàn giao TV1–TV5 | Tên / handle / deadline: `TBD` |
 
-> GitHub currently has **0 Issues and 0 milestones**; this tracker is the repository-based substitute until the Project Lead creates official issues. It is not an assignment mechanism.
+> GitHub hiện có **0 Issue và 0 milestone**; tài liệu này là phương án thay thế dựa trên repository cho đến khi Project Lead tạo issue chính thức. Đây không phải cơ chế phân công.
 
 ---
 
-## 2. Workstream tracker
+## 2. Theo dõi workstream
 
-Status vocabulary: **Completed**, **In Progress**, **Blocked**, **Not Started**, **Unable to Verify**.
-“Evidence” means a repository artifact or GitHub record, not an estimate of effort.
+Từ vựng trạng thái: **Completed**, **In Progress**, **Blocked**, **Not Started**, **Unable to Verify**.
+"Minh chứng" là artifact trong repository hoặc bản ghi GitHub, không phải ước lượng nỗ lực.
 
-### TV1 — Business requirements and mathematical model
+### TV1 — Yêu cầu nghiệp vụ và mô hình toán học
 
-| ID | Deliverable | Acceptance criteria | Status | Dependencies | Evidence |
+| ID | Hạng mục bàn giao | Tiêu chí nghiệm thu | Trạng thái | Phụ thuộc | Minh chứng |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| TV1-01 | Policy decision ratification (Policy A selected) and parameter semantics | Policy A decision recorded and ratified; `C_j`, `c_ij`, and remaining storage/scope questions are unambiguous | **Blocked** | Team approval; TV2 data implications | [model §3–§4](../mathematical-model.md); [requirements §3](../requirements.md); [ADR-004](../decisions/0004-allocation-policy-a.md) |
-| TV1-02 | Requirements baseline for FR01–FR08 and T1–T9 | Requirements are reviewed, unambiguous, and traceable to test IDs | **In Progress** | TV1-01 | [requirements §5–§7](../requirements.md) |
-| TV1-03 | Model handoff to TV2/TV3 with example verification | Worked example reproduced; handoff checklist evidence attached; model assumptions signed off | **Blocked** | TV1-01; TV2 schema | [model §6–§9](../mathematical-model.md); [integration-guide §3.1](../integration-guide.md) |
+| TV1-01 | Xác nhận quyết định chính sách (đã chọn Policy A) và ngữ nghĩa tham số | Quyết định Policy A được ghi và xác nhận; `C_j`, `c_ij` và các câu hỏi lưu trữ/phạm vi còn lại rõ ràng | **Blocked** | Nhóm phê duyệt; ảnh hưởng dữ liệu TV2 | [model §3–§4](../mathematical-model.md); [requirements §3](../requirements.md); [ADR-004](../decisions/0004-allocation-policy-a.md) |
+| TV1-02 | Baseline yêu cầu FR01–FR08 và T1–T9 | Yêu cầu được review, không mơ hồ và truy vết được tới mã test | **In Progress** | TV1-01 | [requirements §5–§7](../requirements.md) |
+| TV1-03 | Bàn giao mô hình cho TV2/TV3 kèm kiểm chứng ví dụ | Ví dụ tính tay được tái lập; minh chứng checklist bàn giao được đính kèm; giả định mô hình được sign-off | **Blocked** | TV1-01; schema TV2 | [model §6–§9](../mathematical-model.md); [integration-guide §3.1](../integration-guide.md) |
 
-### TV2 — Data and test datasets
+### TV2 — Dữ liệu và bộ dữ liệu kiểm thử
 
-| ID | Deliverable | Acceptance criteria | Status | Dependencies | Evidence |
+| ID | Hạng mục bàn giao | Tiêu chí nghiệm thu | Trạng thái | Phụ thuộc | Minh chứng |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| TV2-01 | Canonical data schema | One Policy A schema covers warehouses, per-SKU inventory, orders, capacity in order counts, and shipping costs; field names/types/units are documented | **Completed** | TV1-01 (policy selection) | [schema](../../data/schema/dataset.schema.json); [data dictionary](../data-dictionary.md); [ADR-004](../decisions/0004-allocation-policy-a.md) |
-| TV2-02 | Benchmark fixtures | Feasible small/medium/large fixtures, at least one guaranteed-infeasible fixture, and six documented edge cases; all pass schema validation | **Completed** | TV2-01 | Ten fixtures under `data/samples/`; catalogue in [data/README.md](../../data/README.md) |
-| TV2-03 | Dataset generator and validator | Executable scripts validate schema and invariants, reject invalid fixtures with clear errors, and generate reproducible feasible datasets | **Completed** | TV2-01 | [scripts/README.md](../../scripts/README.md); [tests/test_datasets.py](../../tests/test_datasets.py) |
-| TV2-04 | Data documentation reconciliation | One authoritative dictionary; README/sample descriptions match actual fixtures | **Completed** | TV2-01 | [data dictionary](../data-dictionary.md); root duplicate consolidated into Appendix A; [README](../../README.md) |
+| TV2-01 | Schema dữ liệu chuẩn | Một schema Policy A bao phủ kho, tồn kho theo SKU, đơn hàng, công suất theo số đơn và chi phí vận chuyển; tên trường/kiểu/đơn vị được ghi | **Completed** | TV1-01 (chọn chính sách) | [schema](../../data/schema/dataset.schema.json); [data dictionary](../data-dictionary.md); [ADR-004](../decisions/0004-allocation-policy-a.md) |
+| TV2-02 | Fixture benchmark | Fixture nhỏ/vừa/lớn khả thi, ít nhất một fixture chắc chắn không khả thi và sáu edge case được ghi; tất cả pass kiểm tra schema | **Completed** | TV2-01 | Mười fixture trong `data/samples/`; danh mục tại [data/README.md](../../data/README.md) |
+| TV2-03 | Generator và validator bộ dữ liệu | Script chạy được, kiểm tra schema và bất biến, từ chối fixture sai với lỗi rõ ràng và sinh bộ dữ liệu khả thi tái lập được | **Completed** | TV2-01 | [scripts/README.md](../../scripts/README.md); [tests/test_datasets.py](../../tests/test_datasets.py) |
+| TV2-04 | Đồng bộ tài liệu dữ liệu | Một từ điển chính thức; README/mô tả mẫu khớp fixture thực tế | **Completed** | TV2-01 | [data dictionary](../data-dictionary.md); bản trùng ở thư mục gốc đã gộp thành Phụ lục A; [README](../../README.md) |
 
-### TV3 — Optimization algorithms
+### TV3 — Thuật toán tối ưu
 
-| ID | Deliverable | Acceptance criteria | Status | Dependencies | Evidence |
+| ID | Hạng mục bàn giao | Tiêu chí nghiệm thu | Trạng thái | Phụ thuộc | Minh chứng |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| TV3-01 | Baseline heuristic implementation | Implements the documented order/tie-break rule; consumes canonical input; returns assignments and metrics | **Not Started** | TV1-01, TV2-01 | [model §5](../mathematical-model.md); `src/` has only README |
-| TV3-02 | MILP implementation | Implements the approved policy; respects stock and capacity constraints; reports status and objective components | **Not Started** | TV1-01, TV2-01, TV3-01 | [model §3](../mathematical-model.md) |
-| TV3-03 | Solver adapter | Stable callable contract as specified by the integration guide; deterministic inputs/outputs; error and timeout behavior | **Not Started** | TV3-01, TV3-02 | [integration-guide §3.3](../integration-guide.md) |
-| TV3-04 | Algorithm tests and benchmark report | Unit tests cover invariants and edge cases; MILP cost is not worse than baseline on standard fixtures; runtime/status recorded | **Not Started** | TV3-01–TV3-03; TV6 test harness | [testing-strategy](../testing-strategy.md); TV2 suite exists, TV3 tests pending |
+| TV3-01 | Cài đặt heuristic baseline | Cài đặt đúng quy tắc thứ tự/phá hòa đã ghi; dùng đầu vào chuẩn; trả phân bổ và chỉ số | **Not Started** | TV1-01, TV2-01 | [model §5](../mathematical-model.md); `src/` chỉ có README |
+| TV3-02 | Cài đặt MILP | Cài đặt đúng chính sách đã duyệt; tôn trọng ràng buộc tồn kho và công suất; báo trạng thái và thành phần mục tiêu | **Not Started** | TV1-01, TV2-01, TV3-01 | [model §3](../mathematical-model.md) |
+| TV3-03 | Adapter bộ giải | Hợp đồng callable ổn định theo hướng dẫn tích hợp; đầu vào/đầu ra tất định; hành vi lỗi và timeout | **Not Started** | TV3-01, TV3-02 | [integration-guide §3.3](../integration-guide.md) |
+| TV3-04 | Test thuật toán và báo cáo benchmark | Unit test bao phủ bất biến và edge case; chi phí MILP không tệ hơn baseline trên fixture chuẩn; thời gian/trạng thái được ghi | **Not Started** | TV3-01–TV3-03; harness TV6 | [testing-strategy](../testing-strategy.md); bộ TV2 đã có, test TV3 còn chờ |
 
 ### TV4 — Frontend
 
-| ID | Deliverable | Acceptance criteria | Status | Dependencies | Evidence |
+| ID | Hạng mục bàn giao | Tiêu chí nghiệm thu | Trạng thái | Phụ thuộc | Minh chứng |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| TV4-01 | Frontend application scaffold | Application starts with documented command; no backend coupling required for mock mode | **Not Started** | TV5 API contract | No frontend files or manifest; [integration-guide §3.4](../integration-guide.md) |
-| TV4-02 | Allocation dashboard | User can select/upload a dataset, trigger a run, and inspect assignments, costs, utilization, and errors | **Not Started** | TV4-01, TV5 API | [requirements FR01–FR07](../requirements.md) |
-| TV4-03 | API integration | UI consumes the approved API contract and handles validation, infeasibility, timeout, and no-solution responses | **Not Started** | TV4-02, TV5 implementation, TV1/TV5 sign-off | [api-contract](../api-contract.md) is Policy A aligned; TV5 implementation pending |
-| TV4-04 | E2E readiness evidence | Documented UI flow can be executed against the live backend for TV6 E2E testing | **Not Started** | TV4-03, TV5 implementation | [integration-guide §3.4](../integration-guide.md) |
+| TV4-01 | Khung ứng dụng frontend | Ứng dụng khởi động bằng lệnh được ghi; chế độ mock không cần backend | **Not Started** | Hợp đồng API TV5 | Không có file frontend hoặc manifest; [integration-guide §3.4](../integration-guide.md) |
+| TV4-02 | Dashboard phân bổ | Người dùng chọn/tải bộ dữ liệu, chạy phân bổ và xem phân bổ, chi phí, mức sử dụng và lỗi | **Not Started** | TV4-01, API TV5 | [requirements FR01–FR07](../requirements.md) |
+| TV4-03 | Tích hợp API | UI dùng hợp đồng API đã duyệt và xử lý lỗi kiểm tra, không khả thi, timeout và không có phương án | **Not Started** | TV4-02, cài đặt TV5, sign-off TV1/TV5 | [api-contract](../api-contract.md) đã căn chỉnh Policy A; cài đặt TV5 còn chờ |
+| TV4-04 | Minh chứng sẵn sàng E2E | Luồng UI được ghi có thể chạy với backend thật cho E2E của TV6 | **Not Started** | TV4-03, cài đặt TV5 | [integration-guide §3.4](../integration-guide.md) |
 
-*Policy A is decided: TV4 must display exactly one warehouse per order and no split/penalty views.*
+*Policy A đã được quyết định: TV4 phải hiển thị đúng một kho cho mỗi đơn và không có giao diện split/penalty.*
 
-### TV5 — Backend and database
+### TV5 — Backend và cơ sở dữ liệu
 
-| ID | Deliverable | Acceptance criteria | Status | Dependencies | Evidence |
+| ID | Hạng mục bàn giao | Tiêu chí nghiệm thu | Trạng thái | Phụ thuộc | Minh chứng |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| TV5-01 | API implementation | Endpoints match the approved API contract, including envelope, validation, and error semantics | **Not Started** | TV1-01, TV2-01, TV3-03 | [api-contract](../api-contract.md) is `Proposed` |
-| TV5-02 | SQLite persistence | Schema/models and migrations persist runs, allocations, configuration, and metrics; database files are never committed | **Not Started** | TV2-01, TV5-01 | ADR-003 is `PROPOSED`; `.gitignore` on `main` does not ignore DB files |
-| TV5-03 | Solver integration and timeout guard | Backend calls the solver adapter with a configurable timeout and returns documented statuses/errors | **Not Started** | TV3-03, TV5-01 | [integration-guide §3.5](../integration-guide.md) |
-| TV5-04 | Backend tests | Contract and integration tests pass against SQLite and fixtures | **Not Started** | TV5-01–TV5-03; TV6 harness | TV2 suite exists, TV5 tests pending |
+| TV5-01 | Cài đặt API | Endpoint khớp hợp đồng API đã duyệt, gồm envelope, kiểm tra và ngữ nghĩa lỗi | **Not Started** | TV1-01, TV2-01, TV3-03 | [api-contract](../api-contract.md) đã căn chỉnh Policy A; chưa có cài đặt |
+| TV5-02 | Lưu trữ SQLite | Schema/model và migration lưu lần chạy, phân bổ, cấu hình, chỉ số; file database không bao giờ được commit | **Not Started** | TV2-01, TV5-01 | ADR-003 vẫn `PROPOSED`; `.gitignore` đã bỏ qua `*.db`, `*.sqlite`, `*.sqlite3` |
+| TV5-03 | Tích hợp bộ giải và timeout | Backend gọi adapter bộ giải với timeout cấu hình được và trả trạng thái/lỗi đã ghi | **Not Started** | TV3-03, TV5-01 | [integration-guide §3.5](../integration-guide.md) |
+| TV5-04 | Test backend | Contract test và integration test pass trên SQLite và fixture | **Not Started** | TV5-01–TV5-03; harness TV6 | Bộ TV2 đã có, test TV5 còn chờ |
 
-### TV6 — Integration, testing, reporting
+### TV6 — Tích hợp, kiểm thử, báo cáo
 
-| ID | Deliverable | Acceptance criteria | Status | Dependencies | Evidence |
+| ID | Hạng mục bàn giao | Tiêu chí nghiệm thu | Trạng thái | Phụ thuộc | Minh chứng |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| TV6-01 | Project-management documentation set | Status, tracker, integration plan, and test plan exist and are consistent with repository evidence | **In Progress** | None | This file; [project-status](project-status.md); [integration-plan](integration-plan.md); [test-plan](test-plan.md) |
-| TV6-02 | Requirements traceability and test plan | T1–T9 and EDGE-01–05 mapped to test IDs, levels, prerequisites, and evidence | **In Progress** | TV1 requirements baseline | [test-plan](test-plan.md) |
-| TV6-03 | Test harness | `pytest` structure, fixtures, and helpers exist; tests can run locally and in CI | **In Progress** | TV1-01, TV2-01 | TV2 `tests/test_datasets.py` exists; broader harness pending |
-| TV6-04 | CI test job | CI installs dependencies and runs the test suite; failures block merge | **In Progress** | TV6-03; Project Lead ruleset update | [ci.yml](../../.github/workflows/ci.yml) runs hygiene + TV2 dataset/test job; required-status-check rule pending |
-| TV6-05 | Contract, integration, and E2E tests | Tests cover solver adapter, API, SQLite persistence, and the full dataset → API → solver → DB → UI flow | **Not Started** | TV3-03, TV5-01–TV5-03, TV4-04 | [testing-strategy](../testing-strategy.md) |
-| TV6-06 | Bug tracking and verification workflow | Bugs have reproduction steps, severity, expected/actual, and closure evidence; issue templates are used | **Not Started** | Project Lead to enable issue workflow | `.github/ISSUE_TEMPLATE/` exists; 0 issues created |
-| TV6-07 | Benchmark and final report | Baseline/MILP comparison, test summary, known limitations, demo script, and final report are produced from executed evidence | **Not Started** | TV1–TV5 deliverables; TV6-05 | [team-responsibilities](../team-responsibilities.md) |
+| TV6-01 | Bộ tài liệu quản lý dự án | Trạng thái, tracker, kế hoạch tích hợp và kế hoạch test tồn tại và khớp minh chứng repository | **In Progress** | Không | Tài liệu này; [project-status](project-status.md); [integration-plan](integration-plan.md); [test-plan](test-plan.md) |
+| TV6-02 | Truy vết yêu cầu và kế hoạch test | T1–T9 và EDGE-01–10 được ánh xạ tới mã test, bậc, điều kiện tiên quyết và minh chứng | **In Progress** | Baseline yêu cầu TV1 | [test-plan](test-plan.md) |
+| TV6-03 | Bộ kiểm thử | Cấu trúc `pytest`, fixture và helper tồn tại; test chạy được cục bộ và trong CI | **In Progress** | TV1-01, TV2-01 | `tests/test_datasets.py` (60 test) đã có; harness mở rộng còn chờ |
+| TV6-04 | Job CI kiểm thử | CI cài dependency và chạy bộ test; lỗi chặn merge | **In Progress** | TV6-03; cập nhật ruleset của Project Lead | [ci.yml](../../.github/workflows/ci.yml) chạy job TV2 dataset/test; required-status-check còn chờ |
+| TV6-05 | Test hợp đồng, tích hợp và E2E | Test bao phủ adapter bộ giải, API, lưu trữ SQLite và luồng dataset → API → solver → DB → UI | **Not Started** | TV3-03, TV5-01–TV5-03, TV4-04 | [testing-strategy](../testing-strategy.md) |
+| TV6-06 | Quy trình bug tracking và kiểm chứng | Bug có bước tái hiện, mức độ, mong đợi/thực tế và minh chứng đóng; mẫu issue được dùng | **Not Started** | Project Lead bật quy trình issue | `.github/ISSUE_TEMPLATE/` tồn tại; 0 issue được tạo |
+| TV6-07 | Benchmark và báo cáo cuối kỳ | So sánh Baseline/MILP, tóm tắt test, hạn chế đã biết, kịch bản demo và báo cáo cuối kỳ được tạo từ minh chứng đã chạy | **Not Started** | Hạng mục TV1–TV5; TV6-05 | [team-responsibilities](../team-responsibilities.md) |
 
 ---
 
-## 3. Dependency summary
+## 3. Tóm tắt phụ thuộc
 
 ```text
-TV1-01 (approved rules)
-  -> TV2-01 (canonical schema)
-      -> TV2-02/03 (fixtures + validator)
+TV1-01 (quy tắc được duyệt)
+  -> TV2-01 (schema chuẩn)
+      -> TV2-02/03 (fixture + validator)
       -> TV3-01/02/03 (baseline, MILP, adapter)
-          -> TV5-01/02/03 (API, SQLite, solver integration)
-              -> TV4-01/02/03 (UI, dashboard, live API)
+          -> TV5-01/02/03 (API, SQLite, tích hợp bộ giải)
+              -> TV4-01/02/03 (UI, dashboard, API thật)
                   -> TV6-05 (contract/integration/E2E)
-                      -> TV6-07 (benchmark + final report)
-TV6-02/03/04 (traceability, harness, CI job) can start before TV3–TV5 complete.
+                      -> TV6-07 (benchmark + báo cáo cuối kỳ)
+TV6-02/03/04 (truy vết, harness, job CI) có thể bắt đầu trước khi TV3–TV5 hoàn tất.
 ```
 
 ---
 
-## 4. Status evidence rules
+## 4. Quy tắc minh chứng trạng thái
 
-- A task becomes **Completed** only when its acceptance criteria are demonstrated by a committed artifact, executed test output, or merged PR.
-- A task is **Blocked** when its dependency is explicitly unresolved; the blocker is recorded in [project-status §4](project-status.md#4-blockers-and-dependencies).
-- A task is **In Progress** only when an artifact exists in the repository, not when work is merely planned or discussed.
-- Update the verification date and evidence link whenever a status changes.
-- This tracker does not replace GitHub Issues. Once the Project Lead creates official issues/milestones, link them here rather than duplicating their state.
+- Một nhiệm vụ chỉ chuyển **Completed** khi tiêu chí nghiệm thu được chứng minh bằng artifact đã commit, output test đã chạy hoặc PR đã merge.
+- Một nhiệm vụ là **Blocked** khi phụ thuộc chưa được giải quyết rõ ràng; blocker được ghi tại [project-status §4](project-status.md#4-blocker-và-phụ-thuộc).
+- Một nhiệm vụ là **In Progress** chỉ khi artifact tồn tại trong repository, không phải khi mới được lập kế hoạch hoặc thảo luận.
+- Cập nhật ngày kiểm chứng và liên kết minh chứng mỗi khi trạng thái thay đổi.
+- Tài liệu này không thay thế GitHub Issues. Khi Project Lead tạo issue/milestone chính thức, hãy liên kết tại đây thay vì sao chép trạng thái.
 
 ---
 
-## 5. Known missing information requiring team confirmation
+## 5. Thông tin còn thiếu cần nhóm xác nhận
 
-1. Which GitHub account owns each TV role.
-2. Team ratification of Policy A, selected by the Project Lead in [ADR-004](../decisions/0004-allocation-policy-a.md), and the remaining business-rule conflicts listed in project-status §4.
-3. Downstream adoption of the canonical Policy A data schema; the TV2 schema and dictionary are published, but TV3/TV5/TV6 have not yet been updated.
-4. TV3/TV4/TV5 sign-off on the Policy A API contract and status semantics.
-5. Target sprint dates and milestone definitions.
-6. Ownership of the legacy prototype (`scripts/validate_orders.py`) and datasets (`data/samples/`, `data/legacy/`).
+1. Tài khoản GitHub của từng vai trò TV.
+2. Nhóm xác nhận Policy A do Project Lead chọn trong [ADR-004](../decisions/0004-allocation-policy-a.md), và các xung đột quy tắc nghiệp vụ còn lại trong project-status §4.
+3. Việc TV3/TV5/TV6 áp dụng schema Policy A chuẩn; schema và từ điển TV2 đã công bố nhưng các module chưa cập nhật.
+4. Sign-off của TV3/TV4/TV5 cho hợp đồng API Policy A và ngữ nghĩa trạng thái.
+5. Ngày sprint và định nghĩa milestone.
+6. Quyền sở hữu prototype cũ (`scripts/validate_orders.py`) và các bộ dữ liệu (`data/samples/`, `data/legacy/`).

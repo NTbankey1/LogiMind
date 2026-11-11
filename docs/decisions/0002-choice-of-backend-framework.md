@@ -1,25 +1,30 @@
-# ADR-002: Choice of Backend API Framework
+# ADR-002: Lựa chọn framework API backend
 
-## Status
+## Trạng thái
+
 PROPOSED
 
-## Context
-TV5 needs to build a backend service to orchestrate the solver runs, validate inputs, serve API responses to TV4's frontend, and store allocation records. The backend should integrate seamlessly with Python data science and optimization libraries.
+## Bối cảnh
 
-## Options Considered
+TV5 cần xây dựng dịch vụ backend để điều phối các lần chạy bộ giải, kiểm tra dữ liệu đầu vào, trả phản hồi API cho frontend của TV4 và lưu lịch sử phân bổ. Backend cần tích hợp liền mạch với các thư viện khoa học dữ liệu và tối ưu hóa của Python.
+
+## Các phương án đã xem xét
+
 1. **FastAPI (Python):**
-   - *Pros:* Direct in-process execution of Python solver modules (no IPC overhead); automatic OpenAPI/Swagger documentation; fast serialization via Pydantic; async-ready.
-   - *Cons:* Requires Python async comprehension, though synchronous endpoint handlers are also supported.
+   - *Ưu điểm:* Gọi trực tiếp module bộ giải Python trong cùng tiến trình (không có chi phí IPC); tự động sinh tài liệu OpenAPI/Swagger; tuần tự hóa nhanh qua Pydantic; sẵn sàng cho async.
+   - *Nhược điểm:* Yêu cầu hiểu lập trình async trong Python, dù vẫn hỗ trợ endpoint đồng bộ.
 2. **Flask (Python):**
-   - *Pros:* Minimalistic, highly familiar to Python beginners.
-   - *Cons:* Lacks built-in request schema validation; requires manual Swagger documentation plugins.
+   - *Ưu điểm:* Tối giản, rất quen thuộc với người mới học Python.
+   - *Nhược điểm:* Không có kiểm tra schema request tích hợp; cần plugin thủ công để sinh tài liệu Swagger.
 3. **Node.js (Express / NestJS):**
-   - *Pros:* Unified JavaScript ecosystem with frontend.
-   - *Cons:* Would require multi-language IPC (spawning Python child processes or microservices) to invoke the solver, increasing setup complexity for a student project.
+   - *Ưu điểm:* Thống nhất hệ sinh thái JavaScript với frontend.
+   - *Nhược điểm:* Phải dùng IPC đa ngôn ngữ (spawn tiến trình Python hoặc microservice) để gọi bộ giải, làm tăng độ phức tạp cài đặt cho một dự án sinh viên.
 
-## Decision (Proposed)
-Adopt **FastAPI** as the backend framework.
+## Quyết định (đề xuất)
 
-## Consequences
-- **Positive:** Direct call to TV3 solver classes; automatic interactive docs at `/docs`; strong typing via Pydantic.
-- **Negative / Risks:** TV5 must familiarize themselves with FastAPI routing and Pydantic schema validation.
+Chọn **FastAPI** làm framework backend.
+
+## Hệ quả
+
+- **Tích cực:** Gọi trực tiếp các lớp bộ giải của TV3; tài liệu tương tác tự động tại `/docs`; định kiểu mạnh qua Pydantic.
+- **Tiêu cực / Rủi ro:** TV5 cần làm quen với routing FastAPI và kiểm tra schema bằng Pydantic.

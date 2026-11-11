@@ -1,27 +1,31 @@
-# Git Workflow & Branching Strategy: LogiMind
+# Quy trình Git & chiến lược nhánh: LogiMind
 
-## 1. Principles of Collaboration
+> **Lưu ý:** Đây là bản tóm tắt kèm ví dụ minh họa. Quy trình chính thức và đầy đủ nằm tại [`CONTRIBUTING.md`](../CONTRIBUTING.md); nếu hai tài liệu khác nhau, `CONTRIBUTING.md` là nguồn có hiệu lực.
 
-To support concurrent work across 6 team members without code collisions or lost work:
-1. **Never commit directly to `main`:** The `main` branch is protected and reserved exclusively for reviewed, functional code.
-2. **Branch per Task, Not per Person:** Branches are dedicated to specific deliverables (e.g. `feat/milp-solver`, `docs/math-model`), never personal branches (e.g. `tv1-work`). This ensures clarity when multiple members review or collaborate on a feature.
-3. **Short-Lived Branches:** Keep task branches scoped to 1–3 days of work. Small, frequent PRs are easier to review than massive end-of-semester branches.
+## 1. Nguyên tắc cộng tác
+
+Để 6 thành viên làm việc song song mà không xung đột code hoặc mất việc:
+
+1. **Không commit trực tiếp vào `main`:** `main` được bảo vệ và chỉ dành cho code đã review, chạy được.
+2. **Mỗi nhiệm vụ một nhánh, không phải mỗi người một nhánh:** nhánh gắn với hạng mục bàn giao cụ thể (ví dụ `feat/milp-solver`, `docs/math-model`), không dùng nhánh cá nhân (ví dụ `tv1-work`). Điều này giúp nhiều người review hoặc cộng tác trên cùng tính năng.
+3. **Nhánh ngắn hạn:** giữ nhánh nhiệm vụ trong khoảng 1–3 ngày làm việc. PR nhỏ, thường xuyên dễ review hơn nhánh lớn cuối kỳ.
 
 ---
 
-## 2. Branch Naming Conventions
+## 2. Quy ước đặt tên nhánh
 
-All branch names must use lower-case kebab-case prefixed by the category:
+Mọi tên nhánh dùng chữ thường kebab-case, có tiền tố theo loại:
 
-| Branch Name Pattern | Category | Use When |
+| Mẫu tên nhánh | Loại | Dùng khi |
 | :--- | :--- | :--- |
-| `docs/<topic>` | Documentation | Writing or updating specifications, mathematical models, or guides. |
-| `feat/<topic>` | Feature | Implementing an algorithm, API endpoint, or UI component. |
-| `fix/<topic>` | Bug Fix | Correcting mathematical violations, broken tests, or API bugs. |
-| `test/<topic>` | Testing | Adding automated test suites or edge-case benchmark datasets. |
-| `chore/<topic>` | Housekeeping | Updating dependencies, linters, or CI workflow configuration. |
+| `docs/<topic>` | Tài liệu | Viết hoặc cập nhật đặc tả, mô hình toán học, hướng dẫn. |
+| `feat/<topic>` | Tính năng | Cài đặt thuật toán, endpoint API hoặc thành phần UI. |
+| `fix/<topic>` | Sửa lỗi | Sửa vi phạm toán học, test hỏng hoặc lỗi API. |
+| `test/<topic>` | Kiểm thử | Thêm bộ test tự động hoặc bộ dữ liệu benchmark edge case. |
+| `chore/<topic>` | Việc vặt | Cập nhật dependency, linter hoặc cấu hình CI. |
 
-*Examples:*
+*Ví dụ:*
+
 - `docs/add-infeasible-policy`
 - `feat/baseline-greedy-heuristic`
 - `feat/backend-run-endpoint`
@@ -30,82 +34,94 @@ All branch names must use lower-case kebab-case prefixed by the category:
 
 ---
 
-## 3. Step-by-Step Task Lifecycle (10 Steps)
+## 3. Vòng đời nhiệm vụ (10 bước)
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Dev as Developer (TV1-TV6)
-    participant Local as Local Git
+    actor Dev as Lập trình viên (TV1-TV6)
+    participant Local as Git tại máy
     participant Remote as GitHub Remote
     participant CI as GitHub Actions CI
-    participant Reviewer as Peer Reviewer
+    participant Reviewer as Người review
 
     Dev->>Local: git checkout main && git pull origin main
     Dev->>Local: git checkout -b feat/task-name
-    Dev->>Local: Implement changes & run local tests
+    Dev->>Local: Triển khai thay đổi & chạy test
     Dev->>Local: git commit -m "feat: description"
     Dev->>Remote: git push -u origin feat/task-name
-    Dev->>Remote: Open Pull Request to main
-    Remote->>CI: Trigger automated validation
-    CI-->>Remote: Status: PASS
-    Dev->>Reviewer: Request review
-    Reviewer->>Remote: Approve PR
-    Remote->>Remote: Merge PR into main (Squash / Rebase)
+    Dev->>Remote: Mở Pull Request tới main
+    Remote->>CI: Kích hoạt kiểm tra tự động
+    CI-->>Remote: Trạng thái: PASS
+    Dev->>Reviewer: Yêu cầu review
+    Reviewer->>Remote: Chấp thuận PR
+    Remote->>Remote: Merge PR vào main (Squash / Rebase)
     Local->>Local: git checkout main && git pull origin main
 ```
 
-### Detailed Command Walkthrough
+### Hướng dẫn lệnh chi tiết
 
-#### Step 1: Sync with Latest Main
+#### Bước 1: Đồng bộ với `main` mới nhất
+
 ```bash
 git checkout main
 git pull origin main
 ```
 
-#### Step 2: Create a Fresh Task Branch
+#### Bước 2: Tạo nhánh nhiệm vụ mới
+
 ```bash
 git checkout -b feat/implement-greedy-baseline
 ```
 
-#### Step 3: Implement & Self-Review
-Edit the necessary files. Check status frequently:
+#### Bước 3: Triển khai & tự review
+
+Sửa các file cần thiết. Kiểm tra trạng thái thường xuyên:
+
 ```bash
 git status --short
 git diff
 ```
 
-#### Step 4: Run Tests Locally
-Verify that no constraints are broken:
+#### Bước 4: Chạy test tại máy
+
+Xác nhận không có ràng buộc nào bị vi phạm:
+
 ```bash
-# Example test run (once environment is configured)
+# Ví dụ chạy test (sau khi môi trường đã được cấu hình)
 pytest tests/
 ```
 
-#### Step 5: Commit using Conventional Commits
+#### Bước 5: Commit theo Conventional Commits
+
 ```bash
 git add src/logimind/algorithms/baseline.py tests/unit/test_baseline.py
 git commit -m "feat: implement greedy nearest-warehouse allocation heuristic"
 ```
 
-#### Step 6: Push Branch to Remote
+#### Bước 6: Push nhánh lên remote
+
 ```bash
 git push -u origin feat/implement-greedy-baseline
 ```
 
-#### Step 7: Open Pull Request (PR)
-- Go to the GitHub repository page.
-- Click **Compare & pull request**.
-- Fill out the PR template completely.
+#### Bước 7: Mở Pull Request (PR)
 
-#### Step 8: Peer Review & CI Verification
-- Request review from at least one peer member (e.g. TV3 reviews TV1's model, TV5 reviews TV4's API requests).
-- Verify GitHub Actions CI status is green.
+- Truy cập trang repository trên GitHub.
+- Nhấn **Compare & pull request**.
+- Điền đầy đủ mẫu PR.
 
-#### Step 9: Merge
-- Merge into `main` using "Squash and merge" or "Rebase and merge".
+#### Bước 8: Review và kiểm tra CI
 
-#### Step 10: Clean Up
+- Yêu cầu ít nhất một thành viên khác review (ví dụ TV3 review mô hình của TV1, TV5 review yêu cầu API của TV4).
+- Xác nhận trạng thái GitHub Actions CI xanh.
+
+#### Bước 9: Merge
+
+- Merge vào `main` bằng **Squash and merge** hoặc **Rebase and merge**.
+
+#### Bước 10: Dọn dẹp
+
 ```bash
 git checkout main
 git pull origin main
@@ -114,33 +130,37 @@ git branch -d feat/implement-greedy-baseline
 
 ---
 
-## 4. Keeping Your Branch Updated & Handling Merge Conflicts
+## 4. Cập nhật nhánh và xử lý xung đột merge
 
-If `main` has advanced while your task branch was active, sync your branch safely:
+Nếu `main` tiến lên trong lúc nhánh nhiệm vụ đang mở, đồng bộ nhánh an toàn:
 
 ```bash
-# 1. Update your local main
+# 1. Cập nhật main tại máy
 git checkout main
 git pull origin main
 
-# 2. Merge main into your task branch
+# 2. Merge main vào nhánh nhiệm vụ
 git checkout feat/your-branch-name
 git merge main
 ```
 
-If Git detects conflicting edits:
-1. Open the conflicted files. Search for conflict markers:
+Nếu Git phát hiện xung đột:
+
+1. Mở các file xung đột và tìm dấu đánh dấu:
+
    ```text
-   <<<<<<< HEAD (Current change on your branch)
+   <<<<<<< HEAD (Thay đổi hiện tại trên nhánh của bạn)
    your changes
    =======
    incoming changes from main
    >>>>>>> main
    ```
-2. Manually adjust the code to integrate both changes correctly.
-3. Remove the marker lines (`<<<<<<<`, `=======`, `>>>>>>>`).
-4. Run tests to confirm the resolution works.
-5. Stage and commit:
+
+2. Chỉnh code thủ công để tích hợp đúng cả hai bên.
+3. Xóa các dòng đánh dấu (`<<<<<<<`, `=======`, `>>>>>>>`).
+4. Chạy test để xác nhận bản giải quyết hoạt động.
+5. Stage và commit:
+
    ```bash
    git add <resolved-files>
    git commit -m "chore: resolve merge conflicts with main"
@@ -149,10 +169,13 @@ If Git detects conflicting edits:
 
 ---
 
-## 5. Prohibited Git Actions
+## 5. Hành vi Git bị cấm
 
-The following commands are strictly prohibited on shared branches:
-- `git push --force` (Use `--force-with-lease` only on private task branches if rebasing, never on `main`).
-- `git reset --hard` (Risk of permanent work loss).
-- Direct commits to `main`.
-- Storing unencrypted credentials, passwords, or API tokens.
+Các lệnh sau bị cấm tuyệt đối trên nhánh dùng chung:
+
+- `git push --force` (chỉ dùng `--force-with-lease` trên nhánh nhiệm vụ riêng khi rebase, không bao giờ trên `main`).
+- `git reset --hard` (nguy cơ mất việc vĩnh viễn).
+- Commit trực tiếp vào `main`.
+- Lưu thông tin đăng nhập, mật khẩu hoặc API token không mã hóa.
+
+> Quy trình đầy đủ, quy tắc bảo vệ nhánh và checklist review: [`CONTRIBUTING.md`](../CONTRIBUTING.md).
