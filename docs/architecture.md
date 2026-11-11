@@ -1,9 +1,10 @@
 # System Architecture: LogiMind
 
-> **Status:** Proposed architecture. Only the documentation set, curated data
-> fixtures, and the legacy `scripts/validate_orders.py` prototype exist today.
-> Paths in this document describe the intended layout; no `src/logimind/`
-> package, frontend application, or test suite has been implemented yet.
+> **Status:** Proposed architecture. The canonical Policy A schema, ten fixtures,
+> validator, generator, feasibility oracle, and 60-test TV2 suite exist today,
+> along with the legacy `scripts/validate_orders.py` prototype. The
+> `src/logimind/` package, backend, frontend, and solver are not implemented yet.
+> Paths in this document describe the intended layout.
 
 ## 1. Architectural Philosophy
 
@@ -123,21 +124,28 @@ sequenceDiagram
     SOLVER-->>BE: Solution (cost, allocations, status)
     deactivate SOLVER
 
-    alt status = OPTIMAL or FEASIBLE_SUBOPTIMAL
-        BE->>DB: Persist allocation run and allocation lines
+    alt status = OPTIMAL or FEASIBLE
+        BE->>DB: Persist allocation run and one warehouse per order
         DB-->>BE: Confirm commit
         BE-->>FE: 200 OK - AllocationResult JSON
-        FE->>User: Show cost breakdown, order assignments and warehouse utilization
+        FE->>User: Show shipping cost, one warehouse per order, and order-count utilization
+    else status = NO_SOLUTION_FOUND
+        BE-->>FE: 200 OK - status NO_SOLUTION_FOUND, empty allocations
+        FE->>User: Explain that no complete solution was found yet (not proven infeasible)
     else status = INFEASIBLE
-        BE-->>FE: 422 Unprocessable Entity with unsatisfied order IDs
-        FE-->>User: Flag unmet demand per SKU
-    else solver exceeded time_limit_seconds
-        BE-->>FE: 504 Gateway Timeout
+        BE-->>FE: 422 Unprocessable Entity with proof/certificate
+        FE-->>User: Flag that no complete Policy A allocation exists
+    else status = ERROR
+        BE-->>FE: 400 validation error or 500 solver error
+        FE-->>User: Show structured error details
     end
     deactivate BE
 ```
 
-Status semantics (`OPTIMAL`, `FEASIBLE_SUBOPTIMAL`, `INFEASIBLE`) and error payloads follow the [API Contract](api-contract.md) §4.
+Status semantics (`OPTIMAL`, `FEASIBLE`, `INFEASIBLE`, `NO_SOLUTION_FOUND`,
+`ERROR`) and timeout rules follow the [API Contract](api-contract.md) §5. A
+solver hitting `time_limit_seconds` returns `200` with `FEASIBLE` (if a complete
+solution exists) or `NO_SOLUTION_FOUND` (if not); it does not return `504`.
 
 ---
 

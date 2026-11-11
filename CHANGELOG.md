@@ -33,6 +33,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - ADR-004 selecting Policy A.
 
 ### Changed
+- Aligned the API contract, project overview, architecture, integration guide,
+  testing strategy, and README to Policy A. Removed split/penalty/handling
+  fields from API examples and standardized solver statuses.
 - Reorganized the repository layout:
   - Academic analysis document moved to `docs/reference/project-analysis.docx`.
   - Legacy prototype moved to `scripts/validate_orders.py` with `__file__`-relative data resolution and an optional dataset argument.
