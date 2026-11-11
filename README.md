@@ -1,21 +1,34 @@
 # LogiMind
 
-LogiMind is a decision-support project for the **Multi-Warehouse Order Allocation Problem (MWOAP)**: assigning customer orders to fulfillment warehouses while respecting stock and capacity limits, and comparing a simple heuristic against a Mixed-Integer Linear Programming (MILP) formulation.
+LogiMind is a decision-support project for the **Multi-Warehouse Order Allocation
+Problem (MWOAP)**: assigning each customer order to exactly one fulfillment
+warehouse while respecting per-SKU stock and order-count capacity, then comparing
+a simple heuristic against a Mixed-Integer Linear Programming (MILP) allocation.
 
-The repository is currently at the **foundation and prototype stage**. Only the standalone allocation script is executable today, and it reads just one of the two JSON datasets; the API, database, frontend, MILP solver, and automated test suite are specified but not implemented. See [Current status](#2-current-status).
+The repository is at the **foundation + data-contract stage**. The TV2 dataset
+workstream is implemented: canonical Policy A schema, benchmark fixtures, a
+deterministic generator, a validator, an exhaustive small-instance feasibility
+oracle, automated tests, and a CI job. The solver, backend, database, and frontend
+are specified but not implemented. A legacy standalone prototype remains for
+reference.
 
 ---
 
 ## 1. Problem statement
 
-E-commerce fulfillment networks operate several warehouses. Assigning each order to the nearest warehouse can exhaust that warehouse's stock or throughput capacity and force later orders onto more expensive routes. LogiMind is intended to:
+E-commerce fulfillment networks operate several warehouses. Assigning each order
+to the nearest warehouse can exhaust that warehouse's stock or throughput capacity
+and force later orders onto more expensive routes. LogiMind is intended to:
 
 - read a batch of orders, warehouse capacities, per-SKU stock, and shipping costs;
-- allocate each order to a warehouse, or record it as unassigned (depending on the chosen policy);
+- allocate **every** order to exactly one warehouse (Policy A);
 - compare a baseline heuristic with an optimal MILP allocation on the same input;
-- report shipping cost, penalty cost, utilization, and runtime.
+- report shipping cost, utilization, and runtime.
 
-**Out of scope (documented):** multi-stop vehicle routing, demand forecasting, payments, HR, WMS/ERP integration, and real-time data feeds. See [docs/project-overview.md](docs/project-overview.md) and [docs/requirements.md](docs/requirements.md).
+**Out of scope (documented):** multi-stop vehicle routing, demand forecasting,
+payments, HR, WMS/ERP integration, and real-time data feeds. See
+[docs/project-overview.md](docs/project-overview.md) and
+[docs/requirements.md](docs/requirements.md).
 
 ---
 
@@ -23,30 +36,40 @@ E-commerce fulfillment networks operate several warehouses. Assigning each order
 
 | Area | Status | Evidence |
 | :--- | :--- | :--- |
-| Standalone allocation prototype | **Implemented** | `validate_orders.py` (Python standard library only) |
-| Primary benchmark data | **Implemented** | `benchmark_data.json` (3 warehouses, 2 orders) |
-| Second sample fixture | **Present, not consumed** | `data/samples/sample_small.json` |
-| Formal model and requirements | **Draft / proposed** | [docs/mathematical-model.md](docs/mathematical-model.md), [docs/requirements.md](docs/requirements.md) |
-| Architecture, API contract, ADRs | **Proposed, not approved** | [docs/architecture.md](docs/architecture.md), [docs/api-contract.md](docs/api-contract.md), [docs/decisions/README.md](docs/decisions/README.md) |
-| Backend API and SQLite persistence | **Not started** | `src/` contains only a placeholder README; ADR-002/ADR-003 are `PROPOSED` |
-| Frontend | **Not started** | No frontend files; ADR-004 has not been written |
-| MILP and packaged baseline algorithms | **Not started** | No `src/algorithms/` implementation; the root script is a prototype |
-| Automated tests | **Not started** | `tests/` contains only a placeholder README; CI has no test job |
-| CI repository-hygiene checks | **Implemented** | [.github/workflows/ci.yml](.github/workflows/ci.yml) |
+| Canonical data contract | **Implemented (Policy A)** | [docs/data-dictionary.md](docs/data-dictionary.md), [data/schema/dataset.schema.json](data/schema/dataset.schema.json) |
+| Benchmark and edge-case fixtures | **Implemented** | Ten files under [data/samples/](data/samples/); catalogue in [data/README.md](data/README.md) |
+| Dataset generator | **Implemented** | [scripts/generate_dataset.py](scripts/generate_dataset.py) (deterministic, feasible by construction) |
+| Dataset validator | **Implemented** | [scripts/validate_dataset.py](scripts/validate_dataset.py) (schema + semantic checks) |
+| Feasibility oracle | **Implemented (small instances)** | [scripts/check_feasibility.py](scripts/check_feasibility.py) |
+| Automated TV2 tests | **Implemented** | [tests/test_datasets.py](tests/test_datasets.py) (59 tests) |
+| CI | **Configured** | [.github/workflows/ci.yml](.github/workflows/ci.yml): repository hygiene + TV2 dataset job |
+| Allocation policy | **Decided: Policy A** | [ADR-004](docs/decisions/0004-allocation-policy-a.md) |
+| Legacy allocation prototype | **Implemented (not Policy A)** | `validate_orders.py`, `benchmark_data.json` |
+| Formal model and requirements | **Present; policy A selected** | [docs/mathematical-model.md](docs/mathematical-model.md), [docs/requirements.md](docs/requirements.md) |
+| Architecture, API contract, ADR-001–003 | **Proposed, not approved** | [docs/architecture.md](docs/architecture.md), [docs/api-contract.md](docs/api-contract.md) |
+| Backend API and SQLite persistence | **Not started** | `src/` contains only a placeholder README |
+| Frontend | **Not started** | No frontend files |
+| MILP and packaged baseline algorithms | **Not started** | No `src/algorithms/` implementation |
 
-### What the current prototype does
+### Legacy prototype
 
-`validate_orders.py` loads `benchmark_data.json`, computes the Euclidean distance between each order's destination and each warehouse, and assigns the **whole order** to the nearest warehouse that has enough aggregate free capacity (`capacity - current_occupancy`). It prints the assignment log and updates occupancy only in memory.
-
-It does **not** implement the documented MILP model: it has no per-SKU inventory check, no shipping-cost matrix $c_{ij}$, no unassigned-order penalty $P_i$, no split-shipment decision, and no optimality guarantees. It is a nearest-first baseline proof of concept, not the optimization engine described below.
+`validate_orders.py` loads `benchmark_data.json`, computes Euclidean distances, and
+assigns each whole order to the nearest warehouse with enough aggregate free
+capacity. It uses a legacy flat schema with aggregate capacity, no per-SKU
+inventory, and no shipping-cost matrix. It is **not** the Policy A model and is
+retained only for historical comparison. Do not use `benchmark_data.json` as
+solver input.
 
 ---
 
-## 3. Mathematical model and business constraints
+## 3. Allocation policy and data contract
 
-The current formulation is documented in [docs/mathematical-model.md](docs/mathematical-model.md) (Vietnamese) with supporting requirements in [docs/requirements.md](docs/requirements.md). Both documents describe a **proposal**, not a team-approved final policy.
+The Project Lead selected **Policy A**; the decision is recorded in
+[ADR-004](docs/decisions/0004-allocation-policy-a.md). The authoritative field
+definitions, units, and validation rules live in
+[docs/data-dictionary.md](docs/data-dictionary.md).
 
-### Policy B (proposed primary policy)
+### Policy A
 
 **Sets and parameters**
 
@@ -55,24 +78,24 @@ The current formulation is documented in [docs/mathematical-model.md](docs/mathe
 | $I$, $J$, $K$ | Orders, warehouses, and SKUs |
 | $q_{ik}$ | Quantity of SKU $k$ required by order $i$ |
 | $s_{jk}$ | Available stock of SKU $k$ at warehouse $j$ |
-| $C_j$ | Maximum **number of orders** warehouse $j$ can process in the batch |
+| $C_j$ | Maximum **number of orders** warehouse $j$ can process |
 | $c_{ij}$ | Cost of shipping the entire order $i$ from warehouse $j$ |
-| $P_i$ | Penalty if order $i$ is left unassigned |
-| $E \subseteq I \times J$ | Allowed order–warehouse pairs |
+| $E \subseteq I \times J$ | Allowed order–warehouse pairs (route exists in `shipping_costs`) |
 
-**Decision variables:** $x_{ij} \in \{0,1\}$ equals 1 when order $i$ is assigned to warehouse $j$; $u_i \in \{0,1\}$ equals 1 when order $i$ is unassigned.
+**Decision variable:** $x_{ij} \in \{0,1\}$ equals 1 when order $i$ is assigned to
+warehouse $j$.
 
 **Objective**
 
 $$
-\min Z = \sum_{(i,j)\in E} c_{ij}x_{ij} + \sum_{i\in I} P_i u_i
+\min Z = \sum_{(i,j)\in E} c_{ij}x_{ij}
 $$
 
 **Constraints**
 
 $$
-\sum_{j\in J} x_{ij} + u_i = 1 \quad \forall i \in I
-\qquad\text{(exactly one state per order)}
+\sum_{j\in J} x_{ij} = 1 \quad \forall i \in I
+\qquad\text{(exactly one warehouse, no unassigned orders)}
 $$
 
 $$
@@ -86,31 +109,60 @@ $$
 $$
 
 $$
-x_{ij}, u_i \in \{0,1\}, \qquad x_{ij} = 0 \ \ \forall (i,j)\notin E
+x_{ij} \in \{0,1\}, \qquad x_{ij} = 0 \ \ \forall (i,j)\notin E
 $$
 
-**Policy A (alternative):** every order must be assigned ($\sum_j x_{ij}=1$), there is no $u_i$ or penalty, and the instance may be infeasible.
+There is no split shipment, no unassigned variable, no unassigned penalty, and no
+handling cost. If no complete allocation exists, the instance is
+**mathematically infeasible** — it is still structurally valid.
 
-**Documented baseline:** process orders in ascending string order; choose the cheapest allowed warehouse that still has all required SKUs and free capacity; under policy B, leave the order unassigned when the cheapest shipping cost exceeds $P_i$. Ties break by warehouse ID.
+Policy B (penalty-based, split/unassigned orders) is retained only as historical
+material in `docs/mathematical-model.md` §3 and `docs/requirements.md`.
 
-The model's example uses 3 orders, 2 warehouses, and 2 SKUs and yields an optimal objective of 34 for policy B.
+### Dataset example
+
+```json
+{
+  "schema_version": "1.0",
+  "dataset_id": "sample-small",
+  "name": "Small Feasible Benchmark",
+  "description": "Small 2-warehouse, 3-order, 2-SKU Policy A benchmark.",
+  "policy": "A",
+  "skus": [{ "sku_id": "SKU-A", "name": "Product Alpha" }],
+  "warehouses": [{
+    "warehouse_id": "WH-01",
+    "name": "Warehouse North",
+    "capacity_orders": 2,
+    "inventory": { "SKU-A": 10 }
+  }],
+  "orders": [{
+    "order_id": "ORD-001",
+    "items": { "SKU-A": 2 },
+    "shipping_costs": { "WH-01": 4.0 }
+  }]
+}
+```
 
 ---
 
 ## 4. System architecture
 
-### Implemented today
+### Implemented today (TV2 data layer + legacy prototype)
 
 ```text
-benchmark_data.json  ->  validate_orders.py  ->  console output
-(3 warehouses, 2 orders)   (nearest feasible warehouse, aggregate capacity)
+data/schema/dataset.schema.json
+        |
+        v
+data/samples/*.json  ->  scripts/validate_dataset.py  ->  PASS / FAIL
+        |                        |
+        |                        +-> scripts/check_feasibility.py -> FEASIBLE / INFEASIBLE / UNKNOWN
+        v
+scripts/generate_dataset.py  ->  new deterministic, feasible dataset
+
+benchmark_data.json  ->  validate_orders.py  ->  console output   (legacy, non-Policy-A)
 ```
 
-There is no persistent storage, HTTP API, or user interface in the current codebase.
-
 ### Planned architecture (not implemented)
-
-The planned three-tier design in [docs/architecture.md](docs/architecture.md) is:
 
 ```text
 React / Vite frontend
@@ -122,10 +174,14 @@ FastAPI backend  <-->  SQLite database
 Optimization engine: baseline heuristic + MILP (PuLP/CBC proposed)
         ^
         |
-Benchmark fixtures + automated tests (pytest)
+Policy A datasets + automated tests
 ```
 
-The technology choices are recorded as **`PROPOSED`** ADRs: PuLP/CBC ([ADR-001](docs/decisions/0001-choice-of-optimization-solver-library.md)), FastAPI ([ADR-002](docs/decisions/0002-choice-of-backend-framework.md)), and SQLite ([ADR-003](docs/decisions/0003-choice-of-database-engine.md)). No ADR has `ACCEPTED` status.
+The solver, backend, and database technology choices remain `PROPOSED`:
+PuLP/CBC ([ADR-001](docs/decisions/0001-choice-of-optimization-solver-library.md)),
+FastAPI ([ADR-002](docs/decisions/0002-choice-of-backend-framework.md)), and SQLite
+([ADR-003](docs/decisions/0003-choice-of-database-engine.md)). Only ADR-004
+(Policy A) is `ACCEPTED`.
 
 ---
 
@@ -133,25 +189,24 @@ The technology choices are recorded as **`PROPOSED`** ADRs: PuLP/CBC ([ADR-001](
 
 ```text
 LogiMind/
-├── .github/
-│   ├── workflows/ci.yml            # Repository hygiene: JSON, Markdown links, essential files
-│   ├── pull_request_template.md
-│   └── ISSUE_TEMPLATE/
+├── .github/workflows/ci.yml        # Hygiene job + TV2 dataset/test job
 ├── .editorconfig
 ├── .env.example                    # Template for proposed backend configuration
 ├── .gitattributes
 ├── .gitignore
 ├── CHANGELOG.md
 ├── CLAUDE.md                       # Contributor/agent technical guidelines
-├── CONTRIBUTING.md                 # Git workflow and PR rules
+├── CONTRIBUTING.md
 ├── README.md
-├── benchmark_data.json             # Dataset read by validate_orders.py
-├── data-dictionary.md              # Legacy flat schema for benchmark_data.json
-├── validate_orders.py              # Current standalone allocation prototype
+├── pyproject.toml                  # Packaging and dev/test extras
+├── benchmark_data.json             # Legacy prototype input (not Policy A)
+├── data-dictionary.md              # Deprecated pointer to docs/data-dictionary.md
+├── validate_orders.py              # Legacy standalone allocation prototype
 ├── LogiMind_phantich.docx          # Project analysis document (binary)
 ├── data/
-│   ├── README.md                   # Dataset tracking policy
-│   └── samples/sample_small.json   # Alternative-schema toy fixture
+│   ├── README.md                   # Fixture catalogue and commands
+│   ├── schema/dataset.schema.json  # Canonical JSON Schema (Draft 2020-12)
+│   └── samples/*.json              # 10 Policy A fixtures
 ├── docs/
 │   ├── index.md
 │   ├── project-overview.md
@@ -159,18 +214,22 @@ LogiMind/
 │   ├── mathematical-model.md
 │   ├── architecture.md
 │   ├── api-contract.md
-│   ├── data-dictionary.md          # Proposed relational schema
+│   ├── data-dictionary.md          # Canonical Policy A data dictionary
 │   ├── testing-strategy.md
 │   ├── integration-guide.md
 │   ├── team-responsibilities.md
 │   ├── git-workflow.md
-│   └── decisions/                  # ADR index and ADR-001..003 (all PROPOSED)
-├── scripts/README.md               # Placeholder; no scripts implemented
+│   └── decisions/                  # ADR index; ADR-001..003 PROPOSED, ADR-004 ACCEPTED
+├── scripts/
+│   ├── README.md
+│   ├── validate_dataset.py
+│   ├── generate_dataset.py
+│   └── check_feasibility.py
 ├── src/README.md                   # Placeholder; no source package implemented
-└── tests/README.md                 # Placeholder; no automated tests implemented
+└── tests/
+    ├── README.md
+    └── test_datasets.py            # TV2 dataset/generator/feasibility tests
 ```
-
-Note: `data-dictionary.md` (repository root) and `docs/data-dictionary.md` describe **different schemas** and are not yet reconciled.
 
 ---
 
@@ -180,93 +239,130 @@ Note: `data-dictionary.md` (repository root) and `docs/data-dictionary.md` descr
 
 - **Python 3.10 or newer** (CI uses Python 3.10)
 - **Git**
-- No third-party Python packages are required by the current script. The repository does not yet contain `requirements.txt` or `pyproject.toml`; solver and backend dependencies will be added when those components are implemented.
-
-### Local setup
+- `jsonschema` for dataset validation, generation, and feasibility checking
+- `pytest` and `ruff` for the optional development extras
 
 ```bash
 git clone https://github.com/NTbankey1/LogiMind.git
 cd LogiMind
 
-python3 --version          # confirm 3.10+
+python3 --version                  # confirm 3.10+
 python3 -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+
+pip install -e ".[dev]"            # or: pip install jsonschema pytest
 ```
 
-The current prototype does not read environment variables. [.env.example](.env.example) documents the proposed backend and solver settings; copy it to `.env` only when those components exist. `.env` is ignored by Git.
+The legacy prototype uses only the standard library. [.env.example](.env.example)
+documents proposed backend/solver settings; copy it to `.env` only when those
+components exist. `.env` is ignored by Git.
 
 ---
 
 ## 7. Execution and testing
 
-### Run the allocation prototype
+All commands run from the repository root.
 
-From the repository root:
+### Validate the committed fixtures
+
+```bash
+python scripts/validate_dataset.py data/samples/
+```
+
+Expected: ten `[PASS]` lines, `10 datasets validated.`, `0 validation errors.`,
+exit code `0`. An infeasible fixture still passes; feasibility is a separate
+question.
+
+### Generate a reproducible benchmark
+
+```bash
+python scripts/generate_dataset.py \
+  --warehouses 4 --orders 20 --skus 5 --seed 20261111 \
+  --output data/samples/generated.json
+```
+
+The same arguments and seed produce byte-identical JSON on the same Python
+version. Generated datasets are feasible by construction.
+
+### Check feasibility
+
+```bash
+python scripts/check_feasibility.py data/samples/sample_small.json
+python scripts/check_feasibility.py data/samples/sample_infeasible.json
+python scripts/check_feasibility.py data/samples/edge_infeasible_stock.json
+python scripts/check_feasibility.py data/samples/sample_small.json --json
+```
+
+Statuses: `FEASIBLE`, `INFEASIBLE`, `UNKNOWN` (search limit), `INVALID`. Exit
+codes: `0` for a completed proof (`FEASIBLE`/`INFEASIBLE`), `1` for `INVALID`,
+`2` for `UNKNOWN`.
+
+### Automated tests
+
+```bash
+python -m unittest discover -s tests -v
+# optional: python -m pytest tests/ -v
+```
+
+The TV2 suite covers schema rules, semantic integrity, generator determinism,
+feasibility statuses for every fixture, search-limit handling, input immutability,
+and assignment invariants. See [tests/README.md](tests/README.md).
+
+### Run the legacy prototype
 
 ```bash
 python3 validate_orders.py
 ```
 
-The script reads `benchmark_data.json` relative to the working directory and prints a Vietnamese allocation log. It does not write files or update the JSON input.
+Reads `benchmark_data.json` from the working directory and prints a Vietnamese
+allocation log. It does not implement Policy A.
 
-### Automated tests
+### CI checks
 
-There is currently **no automated test suite**. `tests/` contains only a placeholder README, and CI does not run `pytest`; running `pytest tests/ -v` would collect no tests.
-
-### Checks that do run
-
-CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)) verifies:
-
-- every JSON file under `data/samples/` parses;
-- every internal Markdown link resolves;
-- essential repository files exist.
-
-Reproduce the JSON check locally:
-
-```bash
-python3 -m json.tool data/samples/sample_small.json > /dev/null
-python3 -m json.tool benchmark_data.json > /dev/null
-```
-
-Full code-quality and integration testing will be added with the backend and solver.
+[.github/workflows/ci.yml](.github/workflows/ci.yml) preserves the existing
+repository-hygiene checks (JSON parsing, internal Markdown links, essential files)
+and adds a `tv2-datasets` job that installs `jsonschema`, validates every fixture,
+runs the unittest suite, and asserts the expected feasibility status of
+`sample_small`, `sample_infeasible`, and `edge_infeasible_stock`.
 
 ---
 
 ## 8. Team responsibilities
 
-Roles follow [docs/team-responsibilities.md](docs/team-responsibilities.md). Assignee names, GitHub handles, and deadlines are recorded there as **TBD**; no progress claims are made here beyond the artifacts visible in the repository.
+Roles follow [docs/team-responsibilities.md](docs/team-responsibilities.md).
+Assignee names, GitHub handles, and deadlines are recorded there as **TBD**.
 
-| Role | Functional scope | Primary deliverables | Repository status |
-| :--- | :--- | :--- | :--- |
-| **TV1** | Business analysis and mathematical modeling | `docs/mathematical-model.md`, business rules in `docs/requirements.md` | Draft model and requirements present; policy not approved |
-| **TV2** | Data and benchmark datasets | `docs/data-dictionary.md`, `data/samples/` | One sample fixture; two conflicting schemas |
-| **TV3** | Optimization algorithms | Baseline and MILP modules under `src/algorithms/` | Not started; root prototype only |
-| **TV4** | Frontend | UI under `src/frontend/` | Not started |
-| **TV5** | Backend and database | FastAPI service, SQLite persistence | Not started |
-| **TV6** | Integration, testing, and reporting | `tests/`, CI quality gates, benchmark report | Not started; CI is hygiene-only |
+| Role | Functional scope | Repository status |
+| :--- | :--- | :--- |
+| **TV1** | Business analysis and mathematical modeling | Model and requirements present; Policy A selected; handoff refinements open |
+| **TV2** | Data and benchmark datasets | **Implemented**: Policy A schema, 10 fixtures, generator, validator, feasibility oracle, tests, CI job |
+| **TV3** | Optimization algorithms | Not started; baseline and MILP still to implement |
+| **TV4** | Frontend | Not started |
+| **TV5** | Backend and database | Not started |
+| **TV6** | Integration, testing, and reporting | Not started; TV2 tests are the first automated suite |
 
 ---
 
-## 9. Known limitations and open business-rule decisions
+## 9. Known limitations and open cross-module decisions
 
-The following conflicts are present in the current documentation and must be resolved by the team before implementing the solver or API. They are listed here so no reader assumes the rules are settled.
+TV2's contract is settled on Policy A. Other documents still contain
+pre-decision language and must be reconciled by their owners.
 
-| Rule | Documented in | Conflicting source | Decision needed |
-| :--- | :--- | :--- | :--- |
-| **Warehouse capacity** | `C_j` counts **orders** per batch (`docs/mathematical-model.md` §1, §3.4; `docs/requirements.md` §2) | `capacity`/`current_occupancy` count **item units** in `benchmark_data.json`, root `data-dictionary.md`, and `validate_orders.py`; `docs/data-dictionary.md` says "units or orders" | Define one unit and update schema, data, and code |
-| **SKU-level stock** | Required as $s_{jk}$ (model §3.3) | Absent from `benchmark_data.json`, root `data-dictionary.md`, and `validate_orders.py`; present in `docs/data-dictionary.md` and `data/samples/sample_small.json` | Confirm inventory source and remove aggregate-only checks |
-| **Shipping cost $c_{ij}$** | Precomputed whole-order cost per order–warehouse pair | Euclidean distance in `validate_orders.py`; zone/weight rates in `docs/data-dictionary.md`; per-order `shipping_costs` in `sample_small.json` and the API contract | Choose one cost definition and make data and code match |
-| **Unassigned penalty $P_i$** | Per-order value required in input (model §1, §3.6; requirements §3) | Missing from `benchmark_data.json`, root dictionary, and script; `sample_small.json` uses a global `unassigned_penalty` | Decide per-order vs global penalty and add it to the canonical schema |
-| **Single vs split shipment** | One warehouse per order (binary $x_{ij}$; requirements §2) | Split shipments and split penalties appear in `docs/project-overview.md`, `docs/api-contract.md`, `docs/testing-strategy.md` (EDGE-03), `docs/architecture.md`, and `docs/integration-guide.md` | Approve or remove split-shipment support everywhere |
-| **Handling cost** | Not part of the objective in the mathematical model | Included in `docs/project-overview.md` and the API contract response (`handling_cost`) | Confirm whether handling cost belongs in the objective |
+| Item | Current state | Owner / next step |
+| :--- | :--- | :--- |
+| Split shipments, unassigned penalties, handling cost | Still described in `docs/project-overview.md`, `docs/api-contract.md`, `docs/testing-strategy.md`, `docs/architecture.md`, and `docs/integration-guide.md` | TV4/TV5/TV6: align to Policy A; TV2's schema rejects these fields |
+| Legacy prototype schema | `benchmark_data.json` and `validate_orders.py` use aggregate capacity and Euclidean costs | Retained for history; migrate only via an explicit decision |
+| Large-instance optimization | No solver exists; the feasibility oracle is exponential | TV3: implement baseline + MILP against the Policy A contract |
+| CI evidence | The TV2 job is configured in the workflow | Confirm the run on the Pull Request |
+| Backend, database, frontend | Not implemented | TV5, TV4 |
 
 Additional limitations:
 
-- `data/samples/sample_small.json` claims to match the hand-calculated example in `docs/mathematical-model.md`, but it uses 2 orders and 1 SKU while the example uses 3 orders and 2 SKUs.
-- Two data dictionaries (`data-dictionary.md` and `docs/data-dictionary.md`) describe incompatible schemas.
-- No dependency manifest, packaging configuration, automated tests, API, database, or frontend exists yet.
-- The CI workflow checks repository hygiene only; it does not execute application tests.
-- Role-based identifiers (TV1–TV6) are used throughout the existing documents; contributor-facing workflow rules are in [CONTRIBUTING.md](CONTRIBUTING.md).
+- The exhaustive oracle verifies existence, not optimality, and can return
+  `UNKNOWN` at its state limit.
+- Role-based identifiers (TV1–TV6) are used throughout; contributor workflow rules
+  are in [CONTRIBUTING.md](CONTRIBUTING.md).
+- The binary `LogiMind_phantich.docx` remains the historical analysis source.
 
 ---
 
@@ -276,19 +372,25 @@ Additional limitations:
 | :--- | :--- |
 | [docs/project-overview.md](docs/project-overview.md) | Problem context, objectives, scope |
 | [docs/requirements.md](docs/requirements.md) | Business requirements, validation rules, acceptance tests T1–T9 |
-| [docs/mathematical-model.md](docs/mathematical-model.md) | MILP formulation, policies A/B, worked examples |
-| [docs/architecture.md](docs/architecture.md) | Planned components, data flow, technology evaluation |
+| [docs/mathematical-model.md](docs/mathematical-model.md) | MILP formulations; Policy A is canonical |
+| [docs/data-dictionary.md](docs/data-dictionary.md) | **Canonical Policy A data dictionary** |
+| [data/schema/dataset.schema.json](data/schema/dataset.schema.json) | Machine-readable JSON Schema |
+| [data/README.md](data/README.md) | Fixture catalogue and dataset commands |
+| [scripts/README.md](scripts/README.md) | Generator, validator, and feasibility CLI reference |
+| [tests/README.md](tests/README.md) | How to run and interpret the TV2 suite |
+| [docs/architecture.md](docs/architecture.md) | Planned components and data flow |
 | [docs/api-contract.md](docs/api-contract.md) | Proposed REST endpoints and payloads |
-| [docs/data-dictionary.md](docs/data-dictionary.md) | Proposed relational schema |
-| [data-dictionary.md](data-dictionary.md) | Legacy schema for `benchmark_data.json` |
 | [docs/testing-strategy.md](docs/testing-strategy.md) | Test tiers, invariants, edge cases |
 | [docs/integration-guide.md](docs/integration-guide.md) | Module handoff checklists |
 | [docs/team-responsibilities.md](docs/team-responsibilities.md) | Role matrix (assignees TBD) |
 | [docs/decisions/README.md](docs/decisions/README.md) | ADR index and status definitions |
+| [data-dictionary.md](data-dictionary.md) | Deprecated pointer to the canonical dictionary |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Branch, commit, PR, and review workflow |
 
 ---
 
 ## 11. Contributing
 
-All changes go through a Pull Request targeting `main`; direct pushes are not permitted. See [CONTRIBUTING.md](CONTRIBUTING.md) for branch naming, Conventional Commits, review requirements, and conflict handling.
+All changes go through a Pull Request targeting `main`; direct pushes are not
+permitted. See [CONTRIBUTING.md](CONTRIBUTING.md) for branch naming, Conventional
+Commits, review requirements, and conflict handling.

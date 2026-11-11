@@ -1,39 +1,59 @@
 {
-  "dataset_id": "ds-sample-small",
-  "name": "Toy Benchmark (2 Warehouses, 2 Orders, 1 SKU)",
-  "description": "Standardized toy problem matching the hand-calculated example in docs/mathematical-model.md",
-  "parameters": {
-    "split_penalty": 10.0,
-    "unassigned_penalty": 100.0
+  "schema_version": "1.0",
+  "dataset_id": "sample-small",
+  "name": "Small Feasible Benchmark",
+  "description": "Small 2-warehouse, 3-order, 2-SKU Policy A benchmark. Hand-reviewable and feasible.",
+  "policy": "A",
+  "metadata": {
+    "generator": "LogiMind TV2 manual baseline fixture",
+    "seed": 20261111
   },
+  "skus": [
+    {
+      "sku_id": "SKU-A",
+      "name": "Product Alpha"
+    },
+    {
+      "sku_id": "SKU-B",
+      "name": "Product Beta"
+    }
+  ],
   "warehouses": [
     {
       "warehouse_id": "WH-01",
-      "name": "Warehouse Alpha",
-      "location_code": "NORTH",
-      "daily_capacity": 8,
-      "handling_cost_per_unit": 0.50,
+      "name": "Warehouse North",
+      "capacity_orders": 2,
       "inventory": {
-        "SKU-A": 10
+        "SKU-A": 10,
+        "SKU-B": 5
       }
     },
     {
       "warehouse_id": "WH-02",
-      "name": "Warehouse Beta",
-      "location_code": "SOUTH",
-      "daily_capacity": 8,
-      "handling_cost_per_unit": 0.50,
+      "name": "Warehouse South",
+      "capacity_orders": 2,
       "inventory": {
-        "SKU-A": 10
+        "SKU-A": 5,
+        "SKU-B": 10
       }
     }
   ],
   "orders": [
     {
       "order_id": "ORD-001",
-      "destination_zone": "ZONE-1",
       "items": {
-        "SKU-A": 6
+        "SKU-A": 2,
+        "SKU-B": 1
+      },
+      "shipping_costs": {
+        "WH-01": 4.0,
+        "WH-02": 8.0
+      }
+    },
+    {
+      "order_id": "ORD-002",
+      "items": {
+        "SKU-A": 3
       },
       "shipping_costs": {
         "WH-01": 5.0,
@@ -41,14 +61,13 @@
       }
     },
     {
-      "order_id": "ORD-002",
-      "destination_zone": "ZONE-2",
+      "order_id": "ORD-003",
       "items": {
-        "SKU-A": 5
+        "SKU-B": 4
       },
       "shipping_costs": {
-        "WH-01": 6.0,
-        "WH-02": 11.0
+        "WH-01": 9.0,
+        "WH-02": 3.0
       }
     }
   ]

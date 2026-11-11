@@ -1,0 +1,329 @@
+{
+  "schema_version": "1.0",
+  "dataset_id": "sample-medium",
+  "name": "Medium Feasible Benchmark",
+  "description": "Generated 4-warehouse, 20-order, 5-SKU Policy A benchmark. Feasible by construction.",
+  "policy": "A",
+  "metadata": {
+    "generator": "LogiMind TV2 dataset generator",
+    "seed": 20261111
+  },
+  "skus": [
+    {
+      "sku_id": "SKU-01",
+      "name": "Product SKU-01"
+    },
+    {
+      "sku_id": "SKU-02",
+      "name": "Product SKU-02"
+    },
+    {
+      "sku_id": "SKU-03",
+      "name": "Product SKU-03"
+    },
+    {
+      "sku_id": "SKU-04",
+      "name": "Product SKU-04"
+    },
+    {
+      "sku_id": "SKU-05",
+      "name": "Product SKU-05"
+    }
+  ],
+  "warehouses": [
+    {
+      "warehouse_id": "WH-01",
+      "name": "Warehouse WH-01",
+      "capacity_orders": 5,
+      "inventory": {
+        "SKU-01": 14,
+        "SKU-02": 8,
+        "SKU-03": 15,
+        "SKU-04": 2,
+        "SKU-05": 18
+      }
+    },
+    {
+      "warehouse_id": "WH-02",
+      "name": "Warehouse WH-02",
+      "capacity_orders": 7,
+      "inventory": {
+        "SKU-01": 8,
+        "SKU-02": 5,
+        "SKU-03": 9,
+        "SKU-04": 15,
+        "SKU-05": 4
+      }
+    },
+    {
+      "warehouse_id": "WH-03",
+      "name": "Warehouse WH-03",
+      "capacity_orders": 6,
+      "inventory": {
+        "SKU-01": 15,
+        "SKU-02": 4,
+        "SKU-03": 12,
+        "SKU-04": 10,
+        "SKU-05": 10
+      }
+    },
+    {
+      "warehouse_id": "WH-04",
+      "name": "Warehouse WH-04",
+      "capacity_orders": 6,
+      "inventory": {
+        "SKU-01": 7,
+        "SKU-02": 10,
+        "SKU-03": 13,
+        "SKU-04": 17,
+        "SKU-05": 7
+      }
+    }
+  ],
+  "orders": [
+    {
+      "order_id": "ORD-001",
+      "items": {
+        "SKU-03": 2,
+        "SKU-05": 4
+      },
+      "shipping_costs": {
+        "WH-01": 6.08,
+        "WH-02": 21.65,
+        "WH-03": 5.36,
+        "WH-04": 11.02
+      }
+    },
+    {
+      "order_id": "ORD-002",
+      "items": {
+        "SKU-03": 5,
+        "SKU-01": 3
+      },
+      "shipping_costs": {
+        "WH-02": 9.22,
+        "WH-01": 9.37,
+        "WH-03": 18.06,
+        "WH-04": 13.1
+      }
+    },
+    {
+      "order_id": "ORD-003",
+      "items": {
+        "SKU-03": 4
+      },
+      "shipping_costs": {
+        "WH-03": 13.7,
+        "WH-01": 12.72,
+        "WH-02": 17.99
+      }
+    },
+    {
+      "order_id": "ORD-004",
+      "items": {
+        "SKU-02": 2,
+        "SKU-05": 4,
+        "SKU-01": 3
+      },
+      "shipping_costs": {
+        "WH-04": 4.43,
+        "WH-01": 30.58,
+        "WH-02": 16.17,
+        "WH-03": 4.11
+      }
+    },
+    {
+      "order_id": "ORD-005",
+      "items": {
+        "SKU-03": 2,
+        "SKU-04": 1,
+        "SKU-02": 3
+      },
+      "shipping_costs": {
+        "WH-01": 14.41,
+        "WH-02": 23.41,
+        "WH-03": 13.65,
+        "WH-04": 28.24
+      }
+    },
+    {
+      "order_id": "ORD-006",
+      "items": {
+        "SKU-04": 2
+      },
+      "shipping_costs": {
+        "WH-02": 7.79,
+        "WH-01": 24.01,
+        "WH-03": 10.05,
+        "WH-04": 10.95
+      }
+    },
+    {
+      "order_id": "ORD-007",
+      "items": {
+        "SKU-04": 2,
+        "SKU-03": 5,
+        "SKU-01": 2
+      },
+      "shipping_costs": {
+        "WH-03": 10.94,
+        "WH-01": 27.45,
+        "WH-02": 28.87,
+        "WH-04": 15.14
+      }
+    },
+    {
+      "order_id": "ORD-008",
+      "items": {
+        "SKU-03": 4,
+        "SKU-04": 1
+      },
+      "shipping_costs": {
+        "WH-04": 2.98,
+        "WH-01": 23.1
+      }
+    },
+    {
+      "order_id": "ORD-009",
+      "items": {
+        "SKU-03": 1
+      },
+      "shipping_costs": {
+        "WH-01": 12.51,
+        "WH-04": 11.03
+      }
+    },
+    {
+      "order_id": "ORD-010",
+      "items": {
+        "SKU-04": 2
+      },
+      "shipping_costs": {
+        "WH-02": 13.1,
+        "WH-01": 33.57,
+        "WH-03": 11.55,
+        "WH-04": 31.61
+      }
+    },
+    {
+      "order_id": "ORD-011",
+      "items": {
+        "SKU-05": 3,
+        "SKU-04": 3,
+        "SKU-01": 3
+      },
+      "shipping_costs": {
+        "WH-03": 12.83,
+        "WH-01": 19.92,
+        "WH-04": 32.79
+      }
+    },
+    {
+      "order_id": "ORD-012",
+      "items": {
+        "SKU-03": 5
+      },
+      "shipping_costs": {
+        "WH-04": 2.57,
+        "WH-01": 10.2,
+        "WH-02": 19.7
+      }
+    },
+    {
+      "order_id": "ORD-013",
+      "items": {
+        "SKU-01": 5,
+        "SKU-03": 4,
+        "SKU-05": 5
+      },
+      "shipping_costs": {
+        "WH-01": 2.89,
+        "WH-02": 24.47,
+        "WH-03": 22.07,
+        "WH-04": 3.89
+      }
+    },
+    {
+      "order_id": "ORD-014",
+      "items": {
+        "SKU-05": 2
+      },
+      "shipping_costs": {
+        "WH-02": 3.09,
+        "WH-01": 21.02,
+        "WH-03": 9.75,
+        "WH-04": 10.88
+      }
+    },
+    {
+      "order_id": "ORD-015",
+      "items": {
+        "SKU-04": 3
+      },
+      "shipping_costs": {
+        "WH-03": 8.5,
+        "WH-01": 14.58,
+        "WH-04": 17.16
+      }
+    },
+    {
+      "order_id": "ORD-016",
+      "items": {
+        "SKU-04": 3
+      },
+      "shipping_costs": {
+        "WH-04": 10.17,
+        "WH-01": 17.09,
+        "WH-02": 11.87,
+        "WH-03": 10.56
+      }
+    },
+    {
+      "order_id": "ORD-017",
+      "items": {
+        "SKU-05": 1,
+        "SKU-03": 3
+      },
+      "shipping_costs": {
+        "WH-01": 8.82,
+        "WH-02": 14.67,
+        "WH-03": 15.67,
+        "WH-04": 33.81
+      }
+    },
+    {
+      "order_id": "ORD-018",
+      "items": {
+        "SKU-04": 2,
+        "SKU-02": 2
+      },
+      "shipping_costs": {
+        "WH-02": 7.76,
+        "WH-01": 5.93,
+        "WH-03": 8.49,
+        "WH-04": 31.19
+      }
+    },
+    {
+      "order_id": "ORD-019",
+      "items": {
+        "SKU-02": 1
+      },
+      "shipping_costs": {
+        "WH-03": 14.56
+      }
+    },
+    {
+      "order_id": "ORD-020",
+      "items": {
+        "SKU-02": 1,
+        "SKU-04": 4
+      },
+      "shipping_costs": {
+        "WH-04": 11.56,
+        "WH-02": 30.91,
+        "WH-03": 19.19
+      }
+    }
+  ]
+}

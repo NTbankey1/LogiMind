@@ -41,10 +41,10 @@ Status vocabulary: **Completed**, **In Progress**, **Blocked**, **Not Started**,
 
 | ID | Deliverable | Acceptance criteria | Status | Dependencies | Evidence |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| TV2-01 | Canonical data schema | One schema covers warehouses, inventory, orders/lines, costs, and penalties; field names/types/units are consistent with the approved model | **Blocked** | TV1-01 | [data-dictionary](../data-dictionary.md); [legacy dictionary](../../data-dictionary.md); conflicts noted in [PROJECT_STATUS](PROJECT_STATUS.md#4-blockers-and-dependencies) |
-| TV2-02 | Benchmark fixtures | At least one feasible and one guaranteed-infeasible fixture, plus edge cases required by [testing-strategy](../testing-strategy.md); all pass schema validation | **In Progress** (partial) | TV2-01 | `benchmark_data.json`; [sample_small.json](../../data/samples/sample_small.json) |
-| TV2-03 | Dataset generator and validator | Executable scripts validate schema and invariants; invalid fixtures are rejected with clear errors | **Not Started** | TV2-01 | `scripts/` contains only a README |
-| TV2-04 | Data documentation reconciliation | One authoritative dictionary; README/sample descriptions match actual fixtures | **In Progress** | TV2-01 | [data/README.md](../../data/README.md) contains conflicting counts/ignore claims |
+| TV2-01 | Canonical data schema | One Policy A schema covers warehouses, per-SKU inventory, orders, capacity in order counts, and shipping costs; field names/types/units are documented | **Completed** | TV1-01 (policy selection) | [schema](../../data/schema/dataset.schema.json); [data dictionary](../data-dictionary.md); [ADR-004](../decisions/0004-allocation-policy-a.md) |
+| TV2-02 | Benchmark fixtures | Feasible small/medium/large fixtures, at least one guaranteed-infeasible fixture, and six documented edge cases; all pass schema validation | **Completed** | TV2-01 | Ten fixtures under `data/samples/`; catalogue in [data/README.md](../../data/README.md) |
+| TV2-03 | Dataset generator and validator | Executable scripts validate schema and invariants, reject invalid fixtures with clear errors, and generate reproducible feasible datasets | **Completed** | TV2-01 | [scripts/README.md](../../scripts/README.md); [tests/test_datasets.py](../../tests/test_datasets.py) |
+| TV2-04 | Data documentation reconciliation | One authoritative dictionary; README/sample descriptions match actual fixtures | **Completed** | TV2-01 | [docs/data-dictionary.md](../data-dictionary.md); deprecated root pointer; [README](../../README.md) |
 
 ### TV3 — Optimization algorithms
 
@@ -118,8 +118,8 @@ TV6-02/03/04 (traceability, harness, CI job) can start before TV3–TV5 complete
 ## 5. Known missing information requiring team confirmation
 
 1. Which GitHub account owns each TV role.
-2. Approval of policy A or B and the six business-rule conflicts listed in PROJECT_STATUS §4.
-3. Canonical data schema, including capacity units and required penalty fields.
+2. Team ratification of Policy A, selected by the Project Lead in [ADR-004](../decisions/0004-allocation-policy-a.md), and the remaining business-rule conflicts listed in PROJECT_STATUS §4.
+3. Downstream adoption of the canonical Policy A data schema; the TV2 schema and dictionary are published, but TV3/TV5/TV6 have not yet been updated.
 4. Whether split shipments and handling costs belong in the objective and API.
 5. Target sprint dates and milestone definitions.
 6. Ownership of the root-level prototype and datasets.

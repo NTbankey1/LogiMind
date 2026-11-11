@@ -2,7 +2,7 @@
 
 Tài liệu bàn giao cho TV3 gồm định nghĩa dữ liệu, mô hình nhị phân, Baseline và ví dụ có đáp án. Phạm vi nghiệp vụ và yêu cầu hệ thống nằm trong [Yêu cầu hệ thống](requirements.md).
 
-Mô hình chính trình bày theo chính sách B: tối thiểu hóa chi phí giao cộng tiền phạt của đơn chưa phân bổ. B là phương án đề xuất trong bản TV1; nhóm cần duyệt chính sách và cách đặt phạt trước khi chốt kết quả thực nghiệm. Chính sách A được trình bày riêng tại mục 4.
+Mô hình chính trình bày theo chính sách B: tối thiểu hóa chi phí giao cộng tiền phạt của đơn chưa phân bổ. Tuy nhiên, ngày 2026-11-11 Project Lead đã chọn **chính sách A** làm chính sách chuẩn ([ADR-004](decisions/0004-allocation-policy-a.md)); dữ liệu và công cụ của TV2 tuân theo A. Mục 3 (mô hình B) được giữ làm tham chiếu lịch sử; mục 4 là mô hình A áp dụng cho triển khai.
 
 ## 1. Tập hợp và tham số
 
@@ -111,7 +111,7 @@ Nếu bước 1 chưa chứng minh tối ưu thì chưa được khẳng định
 
 Với đầu vào hợp lệ và chỉ các ràng buộc trong mục 3, đặt mọi $x=0$, mọi $u=1$ luôn tạo phương án hợp lệ. Nếu mô hình B báo không khả thi thì kiểm tra cách dựng mô hình và dữ liệu.
 
-## 4. Biến thể chính sách A
+## 4. Chính sách A (chính sách chuẩn)
 
 Giữ ràng buộc tồn kho, công suất, miền nhị phân và cặp giao. Bỏ $u_i$ và tiền phạt, thay ràng buộc phân bổ bằng:
 

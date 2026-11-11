@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.0",
+  "dataset_id": "edge-zero-stock",
+  "name": "Edge Case: Zero Stock at One Warehouse",
+  "description": "Feasible Policy A edge case where WH-01 has 0 stock of SKU-B, forcing order ORD-001 to be served by WH-02 despite higher shipping cost.",
+  "policy": "A",
+  "metadata": {
+    "generator": "LogiMind TV2 edge-case fixture",
+    "seed": 20261111
+  },
+  "skus": [
+    {
+      "sku_id": "SKU-A",
+      "name": "Product Alpha"
+    },
+    {
+      "sku_id": "SKU-B",
+      "name": "Product Beta"
+    }
+  ],
+  "warehouses": [
+    {
+      "warehouse_id": "WH-01",
+      "name": "Warehouse North",
+      "capacity_orders": 2,
+      "inventory": {
+        "SKU-A": 10,
+        "SKU-B": 0
+      }
+    },
+    {
+      "warehouse_id": "WH-02",
+      "name": "Warehouse South",
+      "capacity_orders": 2,
+      "inventory": {
+        "SKU-A": 10,
+        "SKU-B": 10
+      }
+    }
+  ],
+  "orders": [
+    {
+      "order_id": "ORD-001",
+      "items": {
+        "SKU-B": 3
+      },
+      "shipping_costs": {
+        "WH-01": 2.0,
+        "WH-02": 8.0
+      }
+    },
+    {
+      "order_id": "ORD-002",
+      "items": {
+        "SKU-A": 2
+      },
+      "shipping_costs": {
+        "WH-01": 3.0,
+        "WH-02": 9.0
+      }
+    }
+  ]
+}

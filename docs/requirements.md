@@ -4,6 +4,8 @@ LogiMind hỗ trợ phân bổ đơn hàng giữa 2–3 kho có giới hạn t�
 
 Tài liệu này mô tả yêu cầu nghiệp vụ và điều kiện nghiệm thu. Công thức, ví dụ tính tay và hướng dẫn triển khai thuật toán nằm trong [Mô hình toán học](mathematical-model.md).
 
+> **Cập nhật chính sách (2026-11-11):** Project Lead đã chọn **Chính sách A** làm chính sách chuẩn, ghi tại [ADR-004](decisions/0004-allocation-policy-a.md). Hợp đồng dữ liệu chuẩn của TV2 là Policy A và được mô tả tại [Data Dictionary](data-dictionary.md). Các mục mô tả Chính sách B trong tài liệu này được giữ làm tham chiếu lịch sử, không phải hợp đồng triển khai.
+
 ## 1. Người sử dụng và bài toán
 
 Nhân viên điều phối nhập tập đơn của một đợt, chạy phân bổ và xem kho xử lý từng đơn. Quản lý kho xem lượng tồn và công suất đã sử dụng.
@@ -32,7 +34,7 @@ Ngoài phạm vi: tối ưu tuyến xe nhiều điểm, dự báo nhu cầu, tha
 | Hàm mục tiêu | Chi phí giao hàng | Chi phí giao hàng cộng tiền phạt |
 | Khi nguồn lực không đủ | Có thể không khả thi | Có thể trả phương án có đơn chưa phân bổ |
 
-Bản bàn giao đề xuất B làm chính sách chính, phù hợp với nội dung đã trình bày trong Word. A là biến thể đối chiếu. Đây chưa phải xác nhận nhóm đã duyệt chính sách; nhóm cần thống nhất trước khi chốt thực nghiệm.
+Bản bàn giao ban đầu đề xuất B làm chính sách chính, phù hợp với nội dung đã trình bày trong Word. Tuy nhiên, ngày 2026-11-11 Project Lead đã chọn **A** làm chính sách chuẩn ([ADR-004](decisions/0004-allocation-policy-a.md)); phần B dưới đây chỉ còn là tham chiếu lịch sử. Nhóm vẫn cần thống nhất cách đặt mức phạt nếu B được dùng trong thực nghiệm so sánh.
 
 Trong B, `penalty` phải có trong dữ liệu từng đơn. Không tự coi đơn chưa giao có chi phí bằng 0, không tự đặt mức phạt 100 cho mọi dữ liệu. Giá trị 100 chỉ dùng trong các ví dụ.
 
@@ -51,6 +53,8 @@ Tên trường dưới đây là đề xuất thống nhất giữa TV2, TV3 và
 | Tồn kho | `warehouse_id`, `sku_id`, `stock` | Số lượng khả dụng đầu đợt |
 | Chi phí | `order_id`, `warehouse_id`, `shipping_cost` | Chi phí giao nguyên đơn từ kho |
 | Cấu hình chạy | `policy`, `time_limit_seconds`, `seed` | Chính sách, giới hạn thời gian và seed nếu sinh dữ liệu |
+
+> Với hợp đồng dữ liệu chuẩn **Policy A** của TV2, `penalty` không tồn tại trong dataset; cấu trúc chuẩn là `data/schema/dataset.schema.json`. Bảng trường trên đây mô tả mô hình khái niệm dùng chung cho cả A và B.
 
 ### Quy tắc kiểm tra
 
@@ -115,7 +119,7 @@ Chỉ so sánh trực tiếp phần trăm giảm chi phí giao khi hai phương 
 | TV5 | API, SQLite, tích hợp thuật toán và lưu cấu hình chạy |
 | TV6 | Kiểm tra độc lập ràng buộc, tích hợp và tổng hợp kiểm thử |
 
-Trước khi triển khai cần xác nhận: chính sách A/B, cách đặt mức phạt, quy tắc thiếu chi phí, quy tắc phá hòa và giới hạn thời gian. Trước khi kết luận thực nghiệm cần ghi phiên bản bộ giải và môi trường chạy.
+Chính sách đã chốt là **A** ([ADR-004](decisions/0004-allocation-policy-a.md)). Trước khi triển khai vẫn cần xác nhận cách đặt mức phạt nếu dùng B cho so sánh, quy tắc thiếu chi phí, quy tắc phá hòa và giới hạn thời gian. Trước khi kết luận thực nghiệm cần ghi phiên bản bộ giải và môi trường chạy.
 
 ## 9. Tài liệu nguồn
 

@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0",
+  "dataset_id": "edge-infeasible-stock",
+  "name": "Edge Case: Infeasible Stock Shortage",
+  "description": "Structurally valid Policy A dataset that is mathematically infeasible because order ORD-001 requires 50 units of SKU-A, but no warehouse has more than 10 units.",
+  "policy": "A",
+  "metadata": {
+    "generator": "LogiMind TV2 edge-case fixture",
+    "seed": 20261111
+  },
+  "skus": [
+    {
+      "sku_id": "SKU-A",
+      "name": "Product Alpha"
+    }
+  ],
+  "warehouses": [
+    {
+      "warehouse_id": "WH-01",
+      "name": "Warehouse North",
+      "capacity_orders": 2,
+      "inventory": {
+        "SKU-A": 10
+      }
+    },
+    {
+      "warehouse_id": "WH-02",
+      "name": "Warehouse South",
+      "capacity_orders": 2,
+      "inventory": {
+        "SKU-A": 10
+      }
+    }
+  ],
+  "orders": [
+    {
+      "order_id": "ORD-001",
+      "items": {
+        "SKU-A": 50
+      },
+      "shipping_costs": {
+        "WH-01": 5.0,
+        "WH-02": 5.0
+      }
+    }
+  ]
+}

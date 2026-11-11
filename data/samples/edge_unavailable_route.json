@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0",
+  "dataset_id": "edge-unavailable-route",
+  "name": "Edge Case: Unavailable Route",
+  "description": "Feasible Policy A edge case where ORD-001 omits WH-01 from shipping_costs, representing an unavailable delivery lane.",
+  "policy": "A",
+  "metadata": {
+    "generator": "LogiMind TV2 edge-case fixture",
+    "seed": 20261111
+  },
+  "skus": [
+    {
+      "sku_id": "SKU-A",
+      "name": "Product Alpha"
+    }
+  ],
+  "warehouses": [
+    {
+      "warehouse_id": "WH-01",
+      "name": "Warehouse North",
+      "capacity_orders": 2,
+      "inventory": {
+        "SKU-A": 10
+      }
+    },
+    {
+      "warehouse_id": "WH-02",
+      "name": "Warehouse South",
+      "capacity_orders": 2,
+      "inventory": {
+        "SKU-A": 10
+      }
+    }
+  ],
+  "orders": [
+    {
+      "order_id": "ORD-001",
+      "items": {
+        "SKU-A": 2
+      },
+      "shipping_costs": {
+        "WH-02": 6.5
+      }
+    },
+    {
+      "order_id": "ORD-002",
+      "items": {
+        "SKU-A": 3
+      },
+      "shipping_costs": {
+        "WH-01": 4.0,
+        "WH-02": 7.0
+      }
+    }
+  ]
+}

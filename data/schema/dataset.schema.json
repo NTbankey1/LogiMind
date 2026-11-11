@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/NTbankey1/LogiMind/main/data/schema/dataset.schema.json",
+  "title": "LogiMind Policy A Dataset Schema",
+  "description": "Canonical JSON Schema for LogiMind Policy A multi-warehouse order allocation datasets.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "dataset_id",
+    "name",
+    "description",
+    "policy",
+    "skus",
+    "warehouses",
+    "orders"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0",
+      "description": "Dataset schema version, exactly '1.0'."
+    },
+    "dataset_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unique identifier of the dataset."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable name of the dataset."
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Detailed description of the dataset scenario."
+    },
+    "policy": {
+      "type": "string",
+      "const": "A",
+      "description": "Fulfillment policy. Must be exactly 'A'."
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Optional generation and provenance metadata.",
+      "properties": {
+        "generator": {
+          "type": "string"
+        },
+        "seed": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": true
+    },
+    "skus": {
+      "type": "array",
+      "minItems": 1,
+      "description": "List of available Stock Keeping Units (SKUs).",
+      "items": {
+        "type": "object",
+        "required": [
+          "sku_id",
+          "name"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "sku_id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Unique identifier for the SKU."
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Human-readable name of the SKU."
+          }
+        }
+      }
+    },
+    "warehouses": {
+      "type": "array",
+      "minItems": 1,
+      "description": "List of warehouses.",
+      "items": {
+        "type": "object",
+        "required": [
+          "warehouse_id",
+          "name",
+          "capacity_orders",
+          "inventory"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "warehouse_id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Unique warehouse identifier."
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Human-readable facility name."
+          },
+          "capacity_orders": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Maximum number of orders this warehouse can process."
+          },
+          "inventory": {
+            "type": "object",
+            "minProperties": 1,
+            "description": "Inventory mapping every known SKU to available stock.",
+            "additionalProperties": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "orders": {
+      "type": "array",
+      "minItems": 1,
+      "description": "List of customer orders to fulfill.",
+      "items": {
+        "type": "object",
+        "required": [
+          "order_id",
+          "items",
+          "shipping_costs"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "order_id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Unique order identifier."
+          },
+          "items": {
+            "type": "object",
+            "minProperties": 1,
+            "description": "Mapping of SKU IDs to positive integer quantities.",
+            "additionalProperties": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "shipping_costs": {
+            "type": "object",
+            "description": "Mapping of warehouse IDs to non-negative shipping costs. Omitted warehouse means route unavailable.",
+            "additionalProperties": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    }
+  }
+}

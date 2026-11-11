@@ -25,6 +25,7 @@ An Architecture Decision Record (ADR) captures an important architectural decisi
 | [ADR-001](0001-choice-of-optimization-solver-library.md) | Choice of Optimization Solver Library (PuLP vs. OR-Tools) | 2026-10-29 | PROPOSED | TV3 & TV1 |
 | [ADR-002](0002-choice-of-backend-framework.md) | Choice of Backend API Framework (FastAPI) | 2026-10-29 | PROPOSED | TV5 |
 | [ADR-003](0003-choice-of-database-engine.md) | Choice of Local Persistence Database (SQLite) | 2026-10-29 | PROPOSED | TV5 |
+| [ADR-004](0004-allocation-policy-a.md) | Adoption of Policy A as Canonical Order Allocation Policy | 2026-11-11 | ACCEPTED | TV2 & Lead |
 
 ---
 

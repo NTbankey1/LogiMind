@@ -78,3 +78,80 @@ jobs:
           test -f .editorconfig || (echo "Missing .editorconfig" && exit 1)
           test -f .gitattributes || (echo "Missing .gitattributes" && exit 1)
           echo "All essential project and repository files are present."
+
+  tv2-datasets:
+    name: TV2 Policy A Datasets & Feasibility
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install validation dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "jsonschema>=4.18.0"
+
+      - name: Validate all committed Policy A datasets
+        run: |
+          python scripts/validate_dataset.py data/samples/
+
+      - name: Run TV2 automated tests
+        run: |
+          python -m unittest discover -s tests -v
+
+      - name: Verify expected feasibility statuses
+        run: |
+          python - <<'PY'
+          import json
+          import subprocess
+          import sys
+
+          expected = {
+              "sample_small.json": "FEASIBLE",
+              "sample_medium.json": "FEASIBLE",
+              "sample_large.json": "FEASIBLE",
+              "sample_infeasible.json": "INFEASIBLE",
+              "edge_tight_capacity.json": "FEASIBLE",
+              "edge_tight_inventory.json": "FEASIBLE",
+              "edge_equal_costs.json": "FEASIBLE",
+              "edge_zero_stock.json": "FEASIBLE",
+              "edge_unavailable_route.json": "FEASIBLE",
+              "edge_infeasible_stock.json": "INFEASIBLE",
+          }
+
+          failed = False
+          for filename, want in expected.items():
+              proc = subprocess.run(
+                  [sys.executable, "scripts/check_feasibility.py",
+                   f"data/samples/{filename}", "--json"],
+                  capture_output=True,
+                  text=True,
+              )
+              if proc.returncode != 0:
+                  print(f"[FAIL] {filename}: exit {proc.returncode}")
+                  print(proc.stdout)
+                  print(proc.stderr)
+                  failed = True
+                  continue
+              got = json.loads(proc.stdout)["status"]
+              print(f"[{'PASS' if got == want else 'FAIL'}] {filename}: expected {want}, got {got}")
+              failed = failed or got != want
+
+          sys.exit(1 if failed else 0)
+          PY
+
+      - name: Verify generator determinism
+        run: |
+          python scripts/generate_dataset.py \
+            --warehouses 4 --orders 20 --skus 5 --seed 20261111 \
+            --output /tmp/generated_a.json
+          python scripts/generate_dataset.py \
+            --warehouses 4 --orders 20 --skus 5 --seed 20261111 \
+            --output /tmp/generated_b.json
+          cmp /tmp/generated_a.json /tmp/generated_b.json
+          python scripts/validate_dataset.py /tmp/generated_a.json
