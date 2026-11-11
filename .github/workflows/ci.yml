@@ -25,11 +25,15 @@ jobs:
       - name: Validate JSON Sample Fixtures
         run: |
           echo "Validating sample benchmark JSON fixtures..."
-          for file in $(find data/samples -name "*.json"); do
+          for file in $(find data/samples data/legacy -name "*.json"); do
             echo "Checking $file"
             python -m json.tool "$file" > /dev/null
           done
           echo "All JSON fixtures are valid."
+
+      - name: Smoke-check legacy allocation prototype
+        run: |
+          python scripts/validate_orders.py
 
       - name: Validate Internal Relative Markdown Links
         run: |

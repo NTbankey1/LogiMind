@@ -1,153 +1,68 @@
 # LogiMind
 
-LogiMind is a decision-support project for the **Multi-Warehouse Order Allocation
-Problem (MWOAP)**: assigning each customer order to exactly one fulfillment
-warehouse while respecting per-SKU stock and order-count capacity, then comparing
-a simple heuristic against a Mixed-Integer Linear Programming (MILP) allocation.
+LogiMind is an academic software-engineering project for the **Multi-Warehouse
+Order Allocation Problem (MWOAP)**: assigning each customer order to exactly one
+fulfillment warehouse while respecting per-SKU stock and order-count capacity,
+then comparing a simple heuristic with a Mixed-Integer Linear Programming (MILP)
+allocation.
 
-The repository is at the **foundation + data-contract stage**. The TV2 dataset
-workstream is implemented: canonical Policy A schema, benchmark fixtures, a
+The repository is at the **data-contract + prototype stage**. TV2's Policy A data
+layer is implemented: canonical schema, ten benchmark/edge-case fixtures, a
 deterministic generator, a validator, an exhaustive small-instance feasibility
-oracle, automated tests, and a CI job. The solver, backend, database, and frontend
-are specified but not implemented. A legacy standalone prototype remains for
-reference.
+oracle, automated tests, and a CI job. A standalone legacy prototype is also
+runnable. The solver, FastAPI backend, SQLite persistence, and React frontend are
+planned but not implemented.
 
 ---
 
-## 1. Problem statement
-
-E-commerce fulfillment networks operate several warehouses. Assigning each order
-to the nearest warehouse can exhaust that warehouse's stock or throughput capacity
-and force later orders onto more expensive routes. LogiMind is intended to:
-
-- read a batch of orders, warehouse capacities, per-SKU stock, and shipping costs;
-- allocate **every** order to exactly one warehouse (Policy A);
-- compare a baseline heuristic with an optimal MILP allocation on the same input;
-- report shipping cost, utilization, and runtime.
-
-**Out of scope (documented):** multi-stop vehicle routing, demand forecasting,
-payments, HR, WMS/ERP integration, and real-time data feeds. See
-[docs/project-overview.md](docs/project-overview.md) and
-[docs/requirements.md](docs/requirements.md).
-
----
-
-## 2. Current status
+## 1. Project status
 
 | Area | Status | Evidence |
 | :--- | :--- | :--- |
-| Canonical data contract | **Implemented (Policy A)** | [docs/data-dictionary.md](docs/data-dictionary.md), [data/schema/dataset.schema.json](data/schema/dataset.schema.json) |
-| Benchmark and edge-case fixtures | **Implemented** | Ten files under [data/samples/](data/samples/); catalogue in [data/README.md](data/README.md) |
-| Dataset generator | **Implemented** | [scripts/generate_dataset.py](scripts/generate_dataset.py) (deterministic, feasible by construction) |
-| Dataset validator | **Implemented** | [scripts/validate_dataset.py](scripts/validate_dataset.py) (schema + semantic checks) |
-| Feasibility oracle | **Implemented (small instances)** | [scripts/check_feasibility.py](scripts/check_feasibility.py) |
-| Automated TV2 tests | **Implemented** | [tests/test_datasets.py](tests/test_datasets.py) (60 tests) |
-| CI | **Configured** | [.github/workflows/ci.yml](.github/workflows/ci.yml): repository hygiene + TV2 dataset job |
-| Allocation policy | **Decided: Policy A** | [ADR-004](docs/decisions/0004-allocation-policy-a.md) |
-| Legacy allocation prototype | **Implemented (not Policy A)** | `validate_orders.py`, `benchmark_data.json` |
-| Formal model and requirements | **Present; policy A selected** | [docs/mathematical-model.md](docs/mathematical-model.md), [docs/requirements.md](docs/requirements.md) |
-| Architecture, API contract, ADR-001–003 | **Proposed, not approved** | [docs/architecture.md](docs/architecture.md), [docs/api-contract.md](docs/api-contract.md) |
-| Backend API and SQLite persistence | **Not started** | `src/` contains only a placeholder README |
-| Frontend | **Not started** | No frontend files |
-| MILP and packaged baseline algorithms | **Not started** | No `src/algorithms/` implementation |
+| Allocation policy | **Decided: Policy A** | [ADR-004](docs/decisions/0004-allocation-policy-a.md), [mathematical model](docs/mathematical-model.md) |
+| Canonical data contract | **Implemented** | [data dictionary](docs/data-dictionary.md), [dataset.schema.json](data/schema/dataset.schema.json) |
+| Benchmark and edge-case fixtures | **Implemented** | Ten fixtures under [data/samples/](data/samples/); catalogue in [data/README.md](data/README.md) |
+| Dataset generator | **Implemented** | [scripts/generate_dataset.py](scripts/generate_dataset.py) |
+| Dataset validator | **Implemented** | [scripts/validate_dataset.py](scripts/validate_dataset.py) |
+| Feasibility oracle (small instances) | **Implemented** | [scripts/check_feasibility.py](scripts/check_feasibility.py) |
+| Automated TV2 tests | **Implemented** | [tests/test_datasets.py](tests/test_datasets.py), 60 tests |
+| CI | **Hygiene + TV2 dataset/feasibility job** | [.github/workflows/ci.yml](.github/workflows/ci.yml) |
+| Requirements and mathematical model | **Present; Policy A canonical** | [requirements](docs/requirements.md), [mathematical model](docs/mathematical-model.md) |
+| Architecture and API contract | **Proposed** | [architecture](docs/architecture.md), [API contract](docs/api-contract.md) |
+| ADR-001/002/003 (solver, backend, database) | **Proposed** | [decisions](docs/decisions/README.md) |
+| Optimization engine (`src/logimind/`) | **Not started** | See the intended layout in [src/README.md](src/README.md) |
+| Backend and SQLite | **Not started** | No backend source or migrations |
+| Frontend | **Not started** | No frontend application or package manifest |
+| Legacy allocation prototype | **Implemented; not Policy A** | [scripts/validate_orders.py](scripts/validate_orders.py) |
 
-### Legacy prototype
+### Allocation policy (Policy A)
 
-`validate_orders.py` loads `benchmark_data.json`, computes Euclidean distances, and
-assigns each whole order to the nearest warehouse with enough aggregate free
-capacity. It uses a legacy flat schema with aggregate capacity, no per-SKU
-inventory, and no shipping-cost matrix. It is **not** the Policy A model and is
-retained only for historical comparison. Do not use `benchmark_data.json` as
-solver input.
+There is no split shipment and no unassigned-order penalty:
 
----
+- every order is assigned to exactly one warehouse;
+- all orders must be fulfilled completely;
+- warehouse capacity is measured in **number of orders**;
+- inventory is tracked **per SKU**;
+- the objective minimizes total shipping cost;
+- if no complete allocation exists, the instance is infeasible.
 
-## 3. Allocation policy and data contract
+The authoritative formulation is [docs/mathematical-model.md](docs/mathematical-model.md);
+the dataset contract is [docs/data-dictionary.md](docs/data-dictionary.md).
 
-The Project Lead selected **Policy A**; the decision is recorded in
-[ADR-004](docs/decisions/0004-allocation-policy-a.md). The authoritative field
-definitions, units, and validation rules live in
-[docs/data-dictionary.md](docs/data-dictionary.md).
+### Legacy prototype (not Policy A)
 
-### Policy A
-
-**Sets and parameters**
-
-| Symbol | Meaning |
-| :--- | :--- |
-| $I$, $J$, $K$ | Orders, warehouses, and SKUs |
-| $q_{ik}$ | Quantity of SKU $k$ required by order $i$ |
-| $s_{jk}$ | Available stock of SKU $k$ at warehouse $j$ |
-| $C_j$ | Maximum **number of orders** warehouse $j$ can process |
-| $c_{ij}$ | Cost of shipping the entire order $i$ from warehouse $j$ |
-| $E \subseteq I \times J$ | Allowed order–warehouse pairs (route exists in `shipping_costs`) |
-
-**Decision variable:** $x_{ij} \in \{0,1\}$ equals 1 when order $i$ is assigned to
-warehouse $j$.
-
-**Objective**
-
-$$
-\min Z = \sum_{(i,j)\in E} c_{ij}x_{ij}
-$$
-
-**Constraints**
-
-$$
-\sum_{j\in J} x_{ij} = 1 \quad \forall i \in I
-\qquad\text{(exactly one warehouse, no unassigned orders)}
-$$
-
-$$
-\sum_{i\in I} q_{ik}x_{ij} \le s_{jk} \quad \forall j \in J,\ \forall k \in K
-\qquad\text{(per-SKU stock)}
-$$
-
-$$
-\sum_{i\in I} x_{ij} \le C_j \quad \forall j \in J
-\qquad\text{(order-count capacity)}
-$$
-
-$$
-x_{ij} \in \{0,1\}, \qquad x_{ij} = 0 \ \ \forall (i,j)\notin E
-$$
-
-There is no split shipment, no unassigned variable, no unassigned penalty, and no
-handling cost. If no complete allocation exists, the instance is
-**mathematically infeasible** — it is still structurally valid.
-
-Policy B (penalty-based, split/unassigned orders) is retained only as historical
-material in `docs/mathematical-model.md` §3 and `docs/requirements.md`.
-
-### Dataset example
-
-```json
-{
-  "schema_version": "1.0",
-  "dataset_id": "sample-small",
-  "name": "Small Feasible Benchmark",
-  "description": "Small 2-warehouse, 3-order, 2-SKU Policy A benchmark.",
-  "policy": "A",
-  "skus": [{ "sku_id": "SKU-A", "name": "Product Alpha" }],
-  "warehouses": [{
-    "warehouse_id": "WH-01",
-    "name": "Warehouse North",
-    "capacity_orders": 2,
-    "inventory": { "SKU-A": 10 }
-  }],
-  "orders": [{
-    "order_id": "ORD-001",
-    "items": { "SKU-A": 2 },
-    "shipping_costs": { "WH-01": 4.0 }
-  }]
-}
-```
+[`scripts/validate_orders.py`](scripts/validate_orders.py) loads
+[`data/legacy/benchmark_data.json`](data/legacy/benchmark_data.json), computes
+Euclidean distances, and assigns each whole order to the nearest warehouse with
+enough aggregate free capacity. It has no per-SKU inventory, no precomputed
+shipping-cost matrix, and no Policy A capacity semantics. It is a demonstration,
+not the optimization engine.
 
 ---
 
-## 4. System architecture
+## 2. Architecture
 
-### Implemented today (TV2 data layer + legacy prototype)
+### Implemented today
 
 ```text
 data/schema/dataset.schema.json
@@ -155,91 +70,96 @@ data/schema/dataset.schema.json
         v
 data/samples/*.json  ->  scripts/validate_dataset.py  ->  PASS / FAIL
         |                        |
-        |                        +-> scripts/check_feasibility.py -> FEASIBLE / INFEASIBLE / UNKNOWN
+        |                        +-> scripts/check_feasibility.py -> status
         v
 scripts/generate_dataset.py  ->  new deterministic, feasible dataset
 
-benchmark_data.json  ->  validate_orders.py  ->  console output   (legacy, non-Policy-A)
+data/legacy/benchmark_data.json  ->  scripts/validate_orders.py  ->  console output
+(legacy, non-Policy-A)
 ```
 
 ### Planned architecture (not implemented)
 
 ```text
-React / Vite frontend
-        |  HTTP (proposed /api/v1 contract)
+React + Vite frontend (frontend/)
+        |  HTTP (proposed API contract)
         v
-FastAPI backend  <-->  SQLite database
+FastAPI backend (src/logimind/backend/)  <-->  SQLite
         |
         v
-Optimization engine: baseline heuristic + MILP (PuLP/CBC proposed)
+Optimization engine (src/logimind/algorithms/): baseline + MILP
         ^
         |
-Policy A datasets + automated tests
+data/samples/ + data/schema/ + tests/
 ```
 
-The solver, backend, and database technology choices remain `PROPOSED`:
-PuLP/CBC ([ADR-001](docs/decisions/0001-choice-of-optimization-solver-library.md)),
-FastAPI ([ADR-002](docs/decisions/0002-choice-of-backend-framework.md)), and SQLite
-([ADR-003](docs/decisions/0003-choice-of-database-engine.md)). Only ADR-004
-(Policy A) is `ACCEPTED`.
+Technology choices remain **proposed** in ADR-001 (PuLP/CBC), ADR-002 (FastAPI),
+and ADR-003 (SQLite); ADR-004 (Policy A) is **accepted**. The component map and
+data flow are in [docs/architecture.md](docs/architecture.md).
 
 ---
 
-## 5. Repository structure
+## 3. Repository structure
 
 ```text
 LogiMind/
-├── .github/workflows/ci.yml        # Hygiene job + TV2 dataset/test job
-├── .editorconfig
-├── .env.example                    # Template for proposed backend configuration
-├── .gitattributes
-├── .gitignore
-├── CHANGELOG.md
-├── CLAUDE.md                       # Contributor/agent technical guidelines
-├── CONTRIBUTING.md
-├── README.md
-├── pyproject.toml                  # Packaging and dev/test extras
-├── benchmark_data.json             # Legacy prototype input (not Policy A)
-├── data-dictionary.md              # Deprecated pointer to docs/data-dictionary.md
-├── validate_orders.py              # Legacy standalone allocation prototype
-├── LogiMind_phantich.docx          # Project analysis document (binary)
+├── .github/
+│   ├── ISSUE_TEMPLATE/
+│   ├── workflows/ci.yml
+│   └── pull_request_template.md
 ├── data/
-│   ├── README.md                   # Fixture catalogue and commands
-│   ├── schema/dataset.schema.json  # Canonical JSON Schema (Draft 2020-12)
-│   └── samples/*.json              # 10 Policy A fixtures
+│   ├── README.md
+│   ├── legacy/benchmark_data.json   # Legacy prototype input (not Policy A)
+│   ├── samples/                     # Ten canonical Policy A fixtures
+│   └── schema/dataset.schema.json
 ├── docs/
+│   ├── decisions/                   # ADR index, ADR-001..004
+│   ├── project-management/          # Status, tracker, plans, cleanup record
+│   ├── reference/project-analysis.docx
+│   ├── api-contract.md
+│   ├── architecture.md
+│   ├── data-dictionary.md
+│   ├── git-workflow.md
 │   ├── index.md
+│   ├── integration-guide.md
+│   ├── mathematical-model.md
 │   ├── project-overview.md
 │   ├── requirements.md
-│   ├── mathematical-model.md
-│   ├── architecture.md
-│   ├── api-contract.md
-│   ├── data-dictionary.md          # Canonical Policy A data dictionary
-│   ├── testing-strategy.md
-│   ├── integration-guide.md
 │   ├── team-responsibilities.md
-│   ├── git-workflow.md
-│   └── decisions/                  # ADR index; ADR-001..003 PROPOSED, ADR-004 ACCEPTED
+│   └── testing-strategy.md
 ├── scripts/
 │   ├── README.md
+│   ├── validate_orders.py           # Legacy prototype
 │   ├── validate_dataset.py
 │   ├── generate_dataset.py
 │   └── check_feasibility.py
-├── src/README.md                   # Placeholder; no source package implemented
-└── tests/
-    ├── README.md
-    └── test_datasets.py            # TV2 dataset/generator/feasibility tests
+├── src/README.md                    # Intended src/logimind/ package layout
+├── tests/
+│   ├── README.md
+│   └── test_datasets.py
+├── .editorconfig
+├── .env.example
+├── .gitattributes
+├── .gitignore
+├── CHANGELOG.md
+├── CLAUDE.md
+├── CONTRIBUTING.md
+├── README.md
+└── pyproject.toml                   # TV2 test/data tooling and dev extras
 ```
+
+`frontend/` and `src/logimind/` are intentionally not created until they contain
+real implementation.
 
 ---
 
-## 6. Installation and setup
+## 4. Installation and setup
 
 ### Requirements
 
 - **Python 3.10 or newer** (CI uses Python 3.10)
 - **Git**
-- `jsonschema` for dataset validation, generation, and feasibility checking
+- `jsonschema` for the validator, generator, and feasibility checker
 - `pytest` and `ruff` for the optional development extras
 
 ```bash
@@ -253,25 +173,25 @@ source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -e ".[dev]"            # or: pip install jsonschema pytest
 ```
 
-The legacy prototype uses only the standard library. [.env.example](.env.example)
-documents proposed backend/solver settings; copy it to `.env` only when those
-components exist. `.env` is ignored by Git.
+The legacy prototype needs only the standard library. `.env.example` documents
+proposed backend/solver settings; copy it to `.env` only when those components
+exist. `.env` is ignored by Git.
 
 ---
 
-## 7. Execution and testing
+## 5. Running and testing
 
 All commands run from the repository root.
 
-### Validate the committed fixtures
+### Validate the canonical fixtures
 
 ```bash
 python scripts/validate_dataset.py data/samples/
 ```
 
 Expected: ten `[PASS]` lines, `10 datasets validated.`, `0 validation errors.`,
-exit code `0`. An infeasible fixture still passes; feasibility is a separate
-question.
+exit code `0`. Infeasible fixtures still pass structural validation; feasibility
+is assessed separately.
 
 ### Generate a reproducible benchmark
 
@@ -294,102 +214,105 @@ python scripts/check_feasibility.py data/samples/sample_small.json --json
 ```
 
 Statuses: `FEASIBLE`, `INFEASIBLE`, `UNKNOWN` (search limit), `INVALID`. Exit
-codes: `0` for a completed proof (`FEASIBLE`/`INFEASIBLE`), `1` for `INVALID`,
-`2` for `UNKNOWN`.
+codes: `0` for a completed proof, `1` for `INVALID`, `2` for `UNKNOWN`.
 
 ### Automated tests
 
 ```bash
 python -m unittest discover -s tests -v
-# optional: python -m pytest tests/ -v
+python -m pytest tests/ -v        # optional
 ```
 
 The TV2 suite covers schema rules, semantic integrity, generator determinism,
-feasibility statuses for every fixture, search-limit handling, input immutability,
-and assignment invariants. See [tests/README.md](tests/README.md).
+every fixture's feasibility status, search-limit handling, input immutability, and
+assignment invariants. See [tests/README.md](tests/README.md).
 
 ### Run the legacy prototype
 
 ```bash
-python3 validate_orders.py
+python scripts/validate_orders.py
 ```
 
-Reads `benchmark_data.json` from the working directory and prints a Vietnamese
+Reads `data/legacy/benchmark_data.json` by default and prints a Vietnamese
 allocation log. It does not implement Policy A.
+
+### Validate JSON syntax
+
+```bash
+python -m json.tool data/samples/sample_small.json > /dev/null
+python -m json.tool data/legacy/benchmark_data.json > /dev/null
+```
 
 ### CI checks
 
-[.github/workflows/ci.yml](.github/workflows/ci.yml) preserves the existing
-repository-hygiene checks (JSON parsing, internal Markdown links, essential files)
-and adds a `tv2-datasets` job that installs `jsonschema`, validates every fixture,
-runs the unittest suite, and asserts the expected feasibility status of
-`sample_small`, `sample_infeasible`, and `edge_infeasible_stock`.
+[.github/workflows/ci.yml](.github/workflows/ci.yml) runs repository hygiene
+(JSON parsing, Markdown links, essential files, legacy-prototype smoke check) and
+a TV2 job that installs `jsonschema`, validates all ten fixtures, runs the test
+suite, asserts the expected feasibility status of every fixture, and verifies
+generator determinism.
 
 ---
 
-## 8. Team responsibilities
+## 6. Team responsibilities
 
 Roles follow [docs/team-responsibilities.md](docs/team-responsibilities.md).
-Assignee names, GitHub handles, and deadlines are recorded there as **TBD**.
+Assignee names, GitHub handles, and deadlines remain **TBD**.
 
-| Role | Functional scope | Repository status |
+| Role | Scope | Current repository evidence |
 | :--- | :--- | :--- |
-| **TV1** | Business analysis and mathematical modeling | Model and requirements present; Policy A selected; handoff refinements open |
-| **TV2** | Data and benchmark datasets | **Implemented**: Policy A schema, 10 fixtures, generator, validator, feasibility oracle, tests, CI job |
-| **TV3** | Optimization algorithms | Not started; baseline and MILP still to implement |
-| **TV4** | Frontend | Not started |
-| **TV5** | Backend and database | Not started |
-| **TV6** | Integration, testing, and reporting | Not started; TV2 tests are the first automated suite |
+| **TV1** | Business analysis and mathematical modeling | Policy A model and requirements are present |
+| **TV2** | Data and test datasets | Canonical schema, fixtures, generator, validator, feasibility oracle, tests, CI job |
+| **TV3** | Optimization algorithms | Not started; intended under `src/logimind/algorithms/` |
+| **TV4** | Frontend | Not started; intended under `frontend/` |
+| **TV5** | Backend and database | Not started; intended under `src/logimind/backend/` |
+| **TV6** | Integration, testing, reporting | TV2 suite exists; broader integration/E2E tests and reporting not started |
 
 ---
 
-## 9. Known limitations and open cross-module decisions
+## 7. Known limitations and open cross-module decisions
 
-TV2's contract is settled on Policy A. Other documents still contain
-pre-decision language and must be reconciled by their owners.
-
-| Item | Current state | Owner / next step |
-| :--- | :--- | :--- |
-| Split shipments, unassigned penalties, handling cost | Still described in `docs/project-overview.md`, `docs/api-contract.md`, `docs/testing-strategy.md`, `docs/architecture.md`, and `docs/integration-guide.md` | TV4/TV5/TV6: align to Policy A; TV2's schema rejects these fields |
-| Legacy prototype schema | `benchmark_data.json` and `validate_orders.py` use aggregate capacity and Euclidean costs | Retained for history; migrate only via an explicit decision |
-| Large-instance optimization | No solver exists; the feasibility oracle is exponential | TV3: implement baseline + MILP against the Policy A contract |
-| CI evidence | The TV2 job is configured in the workflow | Confirm the run on the Pull Request |
-| Backend, database, frontend | Not implemented | TV5, TV4 |
-
-Additional limitations:
-
+- The legacy prototype and `data/legacy/benchmark_data.json` use a flat schema
+  with aggregate capacity and Euclidean costs. They are documented in Appendix A
+  of the data dictionary and are not valid Policy A solver input.
+- `docs/api-contract.md`, `docs/project-overview.md`, and
+  `docs/testing-strategy.md` still mention split shipments, penalties, or
+  handling costs. These conflicts are recorded as project blockers (B-01/B-03,
+  EDGE-03) and are owned by TV1/TV5/TV6; they are not part of the canonical TV2
+  contract.
+- No solver, backend, database, or frontend exists.
+- ADR-001, ADR-002, and ADR-003 remain `PROPOSED`.
 - The exhaustive oracle verifies existence, not optimality, and can return
   `UNKNOWN` at its state limit.
-- Role-based identifiers (TV1–TV6) are used throughout; contributor workflow rules
-  are in [CONTRIBUTING.md](CONTRIBUTING.md).
-- The binary `LogiMind_phantich.docx` remains the historical analysis source.
+- TV3/TV5/TV6 still need to adopt the canonical Policy A schema and fixtures.
 
 ---
 
-## 10. Documentation map
+## 8. Documentation map
 
 | Document | Contents |
 | :--- | :--- |
+| [docs/index.md](docs/index.md) | Documentation centre and role-based reading paths |
 | [docs/project-overview.md](docs/project-overview.md) | Problem context, objectives, scope |
-| [docs/requirements.md](docs/requirements.md) | Business requirements, validation rules, acceptance tests T1–T9 |
-| [docs/mathematical-model.md](docs/mathematical-model.md) | MILP formulations; Policy A is canonical |
-| [docs/data-dictionary.md](docs/data-dictionary.md) | **Canonical Policy A data dictionary** |
-| [data/schema/dataset.schema.json](data/schema/dataset.schema.json) | Machine-readable JSON Schema |
-| [data/README.md](data/README.md) | Fixture catalogue and dataset commands |
-| [scripts/README.md](scripts/README.md) | Generator, validator, and feasibility CLI reference |
-| [tests/README.md](tests/README.md) | How to run and interpret the TV2 suite |
-| [docs/architecture.md](docs/architecture.md) | Planned components and data flow |
+| [docs/requirements.md](docs/requirements.md) | Business requirements and acceptance tests |
+| [docs/mathematical-model.md](docs/mathematical-model.md) | Policy A formulation and worked examples |
+| [docs/data-dictionary.md](docs/data-dictionary.md) | Canonical Policy A contract + legacy prototype Appendix A |
+| [data/README.md](data/README.md) | Dataset catalogue and commands |
+| [scripts/README.md](scripts/README.md) | Validator, generator, feasibility checker, legacy prototype |
+| [src/README.md](src/README.md) | Intended Python package layout |
+| [tests/README.md](tests/README.md) | Test suite and planned broader layout |
+| [docs/architecture.md](docs/architecture.md) | Proposed components, paths, and data flow |
 | [docs/api-contract.md](docs/api-contract.md) | Proposed REST endpoints and payloads |
 | [docs/testing-strategy.md](docs/testing-strategy.md) | Test tiers, invariants, edge cases |
 | [docs/integration-guide.md](docs/integration-guide.md) | Module handoff checklists |
 | [docs/team-responsibilities.md](docs/team-responsibilities.md) | Role matrix (assignees TBD) |
 | [docs/decisions/README.md](docs/decisions/README.md) | ADR index and status definitions |
-| [data-dictionary.md](data-dictionary.md) | Deprecated pointer to the canonical dictionary |
+| [docs/project-management/project-status.md](docs/project-management/project-status.md) | Evidence-based project status |
+| [docs/project-management/repository-cleanup-plan.md](docs/project-management/repository-cleanup-plan.md) | Repository cleanup audit and record |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Branch, commit, PR, and review workflow |
 
 ---
 
-## 11. Contributing
+## 9. Contributing
 
 All changes go through a Pull Request targeting `main`; direct pushes are not
 permitted. See [CONTRIBUTING.md](CONTRIBUTING.md) for branch naming, Conventional

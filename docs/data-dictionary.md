@@ -244,9 +244,55 @@ optimization work owned by TV3 on medium and large instances.
 
 | Artifact | Status | Notes |
 | :--- | :--- | :--- |
-| `benchmark_data.json` | Legacy | Input for the standalone `validate_orders.py` prototype. It uses a different flat schema (`capacity`, `current_occupancy`, `items[]`, Euclidean costs) and is intentionally **not** migrated. Do not treat it as a Policy A dataset. |
-| Root `data-dictionary.md` | Deprecated | Replaced by this document; retained as a pointer only. |
-| `docs/mathematical-model.md` §3 | Historical | Policy B formulation retained for reference; Policy A is canonical (§4 and ADR-004). |
+| `data/legacy/benchmark_data.json` | Legacy | Input for the standalone `scripts/validate_orders.py` prototype. It uses a different flat schema (`capacity`, `current_occupancy`, `items[]`, Euclidean costs) and is intentionally **not** migrated. Do not treat it as a Policy A dataset. |
+| Root `data-dictionary.md` | Removed | Consolidated into this document during repository cleanup; there is no root duplicate. |
+| `docs/mathematical-model.md` | Canonical | Policy A formulation; any Policy B references are historical only. |
 
 TV3, TV5, and TV6 should consume files that validate against this contract, not
 the legacy prototype input.
+
+---
+
+## Appendix A: Legacy Prototype Dataset Specification
+
+The earlier **proposed relational storage schema** (warehouse `location_code`/
+`daily_capacity`/`handling_cost_per_unit`, SKU weight/volume, and zone/weight
+`shipping_rates`) is **superseded** by the canonical Policy A contract above. It
+is not an alternative dataset contract and must not be used for the canonical
+benchmark fixtures.
+
+This appendix preserves only the input format of the legacy standalone
+prototype. It is **not** the Policy A benchmark contract.
+
+- Prototype script: [`scripts/validate_orders.py`](../scripts/validate_orders.py)
+- Input fixture: [`data/legacy/benchmark_data.json`](../data/legacy/benchmark_data.json)
+
+### A.1 `warehouses[]`
+
+| Field | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `warehouse_id` | String | Yes | Unique warehouse identifier (e.g. `WH_THU_DUC`). |
+| `capacity` | Integer | Yes | Prototype throughput limit. The prototype adds `quantity` units against this value, so it behaves as an item-unit limit, not a Policy A order count. |
+| `current_occupancy` | Integer | Yes | Units already occupied at the start of the run. |
+| `location.lat` | Float | Yes | Warehouse latitude. |
+| `location.lng` | Float | Yes | Warehouse longitude. |
+
+### A.2 `orders[]`
+
+| Field | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `order_id` | String | Yes | Unique order identifier (e.g. `ORD_2026_001`). |
+| `items[]` | Array | Yes | Ordered products. |
+| `items[].sku` | String | Yes | Product code. |
+| `items[].quantity` | Integer | Yes | Units requested. |
+| `destination.lat` | Float | Yes | Delivery latitude. |
+| `destination.lng` | Float | Yes | Delivery longitude. |
+
+### A.3 Limitations
+
+The prototype computes Euclidean distance from each order destination to each
+warehouse, has no per-SKU inventory, has no precomputed order–warehouse shipping
+cost matrix, has no unassigned-order penalty, and checks aggregate capacity
+in item units. It is therefore a nearest-warehouse demonstration, not an
+implementation of Policy A. Do not use `data/legacy/benchmark_data.json` as input
+to the Policy A solver or API.

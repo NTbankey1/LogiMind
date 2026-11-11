@@ -42,8 +42,8 @@ Whenever a role completes a milestone, they must verify and publish their checkl
 ### 3.1 TV1 (Mathematical Model) $\to$ TV3 & TV2
 - [ ] **Artifact:** `docs/mathematical-model.md` fully formalized.
 - [ ] **Inputs & Parameters:** Clear index notation, unit specifications, and parameter boundaries.
-- [ ] **Constraints:** Unambiguous mathematical equations for capacity, inventory, and split penalties.
-- [ ] **Infeasibility Policy:** Concrete rule for handling over-demand (hard error vs. slack penalty).
+- [ ] **Constraints:** Unambiguous mathematical equations for capacity, per-SKU inventory, and single-warehouse assignment.
+- [ ] **Infeasibility Policy:** Concrete rule for handling over-demand under Policy A (infeasible result; no unassigned penalty).
 - [ ] **Verification:** Manual verification on a 2-warehouse toy example documented.
 - [ ] **Downstream Coordination:** Walkthrough meeting completed with TV3 and TV2.
 
@@ -59,31 +59,31 @@ Whenever a role completes a milestone, they must verify and publish their checkl
 ---
 
 ### 3.3 TV3 (Algorithms) $\to$ TV5 & TV6
-- [ ] **Artifacts:** Algorithm modules under `src/algorithms/` exposing a standard callable:
+- [ ] **Artifacts:** Algorithm modules under `src/logimind/algorithms/` exposing a standard callable:
   `solve_allocation(problem_data: ProblemInput, algorithm: str) -> SolutionOutput`.
 - [ ] **Baseline Implementation:** Greedy or nearest-warehouse heuristic fully operational.
 - [ ] **MILP Implementation:** Solver model formulated, bounded, and tested.
 - [ ] **Reproducibility:** Solvers yield deterministic outputs on identical seeds/inputs.
 - [ ] **Benchmark Proof:** Execution log showing MILP cost $\le$ Baseline cost on sample dataset.
-- [ ] **Unit Tests:** High-coverage tests under `tests/test_algorithms/` passing cleanly.
+- [ ] **Unit Tests:** High-coverage tests under `tests/unit/` passing cleanly.
 
 ---
 
 ### 3.4 TV4 (Frontend) $\to$ TV5 & TV6
-- [ ] **Artifacts:** UI dashboard under `src/frontend/` (or web client folder).
+- [ ] **Artifacts:** UI dashboard under `frontend/` (or web client folder).
 - [ ] **API Mocking:** Frontend can run against mock JSON server adhering to `docs/api-contract.md`.
 - [ ] **Visual Elements:**
   - Order batch selection / upload.
   - Cost comparison chart (Baseline vs. MILP).
   - Warehouse capacity utilization gauges.
-  - Split shipment details table.
+  - Order-to-warehouse assignment details.
 - [ ] **Responsive Design:** Functional on standard laptop screen resolutions.
 - [ ] **Downstream Coordination:** Endpoints verified against TV5 live backend.
 
 ---
 
 ### 3.5 TV5 (Backend & Database) $\to$ TV4 & TV6
-- [ ] **Artifacts:** REST API application under `src/backend/` and SQLite database models.
+- [ ] **Artifacts:** REST API application under `src/logimind/backend/` and SQLite database models.
 - [ ] **Contract Compliance:** Endpoints strictly adhere to `docs/api-contract.md`.
 - [ ] **Solver Integration:** Backend successfully calls TV3 solver engine with proper timeout guards.
 - [ ] **Persistence:** Run history and allocation plans successfully stored and retrieved from SQLite.

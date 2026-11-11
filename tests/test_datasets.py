@@ -571,18 +571,18 @@ class TestRepositoryRegression(unittest.TestCase):
     """Regression tests for existing files."""
 
     def test_legacy_benchmark_data_untouched(self):
-        """Verify legacy prototype benchmark_data.json is preserved and unmodified."""
-        path = REPO_ROOT / "benchmark_data.json"
-        self.assertTrue(path.is_file(), "benchmark_data.json must exist")
+        """Verify the legacy prototype benchmark fixture is preserved and unmodified."""
+        path = REPO_ROOT / "data" / "legacy" / "benchmark_data.json"
+        self.assertTrue(path.is_file(), "data/legacy/benchmark_data.json must exist")
         with open(path, "r", encoding="utf-8") as f:
             content = f.read()
         self.assertIn("WH_THU_DUC", content)
         self.assertIn("ORD_2026_001", content)
 
     def test_validate_orders_script_exists(self):
-        """Verify validate_orders.py legacy script is preserved."""
-        path = REPO_ROOT / "validate_orders.py"
-        self.assertTrue(path.is_file(), "validate_orders.py must exist")
+        """Verify the legacy prototype is preserved under scripts/."""
+        path = REPO_ROOT / "scripts" / "validate_orders.py"
+        self.assertTrue(path.is_file(), "scripts/validate_orders.py must exist")
 
 
 if __name__ == "__main__":

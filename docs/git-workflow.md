@@ -26,7 +26,7 @@ All branch names must use lower-case kebab-case prefixed by the category:
 - `feat/baseline-greedy-heuristic`
 - `feat/backend-run-endpoint`
 - `test/infeasible-capacity-fixtures`
-- `fix/split-penalty-multiplier`
+- `fix/capacity-overflow-check`
 
 ---
 
@@ -84,7 +84,7 @@ pytest tests/
 
 #### Step 5: Commit using Conventional Commits
 ```bash
-git add src/algorithms/baseline.py tests/test_algorithms/test_baseline.py
+git add src/logimind/algorithms/baseline.py tests/unit/test_baseline.py
 git commit -m "feat: implement greedy nearest-warehouse allocation heuristic"
 ```
 

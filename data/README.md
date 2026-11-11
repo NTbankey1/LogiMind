@@ -1,55 +1,59 @@
-# LogiMind Dataset Fixtures
+# Data Directory: `data/`
 
-This directory contains the tracked Policy A dataset contract, schema, and
-benchmark fixtures used by TV2, TV3, TV5, and TV6.
+Curated datasets, canonical Policy A fixtures, and the machine-readable schema
+for LogiMind, overseen by **TV2 (Data & Test Dataset)**. The authoritative field
+definitions are in [`docs/data-dictionary.md`](../docs/data-dictionary.md);
+Policy A is described in [`docs/mathematical-model.md`](../docs/mathematical-model.md).
 
-- Canonical human-readable contract: [`docs/data-dictionary.md`](../docs/data-dictionary.md)
-- Machine-readable schema: [`schema/dataset.schema.json`](schema/dataset.schema.json)
-- Policy decision: [`docs/decisions/0004-allocation-policy-a.md`](../docs/decisions/0004-allocation-policy-a.md)
-- Tooling documentation: [`scripts/README.md`](../scripts/README.md)
-
-## Tracked structure
+## Directory structure
 
 ```text
 data/
 ├── README.md
-├── schema/
-│   └── dataset.schema.json
-└── samples/
-    ├── sample_small.json
-    ├── sample_medium.json
-    ├── sample_large.json
-    ├── sample_infeasible.json
-    ├── edge_tight_capacity.json
-    ├── edge_tight_inventory.json
-    ├── edge_equal_costs.json
-    ├── edge_zero_stock.json
-    ├── edge_unavailable_route.json
-    └── edge_infeasible_stock.json
+├── legacy/
+│   └── benchmark_data.json     # Legacy prototype input (not Policy A)
+├── samples/                    # Ten canonical Policy A fixtures
+│   ├── sample_small.json
+│   ├── sample_medium.json
+│   ├── sample_large.json
+│   ├── sample_infeasible.json
+│   ├── edge_tight_capacity.json
+│   ├── edge_tight_inventory.json
+│   ├── edge_equal_costs.json
+│   ├── edge_zero_stock.json
+│   ├── edge_unavailable_route.json
+│   └── edge_infeasible_stock.json
+└── schema/
+    └── dataset.schema.json     # JSON Schema Draft 2020-12
 ```
 
-All files in `samples/` are intentionally committed because they are reproducible
-benchmark inputs. Do not commit local databases, raw customer data, generated
-scratch files, or runtime outputs here. A generated file is only committed after
-it is reviewed, validated, and checked for feasibility.
+`data/raw/` and `data/processed/` are local scratch areas and are ignored by Git
+(see `.gitignore`). They may be created locally but are never committed.
+
+`data/legacy/` is deliberately separate from `data/samples/`: every file in
+`samples/` must validate against the canonical Policy A schema, and the legacy
+prototype fixture does not.
 
 ## Dataset catalogue
 
 | File | Dimensions (warehouses / orders / SKUs) | Expected status | Purpose |
 | :--- | :--- | :--- | :--- |
-| `sample_small.json` | 2 / 3 / 2 | `FEASIBLE` | Hand-reviewable baseline; demonstrates the contract. |
-| `sample_medium.json` | 4 / 20 / 5 | `FEASIBLE` | Generated benchmark with seed `20261111`. |
-| `sample_large.json` | 8 / 60 / 10 | `FEASIBLE` | Generated benchmark with seed `20261112`. |
-| `sample_infeasible.json` | 2 / 3 / 1 | `INFEASIBLE` | Total capacity is 2 for 3 orders. |
-| `edge_tight_capacity.json` | 2 / 3 / 1 | `FEASIBLE` | Total capacity equals order count exactly. |
-| `edge_tight_inventory.json` | 2 / 2 / 2 | `FEASIBLE` | SKU-A demand exactly equals available stock. |
-| `edge_equal_costs.json` | 2 / 2 / 1 | `FEASIBLE` | Equal shipping costs create multiple optima. |
-| `edge_zero_stock.json` | 2 / 2 / 2 | `FEASIBLE` | A warehouse has explicit zero stock; another serves the order. |
-| `edge_unavailable_route.json` | 2 / 2 / 1 | `FEASIBLE` | One order–warehouse route is omitted from `shipping_costs`. |
-| `edge_infeasible_stock.json` | 2 / 1 / 1 | `INFEASIBLE` | Order demand (50) exceeds every warehouse's stock (10). |
+| `samples/sample_small.json` | 2 / 3 / 2 | `FEASIBLE` | Hand-reviewable baseline; demonstrates the contract. |
+| `samples/sample_medium.json` | 4 / 20 / 5 | `FEASIBLE` | Generated benchmark with seed `20261111`. |
+| `samples/sample_large.json` | 8 / 60 / 10 | `FEASIBLE` | Generated benchmark with seed `20261112`. |
+| `samples/sample_infeasible.json` | 2 / 3 / 1 | `INFEASIBLE` | Total capacity is 2 for 3 orders. |
+| `samples/edge_tight_capacity.json` | 2 / 3 / 1 | `FEASIBLE` | Total capacity equals order count exactly. |
+| `samples/edge_tight_inventory.json` | 2 / 2 / 2 | `FEASIBLE` | SKU-A demand exactly equals available stock. |
+| `samples/edge_equal_costs.json` | 2 / 2 / 1 | `FEASIBLE` | Equal shipping costs create multiple optima. |
+| `samples/edge_zero_stock.json` | 2 / 2 / 2 | `FEASIBLE` | A warehouse has explicit zero stock; another serves the order. |
+| `samples/edge_unavailable_route.json` | 2 / 2 / 1 | `FEASIBLE` | One order–warehouse route is omitted from `shipping_costs`. |
+| `samples/edge_infeasible_stock.json` | 2 / 1 / 1 | `INFEASIBLE` | Order demand (50) exceeds every warehouse's stock (10). |
+| `legacy/benchmark_data.json` | 3 warehouses / 2 orders | Legacy | Input for `scripts/validate_orders.py`; **not** Policy A. See [Appendix A](../docs/data-dictionary.md#appendix-a-legacy-prototype-dataset-specification). |
 
 `INFEASIBLE` means mathematically infeasible under Policy A, not structurally
-invalid. All ten files pass schema and semantic validation.
+invalid. All ten files in `samples/` pass schema and semantic validation. The
+legacy fixture is intentionally outside that directory and must not be used as
+solver or API input.
 
 ## Validate fixtures
 
@@ -108,11 +112,29 @@ The committed `sample_medium.json` and `sample_large.json` are reproducible
 byte-for-byte from seeds `20261111` (4 / 20 / 5) and `20261112` (8 / 60 / 10) when
 the same `--dataset-id`, `--name`, and `--description` strings are passed.
 
-## Adding a fixture
+## Legacy prototype
 
-1. Generate or hand-build the dataset following `docs/data-dictionary.md`.
-2. Run `validate_dataset.py` and `check_feasibility.py`.
-3. Add the file to the catalogue above.
-4. Add its expected status to
-   `tests/test_datasets.py::test_all_fixtures_match_declared_feasibility_status`.
-5. Document any controlled infeasibility reason in the dataset `description`.
+```bash
+python scripts/validate_orders.py
+```
+
+The script resolves `data/legacy/benchmark_data.json` relative to the repository
+and prints a Vietnamese allocation log. It is a nearest-warehouse demonstration,
+not Policy A.
+
+## Tracking rules
+
+- Commit only curated, reproducible fixtures under `data/samples/`; they must
+  validate against the canonical schema.
+- Keep genuinely legacy or non-Policy-A inputs under `data/legacy/` and document
+  them as such.
+- Put machine-readable schemas under `data/schema/`.
+- Keep large/generated datasets in `data/raw/` or `data/processed/` locally.
+- Never commit SQLite databases (`*.db`, `*.sqlite`, `*.sqlite3`), secrets, or
+  extracted customer data.
+- Record provenance (generator, seed, or source) in each fixture or in this
+  README when adding a new dataset.
+- Add edge cases deliberately; do not label a fixture feasible or infeasible
+  without verification.
+- Add every new canonical fixture to the catalogue above and to the expected
+  status table in `tests/test_datasets.py`.
