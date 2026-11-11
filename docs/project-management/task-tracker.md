@@ -33,7 +33,7 @@ Status vocabulary: **Completed**, **In Progress**, **Blocked**, **Not Started**,
 
 | ID | Deliverable | Acceptance criteria | Status | Dependencies | Evidence |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| TV1-01 | Policy decision ratification (Policy A selected) and parameter semantics | Policy A decision recorded and ratified; `C_j`, `c_ij`, and remaining storage/scope questions are unambiguous | **Blocked** | Team approval; TV2 data implications | [model §3–§4](../mathematical-model.md); [requirements §3](../requirements.md) |
+| TV1-01 | Policy decision ratification (Policy A selected) and parameter semantics | Policy A decision recorded and ratified; `C_j`, `c_ij`, and remaining storage/scope questions are unambiguous | **Blocked** | Team approval; TV2 data implications | [model §3–§4](../mathematical-model.md); [requirements §3](../requirements.md); [ADR-004](../decisions/0004-allocation-policy-a.md) |
 | TV1-02 | Requirements baseline for FR01–FR08 and T1–T9 | Requirements are reviewed, unambiguous, and traceable to test IDs | **In Progress** | TV1-01 | [requirements §5–§7](../requirements.md) |
 | TV1-03 | Model handoff to TV2/TV3 with example verification | Worked example reproduced; handoff checklist evidence attached; model assumptions signed off | **Blocked** | TV1-01; TV2 schema | [model §6–§9](../mathematical-model.md); [integration-guide §3.1](../integration-guide.md) |
 
@@ -41,10 +41,10 @@ Status vocabulary: **Completed**, **In Progress**, **Blocked**, **Not Started**,
 
 | ID | Deliverable | Acceptance criteria | Status | Dependencies | Evidence |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| TV2-01 | Canonical data schema | One schema covers warehouses, inventory, orders/lines, costs, and penalties; field names/types/units are consistent with the approved model | **Blocked** | TV1-01 | [data-dictionary](../data-dictionary.md) (Appendix A covers the legacy prototype); conflicts noted in [project-status](project-status.md#4-blockers-and-dependencies) |
-| TV2-02 | Benchmark fixtures | At least one feasible and one guaranteed-infeasible fixture, plus edge cases required by [testing-strategy](../testing-strategy.md); all pass schema validation | **In Progress** (partial) | TV2-01 | `data/samples/benchmark_data.json`; [sample_small.json](../../data/samples/sample_small.json) |
-| TV2-03 | Dataset generator and validator | Executable scripts validate schema and invariants; invalid fixtures are rejected with clear errors | **Not Started** | TV2-01 | `scripts/` contains the legacy prototype and README only |
-| TV2-04 | Data documentation reconciliation | One authoritative dictionary; README/sample descriptions match actual fixtures | **In Progress** | TV2-01 | [data/README.md](../../data/README.md) contains conflicting counts/ignore claims |
+| TV2-01 | Canonical data schema | One Policy A schema covers warehouses, per-SKU inventory, orders, capacity in order counts, and shipping costs; field names/types/units are documented | **Completed** | TV1-01 (policy selection) | [schema](../../data/schema/dataset.schema.json); [data dictionary](../data-dictionary.md); [ADR-004](../decisions/0004-allocation-policy-a.md) |
+| TV2-02 | Benchmark fixtures | Feasible small/medium/large fixtures, at least one guaranteed-infeasible fixture, and six documented edge cases; all pass schema validation | **Completed** | TV2-01 | Ten fixtures under `data/samples/`; catalogue in [data/README.md](../../data/README.md) |
+| TV2-03 | Dataset generator and validator | Executable scripts validate schema and invariants, reject invalid fixtures with clear errors, and generate reproducible feasible datasets | **Completed** | TV2-01 | [scripts/README.md](../../scripts/README.md); [tests/test_datasets.py](../../tests/test_datasets.py) |
+| TV2-04 | Data documentation reconciliation | One authoritative dictionary; README/sample descriptions match actual fixtures | **Completed** | TV2-01 | [data dictionary](../data-dictionary.md); root duplicate consolidated into Appendix A; [README](../../README.md) |
 
 ### TV3 — Optimization algorithms
 
@@ -118,8 +118,8 @@ TV6-02/03/04 (traceability, harness, CI job) can start before TV3–TV5 complete
 ## 5. Known missing information requiring team confirmation
 
 1. Which GitHub account owns each TV role.
-2. Team ratification of Policy A, selected by the Project Lead, and the remaining business-rule conflicts listed in project-status §4.
-3. Canonical data schema, including capacity units and required penalty fields.
+2. Team ratification of Policy A, selected by the Project Lead in [ADR-004](../decisions/0004-allocation-policy-a.md), and the remaining business-rule conflicts listed in project-status §4.
+3. Downstream adoption of the canonical Policy A data schema; the TV2 schema and dictionary are published, but TV3/TV5/TV6 have not yet been updated.
 4. Whether split shipments and handling costs belong in the objective and API.
 5. Target sprint dates and milestone definitions.
-6. Ownership of the legacy prototype (`scripts/validate_orders.py`) and datasets (`data/samples/`).
+6. Ownership of the legacy prototype (`scripts/validate_orders.py`) and datasets (`data/samples/`, `data/legacy/`).

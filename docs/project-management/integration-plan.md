@@ -100,11 +100,11 @@ Use this checklist at G1–G5. “Current” reflects the repository on the veri
 - [ ] Capacity unit is defined consistently (orders vs. item units)
 - [ ] Per-SKU inventory is present for every warehouse–SKU pair
 - [ ] Shipping cost `c_ij` is present/derived by one documented rule
-- [ ] Unassigned penalty `P_i` is present with the approved granularity
-- [ ] Split-shipment policy is reflected in the schema or explicitly excluded
+- [x] No unassigned penalty exists (Policy A)
+- [x] Single-warehouse assignment is enforced; split shipments are excluded
 - [ ] Fixture identifiers, versions, and expected outcomes are documented
 
-**Current:** not verified. `data/samples/benchmark_data.json`, `data/samples/sample_small.json`, and `docs/data-dictionary.md` still describe different schemas. The repository cleanup consolidated the former root dictionary into Appendix A, but reconciling the canonical data contract remains TV2 work. See [project-status §4](project-status.md#4-blockers-and-dependencies).
+**Current:** TV2 has published the canonical Policy A schema, dictionary, and canonical fixtures (PR #11 pending review). The legacy prototype fixture is isolated under `data/legacy/` and is not part of the contract. Adoption by TV3/TV5/TV6 remains open. See [project-status §4](project-status.md#4-blockers-and-dependencies).
 
 ### 5.2 Solver adapter contract
 

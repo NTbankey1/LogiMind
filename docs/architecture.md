@@ -72,7 +72,7 @@ belongs in these locations:
 | Maintenance and generation utilities | `scripts/` |
 | Automated tests | `tests/unit/`, `tests/integration/`, `tests/e2e/` |
 | Technical documentation | `docs/` |
-| Legacy prototype (not Policy A) | `scripts/validate_orders.py`, `data/samples/benchmark_data.json` |
+| Legacy prototype (not Policy A) | `scripts/validate_orders.py`, `data/legacy/benchmark_data.json` |
 
 ## 3. Technology Stack Evaluation (Proposed vs. Pending ADR)
 

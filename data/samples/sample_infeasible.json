@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.0",
+  "dataset_id": "sample-infeasible",
+  "name": "Small Infeasible Benchmark (Capacity Shortage)",
+  "description": "Small controlled Policy A benchmark with 3 orders but total warehouse capacity of 2. Mathematically infeasible.",
+  "policy": "A",
+  "metadata": {
+    "generator": "LogiMind TV2 controlled infeasibility fixture",
+    "seed": 20261111
+  },
+  "skus": [
+    {
+      "sku_id": "SKU-A",
+      "name": "Product Alpha"
+    }
+  ],
+  "warehouses": [
+    {
+      "warehouse_id": "WH-01",
+      "name": "Warehouse North",
+      "capacity_orders": 1,
+      "inventory": {
+        "SKU-A": 100
+      }
+    },
+    {
+      "warehouse_id": "WH-02",
+      "name": "Warehouse South",
+      "capacity_orders": 1,
+      "inventory": {
+        "SKU-A": 100
+      }
+    }
+  ],
+  "orders": [
+    {
+      "order_id": "ORD-001",
+      "items": {
+        "SKU-A": 1
+      },
+      "shipping_costs": {
+        "WH-01": 5.0,
+        "WH-02": 5.0
+      }
+    },
+    {
+      "order_id": "ORD-002",
+      "items": {
+        "SKU-A": 1
+      },
+      "shipping_costs": {
+        "WH-01": 5.0,
+        "WH-02": 5.0
+      }
+    },
+    {
+      "order_id": "ORD-003",
+      "items": {
+        "SKU-A": 1
+      },
+      "shipping_costs": {
+        "WH-01": 5.0,
+        "WH-02": 5.0
+      }
+    }
+  ]
+}

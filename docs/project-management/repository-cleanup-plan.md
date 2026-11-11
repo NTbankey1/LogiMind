@@ -4,6 +4,13 @@
 > **Baseline commit:** `fb15ef2` on `origin/main`
 > **Scope:** Repository organization only. No change to the Policy A mathematical
 > model, solver behavior, or canonical data semantics.
+>
+> **Post-merge note (TV2 PR #11):** The cleanup moved the legacy fixture to
+> `data/samples/`. During the TV2 merge it was separated into
+> `data/legacy/benchmark_data.json` so that every `data/samples/*.json` file
+> validates against the canonical Policy A schema. The TV2 merge also adds
+> `data/schema/`, the validator/generator/feasibility scripts, the automated test
+> suite, and `pyproject.toml`; those are outside the original cleanup scope.
 
 ---
 
@@ -56,7 +63,7 @@ Every tracked file at the baseline receives exactly one classification:
 | 12 | `CONTRIBUTING.md` | KEEP | — | Git workflow; commands updated for moved prototype/fixtures. | Yes | Command test |
 | 13 | `LogiMind_phantich.docx` | ARCHIVE | `docs/reference/project-analysis.docx` | Academic source document; preserve but separate from active development. | Yes (`README`, project status, docs index) | SHA-256 unchanged |
 | 14 | `README.md` | KEEP | — | Root entry point; rewritten for the cleaned layout and honest status. | Yes | Link check |
-| 15 | `benchmark_data.json` | MOVE | `data/samples/benchmark_data.json` | Dataset belongs with curated fixtures; documented as legacy prototype input. | Yes (`scripts/validate_orders.py`, docs) | JSON parse + prototype run |
+| 15 | `benchmark_data.json` | MOVE | `data/samples/` → `data/legacy/benchmark_data.json` after the TV2 merge | Dataset belongs under `data/`, separated from canonical Policy A samples. | Yes (`scripts/validate_orders.py`, docs) | JSON parse + prototype run |
 | 16 | `data-dictionary.md` | MERGE | Merged into `docs/data-dictionary.md` as Appendix A; root file removed | Duplicate dictionary; prototype schema preserved in the authoritative document. | Yes (README, index, project docs) | Link check; zero root refs |
 | 17 | `data/README.md` | KEEP | — | Dataset policy; rewritten with the actual catalogue and legacy status. | Yes | Link check |
 | 18 | `data/samples/sample_small.json` | KEEP | — | Curated draft fixture; content unchanged (replacement is TV2 work). | No | JSON parse |
@@ -116,10 +123,12 @@ Every tracked file at the baseline receives exactly one classification:
 
 - **Finding:** `validate_orders.py` and `benchmark_data.json` are the only
   executable baseline and must not be deleted.
-- **Decision:** Move to `scripts/validate_orders.py` and
-  `data/samples/benchmark_data.json`. The script resolves its default input
-  relative to the repository and accepts an optional path, so it works from any
-  working directory. CI runs it as a smoke check.
+- **Decision:** Move to `scripts/validate_orders.py` and (originally)
+  `data/samples/benchmark_data.json`. The TV2 merge later separated the legacy
+  fixture into `data/legacy/benchmark_data.json` so `data/samples/` remains
+  canonical. The script resolves its default input relative to the repository
+  and accepts an optional path, so it works from any working directory. CI runs
+  it as a smoke check.
 - **Status:** Still a nearest-warehouse demonstration, **not** Policy A. This is
   stated in the README, scripts README, data README, and dictionary Appendix A.
 
@@ -146,12 +155,13 @@ Every tracked file at the baseline receives exactly one classification:
   `project-status.md`, `task-tracker.md`, `test-plan.md`, `integration-plan.md`.
 - Updated every internal link and path; no historical evidence was removed.
 
-### 3.6 `pyproject.toml` deferred
+### 3.6 `pyproject.toml` (added by the TV2 merge)
 
-The target direction includes `pyproject.toml`, but the repository currently has
-no Python package, tests, or third-party dependencies. Adding one now would be
-decoration and would imply tooling that does not exist. It will be added with the
-first real package/test code. The README and `src/README.md` record this decision.
+The cleanup PR deferred `pyproject.toml` because the cleanup branch had no
+Python package, tests, or third-party dependencies. The TV2 merge adds it for
+`jsonschema`, `pytest`, and `ruff` configuration and package discovery, because
+actual data/test tooling now exists. No `src/logimind/` package exists yet, so
+the packaging section remains minimal.
 
 ---
 
@@ -165,14 +175,15 @@ LogiMind/
 │   └── pull_request_template.md
 ├── data/
 │   ├── README.md
-│   └── samples/
-│       ├── benchmark_data.json
-│       └── sample_small.json
+│   ├── legacy/benchmark_data.json
+│   ├── samples/ (ten Policy A fixtures)
+│   └── schema/dataset.schema.json
 ├── docs/
 │   ├── decisions/
 │   │   ├── 0001-choice-of-optimization-solver-library.md
 │   │   ├── 0002-choice-of-backend-framework.md
 │   │   ├── 0003-choice-of-database-engine.md
+│   │   ├── 0004-allocation-policy-a.md
 │   │   └── README.md
 │   ├── project-management/
 │   │   ├── integration-plan.md
@@ -195,11 +206,15 @@ LogiMind/
 │   └── testing-strategy.md
 ├── scripts/
 │   ├── README.md
+│   ├── check_feasibility.py
+│   ├── generate_dataset.py
+│   ├── validate_dataset.py
 │   └── validate_orders.py
 ├── src/
 │   └── README.md
 ├── tests/
-│   └── README.md
+│   ├── README.md
+│   └── test_datasets.py
 ├── .editorconfig
 ├── .env.example
 ├── .gitattributes
@@ -207,25 +222,26 @@ LogiMind/
 ├── CHANGELOG.md
 ├── CLAUDE.md
 ├── CONTRIBUTING.md
-└── README.md
+├── README.md
+└── pyproject.toml
 ```
 
 ### Deviations from the suggested target tree
 
-- **No `pyproject.toml`** — no package/tests/dependencies yet (see §3.6).
+- **`pyproject.toml`** is added by the TV2 merge for data/test tooling; the cleanup PR itself did not add one (see §3.6).
 - **No `src/logimind/` package** — no implementation yet; the intended layout is
   documented in `src/README.md`.
 - **No `frontend/`** — no frontend application exists.
-- **No `tests/unit|integration|e2e` directories** — no tests exist; the intended
-  layout is documented in `tests/README.md`.
-- **No `data/schema/` yet** — the machine-readable Policy A schema is TV2 work
-  and is not in this branch.
+- **No `tests/unit|integration|e2e` directories** — the TV2 suite lives at
+  `tests/test_datasets.py`; the broader layout is documented in `tests/README.md`.
+- **`data/schema/`** is added by the TV2 merge; the cleanup PR itself did not
+  include it.
 - **No `docs/architecture/` or `docs/requirements/` subdirectories** — those
   documents already exist at `docs/` root; creating duplicate directories would
   add clutter.
 - **No generic `archive/` directory** — the academic document is in
   `docs/reference/`; legacy executable material remains active in `scripts/` and
-  `data/samples/` so it can still be run and tested.
+  `data/legacy/` so it can still be run and tested.
 
 ---
 
@@ -279,15 +295,17 @@ also recorded in the Pull Request):
    required to start from `main`, so it retains the draft fixture and proposed
    dictionary. Expect a merge conflict in the data documentation; TV2's canonical
    contract should take precedence when both land.
-2. `data/samples/sample_small.json` still contains pre-Policy-A fields. It was
-   deliberately not rewritten here; replacing it is TV2 work.
+2. TV2 replaces the draft `data/samples/sample_small.json` with a canonical
+   Policy A fixture; the legacy prototype fixture remains under `data/legacy/`.
 3. `docs/api-contract.md`, `docs/project-overview.md`, and
    `docs/testing-strategy.md` still describe split shipments, penalties, or
    handling costs. These conflicts are already recorded as project blockers
    (B-01/B-03, EDGE-03) and are owned by TV1/TV5/TV6; the cleanup did not rewrite
    those contracts.
-4. No solver, backend, database, frontend, or automated test suite exists. The
-   intended locations are documented but not scaffolded with fake files.
-5. `pyproject.toml` is deferred until actual package/test code exists.
+4. No solver, backend, database, or frontend exists. The TV2 test suite exists;
+   TV3/TV5/TV6 tests remain planned. Intended locations are documented but not
+   scaffolded with fake files.
+5. `pyproject.toml` now exists for TV2 data/test tooling; it will be extended
+   when the `src/logimind/` package and application dependencies are added.
 6. `docs/mathematical-model.md` and `docs/requirements.md` were line-ending
    normalized from CRLF to LF per `.gitattributes`; their content is unchanged.

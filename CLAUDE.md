@@ -60,7 +60,7 @@ Placement rules:
 - Do **not** add `pyproject.toml` for decoration. Add it when the
   `src/logimind/` package or automated tests actually need packaging/tooling.
 - The legacy prototype lives at `scripts/validate_orders.py` with its fixture at
-  `data/samples/benchmark_data.json`. It is a demonstration, not Policy A.
+  `data/legacy/benchmark_data.json`. It is a demonstration, not Policy A.
 
 ---
 

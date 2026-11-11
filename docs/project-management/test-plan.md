@@ -88,12 +88,12 @@ Source: [testing-strategy.md §3](../testing-strategy.md).
 
 | Requirement | Needed data | Current state |
 | :--- | :--- | :--- |
-| Canonical input schema | Warehouse, inventory (warehouse–SKU), order, order lines, shipping cost, penalty | Not unified; three schemas exist |
-| Small hand-checkable case | Matches T1/model example | `sample_small.json` claims to match but does not (2 orders/1 SKU vs. 3 orders/2 SKUs) |
-| Feasible case | Enough stock and capacity | Partial; `data/samples/benchmark_data.json` lacks SKU inventory and cost/penalty fields |
-| Infeasible case | Demand exceeds available resources | Not identified |
-| Tight-resource case | T5 | Not identified |
-| Tie-break case | T8 | Not identified |
+| Canonical input schema | Warehouse, per-SKU inventory, order, order items, shipping costs | Implemented by TV2: `data/schema/dataset.schema.json` + `docs/data-dictionary.md` |
+| Small hand-checkable case | Matches T1/model example | Canonical `data/samples/sample_small.json` (2 warehouses/3 orders/2 SKUs); hand-reviewable but not the same numeric example as the model |
+| Feasible case | Enough stock and capacity | Covered by canonical TV2 fixtures; legacy prototype fixture is non-Policy-A |
+| Infeasible case | Demand exceeds available resources | `sample_infeasible.json`, `edge_infeasible_stock.json` |
+| Tight-resource case | T5 | `edge_tight_capacity.json`, `edge_tight_inventory.json` |
+| Tie-break case | T8 | `edge_equal_costs.json` |
 | Scale case | T9 | Not identified |
 | Invalid-data cases | T7 | Not implemented as fixtures |
 

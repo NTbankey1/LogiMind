@@ -26,12 +26,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Pull Request template (`.github/pull_request_template.md`).
   - Issue templates for bug reports, feature requests, and tasks (`.github/ISSUE_TEMPLATE/`).
 - Module placeholder READMEs (`src/`, `tests/`, `data/`, `scripts/`).
+- TV2 Policy A data layer:
+  - Canonical JSON Schema (`data/schema/dataset.schema.json`) and data dictionary.
+  - Ten benchmark/edge-case fixtures under `data/samples/` plus a deterministic generator, validator, and exhaustive feasibility oracle.
+  - 60 automated tests and a TV2 CI dataset/feasibility job.
+  - ADR-004 selecting Policy A.
 
 ### Changed
 - Reorganized the repository layout:
   - Academic analysis document moved to `docs/reference/project-analysis.docx`.
   - Legacy prototype moved to `scripts/validate_orders.py` with `__file__`-relative data resolution and an optional dataset argument.
-  - Prototype fixture moved to `data/samples/benchmark_data.json`.
+  - Prototype fixture moved to `data/legacy/benchmark_data.json`.
   - Duplicate root `data-dictionary.md` consolidated into `docs/data-dictionary.md` as Appendix A.
   - Project-management documents renamed to lowercase-kebab-case.
 - Updated README, CLAUDE.md, CONTRIBUTING.md, documentation links, architecture paths, and CI to the new layout.

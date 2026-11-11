@@ -122,7 +122,7 @@ class LogisticsManager:
 
 
 DEFAULT_DATA_FILE = (
-    Path(__file__).resolve().parent.parent / "data" / "samples" / "benchmark_data.json"
+    Path(__file__).resolve().parent.parent / "data" / "legacy" / "benchmark_data.json"
 )
 
 

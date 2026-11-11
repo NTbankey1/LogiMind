@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0",
+  "dataset_id": "edge-equal-costs",
+  "name": "Edge Case: Equal Shipping Costs",
+  "description": "Feasible Policy A edge case where multiple warehouses have identical shipping costs for an order, creating multiple optimal allocations.",
+  "policy": "A",
+  "metadata": {
+    "generator": "LogiMind TV2 edge-case fixture",
+    "seed": 20261111
+  },
+  "skus": [
+    {
+      "sku_id": "SKU-A",
+      "name": "Product Alpha"
+    }
+  ],
+  "warehouses": [
+    {
+      "warehouse_id": "WH-01",
+      "name": "Warehouse North",
+      "capacity_orders": 2,
+      "inventory": {
+        "SKU-A": 10
+      }
+    },
+    {
+      "warehouse_id": "WH-02",
+      "name": "Warehouse South",
+      "capacity_orders": 2,
+      "inventory": {
+        "SKU-A": 10
+      }
+    }
+  ],
+  "orders": [
+    {
+      "order_id": "ORD-001",
+      "items": {
+        "SKU-A": 2
+      },
+      "shipping_costs": {
+        "WH-01": 5.0,
+        "WH-02": 5.0
+      }
+    },
+    {
+      "order_id": "ORD-002",
+      "items": {
+        "SKU-A": 1
+      },
+      "shipping_costs": {
+        "WH-01": 7.0,
+        "WH-02": 7.0
+      }
+    }
+  ]
+}
