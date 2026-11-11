@@ -1,102 +1,77 @@
-# Project Overview: LogiMind
+# Tổng quan dự án: LogiMind
 
-## 1. Executive Summary
+## 1. Tóm tắt
 
-**LogiMind** is a decision-support system for the Multi-Warehouse Order Allocation
-Problem (MWOAP). Customer orders must be routed to fulfillment warehouses based on
-per-SKU stock availability, warehouse processing capacity, and shipping cost.
+**LogiMind** là hệ thống hỗ trợ ra quyết định cho **bài toán phân bổ đơn hàng đa kho** (Multi-Warehouse Order Allocation Problem — MWOAP). Đơn hàng của khách được định tuyến tới các kho fulfillment dựa trên tồn kho theo từng SKU, công suất xử lý của kho và chi phí vận chuyển.
 
-LogiMind formulates this problem as a Mixed-Integer Linear Program (MILP),
-compares the optimal allocation with baseline heuristic rules, and presents the
-results through a web application for supply chain operators.
+LogiMind mô hình hóa bài toán dưới dạng quy hoạch tuyến tính nguyên hỗn hợp (Mixed-Integer Linear Program — MILP), so sánh phương án tối ưu với các quy tắc heuristic baseline, và trình bày kết quả qua ứng dụng web cho nhân viên chuỗi cung ứng.
 
-The canonical allocation policy is **Policy A — Strict Non-Split Allocation**
-([ADR-004](decisions/0004-allocation-policy-a.md)):
+Chính sách phân bổ chuẩn là **Policy A — Strict Non-Split Allocation** ([ADR-004](decisions/0004-allocation-policy-a.md)):
 
-- every order is fulfilled completely;
-- every order is assigned to exactly one warehouse;
-- split shipments are not allowed;
-- unassigned orders are not allowed;
-- there is no split penalty, unassigned penalty, or handling cost;
-- warehouse capacity is measured in **number of orders**;
-- inventory is tracked **per SKU**;
-- the objective minimizes total shipping cost.
+- mỗi đơn hàng được giao đầy đủ;
+- mỗi đơn hàng được gán cho đúng một kho;
+- không cho phép giao tách đơn (split shipment);
+- không cho phép đơn hàng chưa được phân bổ;
+- không có split penalty, unassigned penalty hoặc handling cost;
+- công suất kho được tính bằng **số đơn hàng**;
+- tồn kho được theo dõi **riêng theo từng SKU**;
+- hàm mục tiêu tối thiểu hóa tổng chi phí vận chuyển.
 
-If no complete allocation exists, the instance is **mathematically infeasible**;
-the dataset is still structurally valid.
+Nếu không tồn tại phương án phân bổ đầy đủ, bài toán **không khả thi về mặt toán học**; bộ dữ liệu vẫn hợp lệ về cấu trúc.
 
 ---
 
-## 2. Business Context & Motivation
+## 2. Bối cảnh nghiệp vụ & động lực
 
-E-commerce businesses operate multiple fulfillment centers to reduce delivery
-distances. Multi-warehouse operations introduce these trade-offs:
+Các doanh nghiệp thương mại điện tử vận hành nhiều trung tâm fulfillment để giảm khoảng cách giao hàng. Vận hành đa kho tạo ra các đánh đổi:
 
-1. **Stock Fragmentation:** An order containing several SKUs may not be fully
-   available at the nearest warehouse.
-2. **Single-Warehouse Fulfillment:** Policy A requires the whole order to ship
-   from one warehouse, so a warehouse is eligible only if it holds all required
-   SKU quantities.
-3. **Capacity Bottlenecks:** Directing all orders to the closest warehouse can
-   exhaust its order-processing capacity and force later orders onto more
-   expensive routes.
-4. **Shipping Cost vs. Capacity:** A cheaper warehouse may have no capacity or
-   stock, so the solver must consider the whole batch rather than choosing the
-   nearest warehouse independently for each order.
+1. **Phân mảnh tồn kho:** một đơn chứa nhiều SKU có thể không đủ hàng tại kho gần nhất.
+2. **Giao từ một kho:** Policy A yêu cầu giao toàn bộ đơn từ một kho, nên kho chỉ đủ điều kiện khi có đủ số lượng của mọi SKU trong đơn.
+3. **Nghẽn công suất:** dồn mọi đơn về kho gần nhất có thể làm cạn công suất xử lý và buộc các đơn sau phải đi tuyến đắt hơn.
+4. **Chi phí vận chuyển và công suất:** một kho rẻ hơn có thể hết công suất hoặc hết hàng, nên bộ giải phải xét toàn bộ lô đơn thay vì chọn kho gần nhất cho từng đơn một cách độc lập.
 
-LogiMind balances these factors to minimize total shipping cost while respecting
-per-SKU inventory and order-count capacity. Split shipments, handling fees, and
-unassigned penalties are outside the current policy and are not optimized.
+LogiMind cân bằng các yếu tố này để tối thiểu hóa tổng chi phí vận chuyển trong khi tôn trọng tồn kho theo SKU và công suất theo số đơn. Giao tách đơn, phí xử lý và penalty cho đơn chưa phân bổ nằm ngoài chính sách hiện hành và không được tối ưu.
 
 ---
 
-## 3. Core Objectives
+## 3. Mục tiêu cốt lõi
 
-1. **Model Formulation:** Implement the Policy A MILP model in
-   [docs/mathematical-model.md](mathematical-model.md).
-2. **Benchmarking:** Compare a deterministic baseline heuristic with the MILP on
-   identical canonical datasets and report total shipping cost, assigned orders,
-   utilization, and runtime.
-3. **Data Realism:** Provide reproducible synthetic datasets under
-   `data/samples/`, validated against
-   [data/schema/dataset.schema.json](../data/schema/dataset.schema.json).
-4. **Interactive Visualization:** Let operators select a dataset, run an
-   allocation, and inspect one warehouse per order, cost, and capacity usage.
-5. **Academic Rigor:** Maintain reproducibility, automated tests, and one
-   authoritative data contract.
+1. **Mô hình hóa:** cài đặt mô hình MILP Policy A trong [docs/mathematical-model.md](mathematical-model.md).
+2. **Benchmark:** so sánh heuristic baseline tất định với MILP trên cùng bộ dữ liệu chuẩn; báo cáo tổng chi phí vận chuyển, số đơn được gán, mức sử dụng và thời gian chạy.
+3. **Dữ liệu thực tế:** cung cấp bộ dữ liệu tổng hợp tái lập được trong `data/samples/`, được kiểm tra theo [data/schema/dataset.schema.json](../data/schema/dataset.schema.json).
+4. **Trực quan hóa tương tác:** cho phép người vận hành chọn bộ dữ liệu, chạy phân bổ và xem một kho cho mỗi đơn, chi phí và mức sử dụng công suất.
+5. **Chuẩn học thuật:** duy trì khả năng tái lập, kiểm thử tự động và một hợp đồng dữ liệu chính thức duy nhất.
 
 ---
 
-## 4. Project Scope
+## 4. Phạm vi dự án
 
-### In Scope
+### Trong phạm vi
 
-- Multi-warehouse order assignment within one fulfillment planning window.
-- Single-SKU and multi-SKU orders.
-- Per-SKU inventory and order-count warehouse capacity.
-- Precomputed order–warehouse shipping costs.
-- Policy A statuses: `OPTIMAL`, `FEASIBLE`, `INFEASIBLE`, `NO_SOLUTION_FOUND`,
-  `ERROR`.
-- Comparison metrics: total shipping cost, assigned orders, warehouse
-  utilization, and computation time.
+- Phân bổ đơn hàng đa kho trong một cửa sổ lập kế hoạch fulfillment.
+- Đơn hàng một SKU và nhiều SKU.
+- Tồn kho theo từng SKU và công suất kho theo số đơn.
+- Chi phí vận chuyển đơn–kho được tính trước.
+- Các trạng thái Policy A: `OPTIMAL`, `FEASIBLE`, `INFEASIBLE`, `NO_SOLUTION_FOUND`, `ERROR`.
+- Chỉ số so sánh: tổng chi phí vận chuyển, số đơn được gán, mức sử dụng kho và thời gian tính toán.
 
-### Out of Scope (Deferred)
+### Ngoài phạm vi (tạm hoãn)
 
-- Split shipments, handling fees, and unassigned-order penalties (not part of
-  Policy A).
-- Real-time fleet vehicle routing and turn-by-turn navigation.
-- Long-term inventory replenishment and demand forecasting.
-- Dynamic pricing and carrier API negotiation.
+- Giao tách đơn, phí xử lý và penalty cho đơn chưa phân bổ (không thuộc Policy A).
+- Định tuyến đội xe thời gian thực và chỉ đường từng chặng.
+- Bổ sung tồn kho dài hạn và dự báo nhu cầu.
+- Định giá động và đàm phán API với hãng vận chuyển.
 
 ---
 
-## 5. Authoritative Documents
+## 5. Tài liệu chính thức
 
-| Topic | Document |
+| Chủ đề | Tài liệu |
 | :--- | :--- |
-| Mathematical model | [mathematical-model.md](mathematical-model.md) |
-| Requirements | [requirements.md](requirements.md) |
-| Dataset contract | [data-dictionary.md](data-dictionary.md) |
-| API interface | [api-contract.md](api-contract.md) |
-| Testing methodology | [testing-strategy.md](testing-strategy.md) |
-| Policy decision | [ADR-004](decisions/0004-allocation-policy-a.md) |
+| Mô hình toán học | [mathematical-model.md](mathematical-model.md) |
+| Yêu cầu hệ thống | [requirements.md](requirements.md) |
+| Hợp đồng bộ dữ liệu | [data-dictionary.md](data-dictionary.md) |
+| Giao diện API | [api-contract.md](api-contract.md) |
+| Phương pháp kiểm thử | [testing-strategy.md](testing-strategy.md) |
+| Quyết định chính sách | [ADR-004](decisions/0004-allocation-policy-a.md) |
+| Thuật ngữ | [glossary.md](glossary.md) |

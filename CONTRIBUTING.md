@@ -1,52 +1,52 @@
-# Contributing to LogiMind
+# Hướng dẫn đóng góp cho LogiMind
 
-This document is the Git and collaboration agreement for everyone working on **LogiMind**. It applies to all contributors, regardless of which part of the system they work on:
+Tài liệu này là thỏa thuận Git và cộng tác cho mọi người làm việc trên **LogiMind**. Nội dung áp dụng cho tất cả người đóng góp, bất kể làm ở phần nào của hệ thống:
 
-- the frontend web application;
-- the backend API and its SQLite database;
-- the optimization engine (baseline heuristics and the MILP solver);
-- the data layer, including benchmark datasets and sample fixtures;
-- integration, testing, and documentation.
+- ứng dụng web frontend;
+- API backend và cơ sở dữ liệu SQLite;
+- engine tối ưu (heuristic baseline và bộ giải MILP);
+- lớp dữ liệu, bao gồm bộ dữ liệu benchmark và fixture mẫu;
+- tích hợp, kiểm thử và tài liệu.
 
-Read [docs/project-overview.md](docs/project-overview.md) and [docs/architecture.md](docs/architecture.md) before your first contribution. Agree on interfaces in [docs/api-contract.md](docs/api-contract.md) and [docs/mathematical-model.md](docs/mathematical-model.md) before implementing dependent modules.
-
----
-
-## 1. Branch protection on `main`
-
-`main` is the shared, reviewed baseline. The GitHub ruleset **Protect main branch** applies to it and cannot be bypassed by any contributor:
-
-- **Never push directly to `main`.** Every change, including documentation and small fixes, goes through a Pull Request (PR).
-- **A PR requires at least one approving review** from someone other than its author. Self-approval is not possible on GitHub.
-- **All review conversations must be resolved** before the PR can be merged.
-- **New commits dismiss previous approvals.** After pushing updates, request a fresh review.
-- **`main` cannot be deleted or force-pushed.** Its history cannot be rewritten.
-- **Pull Requests target `main`.** Merge commits, squash merges, and rebase merges are all permitted; prefer **Squash and merge** for a single logical change so `main` stays readable.
-
-Protected branches are a safety net, not a review substitute: reviewers are expected to check correctness, scope, and tests.
+Đọc [docs/project-overview.md](docs/project-overview.md) và [docs/architecture.md](docs/architecture.md) trước lần đóng góp đầu tiên. Thống nhất giao diện tại [docs/api-contract.md](docs/api-contract.md) và [docs/mathematical-model.md](docs/mathematical-model.md) trước khi cài đặt các module phụ thuộc.
 
 ---
 
-## 2. Branch naming
+## 1. Bảo vệ nhánh `main`
 
-Create one branch per task, not per person. Use the pattern `<type>/<short-description>` in lower-case kebab-case English:
+`main` là baseline dùng chung đã được review. Ruleset GitHub **Protect main branch** áp dụng cho nhánh này và không người đóng góp nào được bỏ qua:
 
-| Prefix | Use for | Example |
+- **Không bao giờ push trực tiếp vào `main`.** Mọi thay đổi, kể cả tài liệu và sửa lỗi nhỏ, đều phải đi qua Pull Request (PR).
+- **PR cần ít nhất một review chấp thuận** từ người khác tác giả. GitHub không cho phép tự chấp thuận.
+- **Mọi hội thoại review phải được giải quyết** trước khi merge.
+- **Commit mới sẽ hủy các chấp thuận trước đó.** Sau khi push cập nhật, phải yêu cầu review lại.
+- **Không thể xóa hoặc force-push `main`.** Lịch sử của nhánh không được viết lại.
+- **PR phải nhắm tới `main`.** Merge commit, squash merge và rebase merge đều được phép; ưu tiên **Squash and merge** cho một thay đổi logic duy nhất để `main` dễ đọc.
+
+Nhánh được bảo vệ là lưới an toàn, không thay thế review: người review vẫn phải kiểm tra tính đúng đắn, phạm vi và test.
+
+---
+
+## 2. Đặt tên nhánh
+
+Tạo một nhánh cho mỗi nhiệm vụ, không phải cho mỗi người. Dùng mẫu `<type>/<short-description>` bằng tiếng Anh, chữ thường, kebab-case:
+
+| Tiền tố | Dùng cho | Ví dụ |
 | :--- | :--- | :--- |
-| `feat/` | New features or modules | `feat/milp-solver-adapter`, `feat/allocation-dashboard` |
-| `fix/` | Bug fixes and constraint corrections | `fix/capacity-overflow-check`, `fix/api-infeasible-response` |
-| `docs/` | Documentation only | `docs/clarify-infeasibility-status`, `docs/api-timeout-behavior` |
-| `test/` | Test suites, fixtures, and test data | `test/infeasible-capacity-fixtures` |
-| `refactor/` | Internal restructuring with no behavior change | `refactor/extract-allocation-service` |
-| `chore/` | Tooling, CI, dependencies, housekeeping | `chore/ci-json-validation` |
+| `feat/` | Tính năng hoặc module mới | `feat/milp-solver-adapter`, `feat/allocation-dashboard` |
+| `fix/` | Sửa lỗi và sửa ràng buộc | `fix/capacity-overflow-check`, `fix/api-infeasible-response` |
+| `docs/` | Chỉ tài liệu | `docs/clarify-infeasibility-status`, `docs/api-timeout-behavior` |
+| `test/` | Bộ kiểm thử, fixture và dữ liệu test | `test/infeasible-capacity-fixtures` |
+| `refactor/` | Tái cấu trúc nội bộ, không đổi hành vi | `refactor/extract-allocation-service` |
+| `chore/` | Công cụ, CI, dependency, việc vặt | `chore/ci-json-validation` |
 
-Keep branches short-lived. Do not reuse a branch after its PR is merged, and do not create personal branches (for example, `my-changes`).
+Giữ nhánh ngắn hạn. Không dùng lại nhánh sau khi PR đã merge và không tạo nhánh cá nhân (ví dụ `my-changes`).
 
 ---
 
-## 3. Commit messages
+## 3. Thông điệp commit
 
-All commits follow [Conventional Commits](https://www.conventionalcommits.org/):
+Mọi commit tuân theo [Conventional Commits](https://www.conventionalcommits.org/):
 
 ```text
 <type>(<optional scope>): <short description>
@@ -56,94 +56,94 @@ All commits follow [Conventional Commits](https://www.conventionalcommits.org/):
 [optional footer: e.g. Closes #12]
 ```
 
-- Write the description in the imperative mood, lower-case, without a trailing period: `add`, `fix`, `remove`, not `added` or `fixes`.
-- Keep the first line at roughly 72 characters or fewer.
-- Make one logical change per commit. Do not mix refactoring, formatting, and new behavior in the same commit.
-- Use a scope when it clarifies the affected component: `optimizer`, `api`, `db`, `ui`, `data`, `tests`, `docs`, `ci`.
+- Viết mô tả ở thể mệnh lệnh, chữ thường, không có dấu chấm cuối: `add`, `fix`, `remove`, không dùng `added` hay `fixes`.
+- Giữ dòng đầu khoảng 72 ký tự hoặc ít hơn.
+- Mỗi commit là một thay đổi logic. Không trộn refactor, định dạng và hành vi mới trong cùng commit.
+- Dùng scope khi cần làm rõ thành phần bị ảnh hưởng: `optimizer`, `api`, `db`, `ui`, `data`, `tests`, `docs`, `ci`.
 
-| Type | Purpose | LogiMind example |
+| Loại | Mục đích | Ví dụ LogiMind |
 | :--- | :--- | :--- |
-| `feat` | New capability | `feat(optimizer): add allocation logic` |
-| `fix` | Bug or constraint correction | `fix(optimizer): prevent capacity overflow in baseline` |
-| `docs` | Documentation only | `docs: clarify infeasibility status` |
-| `test` | Adding or updating tests | `test(optimizer): add infeasible capacity fixture` |
-| `refactor` | No behavior change | `refactor(api): extract allocation service` |
-| `chore` | Maintenance and tooling | `chore(ci): validate benchmark JSON fixtures` |
+| `feat` | Năng lực mới | `feat(optimizer): add allocation logic` |
+| `fix` | Sửa lỗi hoặc ràng buộc | `fix(optimizer): prevent capacity overflow in baseline` |
+| `docs` | Chỉ tài liệu | `docs: clarify infeasibility status` |
+| `test` | Thêm hoặc cập nhật test | `test(optimizer): add infeasible capacity fixture` |
+| `refactor` | Không đổi hành vi | `refactor(api): extract allocation service` |
+| `chore` | Bảo trì và công cụ | `chore(ci): validate benchmark JSON fixtures` |
 
-When a PR is squash-merged, its **PR title** becomes the commit message on `main`, so keep the PR title in Conventional Commits form as well.
+Khi PR được squash-merge, **tiêu đề PR** trở thành thông điệp commit trên `main`, nên tiêu đề PR cũng phải theo Conventional Commits.
 
 ---
 
-## 4. Development workflow
+## 4. Quy trình phát triển
 
-### Step 1: Synchronize with `main`
+### Bước 1: Đồng bộ với `main`
 
 ```bash
 git checkout main
 git pull --ff-only origin main
 ```
 
-### Step 2: Create a task branch
+### Bước 2: Tạo nhánh nhiệm vụ
 
 ```bash
 git checkout -b feat/your-task-description
 ```
 
-### Step 3: Implement your changes
+### Bước 3: Triển khai thay đổi
 
-Stay within the scope of the task. Do not refactor unrelated modules or change mathematical definitions without an agreed specification. If your change affects an interface, update the contract documentation in the same PR.
+Bám sát phạm vi nhiệm vụ. Không refactor module không liên quan và không thay đổi định nghĩa toán học khi chưa có đặc tả được thống nhất. Nếu thay đổi ảnh hưởng đến giao diện, cập nhật tài liệu hợp đồng trong cùng PR.
 
-### Step 4: Run the relevant tests locally
+### Bước 4: Chạy test liên quan tại máy
 
-Run the checks that cover what you changed, and fix failures before committing:
+Chạy các kiểm tra bao phủ phần đã sửa và sửa lỗi trước khi commit:
 
 ```bash
-# Automated test suite (once test files are present)
+# Bộ kiểm thử tự động
 pytest tests/ -v
 
-# Validate JSON benchmark or sample fixtures
+# Kiểm tra cú pháp JSON của benchmark hoặc fixture mẫu
 python -m json.tool data/samples/sample_small.json > /dev/null
 python -m json.tool data/legacy/benchmark_data.json > /dev/null
 
-# Smoke-check the order-allocation script
+# Chạy thử script phân bổ đơn
 python scripts/validate_orders.py
 ```
 
-If a component has no tests yet, state that explicitly in the PR instead of claiming the change was verified. Do not report a test as passing unless you ran it locally or in CI.
+Nếu một thành phần chưa có test, hãy nêu rõ trong PR thay vì tuyên bố đã kiểm chứng. Không báo test pass nếu chưa chạy tại máy hoặc trong CI.
 
-### Step 5: Review your own diff
+### Bước 5: Tự review diff
 
 ```bash
 git status --short
 git diff
 ```
 
-Confirm that no secrets, database files, generated artifacts, or unrelated edits are included.
+Xác nhận không có secret, file cơ sở dữ liệu, artifact sinh tự động hoặc thay đổi không liên quan.
 
-### Step 6: Stage and commit
+### Bước 6: Stage và commit
 
 ```bash
 git add <modified-files>
 git commit -m "feat(optimizer): add allocation logic"
 ```
 
-### Step 7: Push the branch
+### Bước 7: Push nhánh
 
 ```bash
 git push -u origin feat/your-task-description
 ```
 
-### Step 8: Open a Pull Request
+### Bước 8: Mở Pull Request
 
-Open a PR through the GitHub interface (or with `gh pr create --base main --head feat/your-task-description`) and complete [the PR template](.github/pull_request_template.md) in full.
+Mở PR qua giao diện GitHub (hoặc `gh pr create --base main --head feat/your-task-description`) và điền đầy đủ [mẫu PR](.github/pull_request_template.md).
 
-### Step 9: Request review and address feedback
+### Bước 9: Yêu cầu review và xử lý phản hồi
 
-Request at least one reviewer. Respond to every comment, push the requested changes, and re-request review. Resolve conversations only once the concern is addressed.
+Yêu cầu ít nhất một người review. Trả lời mọi bình luận, push thay đổi được yêu cầu và yêu cầu review lại. Chỉ đánh dấu hội thoại đã giải quyết khi vấn đề được xử lý.
 
-### Step 10: Merge and clean up
+### Bước 10: Merge và dọn dẹp
 
-After approval, a green CI run, and resolved conversations, merge the PR. Then delete the branch:
+Sau khi được chấp thuận, CI xanh và mọi hội thoại đã giải quyết, merge PR. Sau đó xóa nhánh:
 
 ```bash
 git push origin --delete feat/your-task-description
@@ -152,37 +152,37 @@ git branch -d feat/your-task-description
 
 ---
 
-## 5. Pull Request expectations
+## 5. Kỳ vọng với Pull Request
 
-A reviewer should be able to understand and verify a PR without reading the entire codebase. Every PR must:
+Người review phải hiểu và kiểm chứng được PR mà không cần đọc toàn bộ codebase. Mọi PR phải:
 
-- **Explain purpose and scope** — what problem it solves and what it deliberately does not change.
-- **Link the related issue or task** — for example `Closes #12`.
-- **List the modified components** — frontend, backend/API, SQLite schema, optimization engine (baseline or MILP), data fixtures, tests, or documentation.
-- **Include test results** — the commands executed and their outcome, or a clear statement that tests could not be run and why.
-- **Note risks and limitations** — solver timeouts, unhandled edge cases, or follow-up work.
+- **Nêu mục đích và phạm vi** — giải quyết vấn đề gì và chủ động không thay đổi gì.
+- **Liên kết issue hoặc nhiệm vụ** — ví dụ `Closes #12`.
+- **Liệt kê thành phần đã sửa** — frontend, backend/API, schema SQLite, engine tối ưu (baseline hoặc MILP), fixture dữ liệu, test hoặc tài liệu.
+- **Kèm kết quả test** — lệnh đã chạy và kết quả, hoặc nêu rõ vì sao không thể chạy.
+- **Ghi chú rủi ro và hạn chế** — timeout bộ giải, edge case chưa xử lý hoặc việc tiếp theo.
 
-Keep PRs focused and reviewable. Split large changes into a sequence of smaller PRs rather than bundling unrelated work.
+Giữ PR tập trung và dễ review. Chia thay đổi lớn thành nhiều PR nhỏ thay vì gộp việc không liên quan.
 
-### CI and review rules
+### Quy tắc CI và review
 
-The [CI workflow](.github/workflows/ci.yml) validates JSON fixtures, internal Markdown links, and essential repository files. CI must be green before a PR is merged. The ruleset currently requires human approval and conversation resolution; it does **not** yet require a CI status check, so reviewers must confirm CI results themselves.
+[Workflow CI](.github/workflows/ci.yml) kiểm tra fixture JSON, liên kết Markdown nội bộ và các file thiết yếu của repository. CI phải xanh trước khi merge. Ruleset hiện yêu cầu phê duyệt của người và giải quyết hội thoại; **chưa** yêu cầu status check CI, nên người review phải tự xác nhận kết quả CI.
 
-Before merging:
+Trước khi merge:
 
-- [ ] At least one approval from a contributor other than the author.
-- [ ] Every review conversation resolved.
-- [ ] CI passing.
-- [ ] Branch up to date with `main` and conflicts resolved.
-- [ ] No secrets, database files, or generated artifacts committed.
+- [ ] Có ít nhất một phê duyệt từ người khác tác giả.
+- [ ] Mọi hội thoại review đã giải quyết.
+- [ ] CI pass.
+- [ ] Nhánh đã cập nhật với `main` và xung đột đã xử lý.
+- [ ] Không commit secret, file cơ sở dữ liệu hoặc artifact sinh tự động.
 
 ---
 
-## 6. Keeping your branch in sync and resolving conflicts
+## 6. Đồng bộ nhánh và xử lý xung đột
 
-When `main` advances while your branch is open, update it before requesting a final review.
+Khi `main` tiến lên trong lúc nhánh đang mở, cập nhật nhánh trước khi yêu cầu review cuối.
 
-### Option A: Merge `main` into your branch (recommended)
+### Cách A: Merge `main` vào nhánh (khuyến nghị)
 
 ```bash
 git fetch origin
@@ -192,9 +192,9 @@ git checkout feat/your-task-description
 git merge main
 ```
 
-### Option B: Rebase onto `main`
+### Cách B: Rebase lên `main`
 
-Use this only if you are comfortable rewriting your own branch history:
+Chỉ dùng khi bạn thoải mái viết lại lịch sử nhánh của chính mình:
 
 ```bash
 git fetch origin
@@ -203,12 +203,12 @@ git rebase origin/main
 git push --force-with-lease origin feat/your-task-description
 ```
 
-`--force-with-lease` is acceptable **only** on your own task branch. Never force-push `main`, and never rewrite a branch another contributor is working on.
+`--force-with-lease` chỉ chấp nhận **trên nhánh nhiệm vụ của chính bạn**. Không bao giờ force-push `main` và không viết lại nhánh người khác đang làm việc.
 
-### Resolving conflicts safely
+### Xử lý xung đột an toàn
 
-1. Run `git status` to list the conflicted files.
-2. Open each file and locate the conflict markers:
+1. Chạy `git status` để liệt kê file xung đột.
+2. Mở từng file và tìm dấu xung đột:
 
    ```text
    <<<<<<< HEAD
@@ -218,55 +218,56 @@ git push --force-with-lease origin feat/your-task-description
    >>>>>>> main
    ```
 
-3. Edit the file so that both sets of changes are integrated correctly, then delete all marker lines.
-4. Stage the resolved files:
+3. Sửa file để tích hợp đúng cả hai bên, sau đó xóa mọi dòng đánh dấu.
+4. Stage các file đã giải quyết:
 
    ```bash
    git add <resolved-files>
    ```
 
-5. Finish the operation:
-   - After a merge: `git commit` (a merge commit is created).
-   - After a rebase: `git rebase --continue`.
-6. **Re-run the relevant tests** to confirm the resolution did not break anything.
-7. Push the branch and request a new review — your previous approval was dismissed by the push.
+5. Hoàn tất thao tác:
+   - Sau merge: `git commit` (tạo merge commit).
+   - Sau rebase: `git rebase --continue`.
+6. **Chạy lại test liên quan** để xác nhận việc giải quyết không làm hỏng gì.
+7. Push nhánh và yêu cầu review mới — lần push đã hủy phê duyệt trước đó.
 
-If the conflict becomes unmanageable, abort and start over rather than committing a partial resolution:
+Nếu xung đột quá phức tạp, hãy hủy và làm lại thay vì commit một bản giải quyết dở dang:
 
 ```bash
-git merge --abort     # or: git rebase --abort
+git merge --abort     # hoặc: git rebase --abort
 ```
 
-Do not resolve conflicts by deleting code you do not understand. When in doubt, ask the author of the incoming change.
+Không giải quyết xung đột bằng cách xóa code bạn không hiểu. Khi không chắc, hãy hỏi tác giả của thay đổi đến.
 
 ---
 
-## 7. Security and repository hygiene
+## 7. Bảo mật và vệ sinh repository
 
-- **Never commit secrets.** This includes passwords, API keys, access tokens, certificates, and `.env` files. Copy [.env.example](.env.example) to `.env` locally and keep `.env` untracked.
-- **Never commit database files** (`*.db`, `*.sqlite`, `*.sqlite3`) or generated data. Only curated fixtures under `data/samples/` belong in Git; keep large or generated datasets in `data/raw/` or `data/processed/` on your machine.
-- **Avoid unnecessary generated files and large binaries.** Do not add build output, caches, logs, archives, or documents that are not part of the deliverable.
-- **Do not add editor, OS, or virtual-environment files** (`.venv/`, `.vscode/`, `.idea/`, `.DS_Store`). They are already listed in `.gitignore`.
-- **Check what you are staging** before every commit:
+- **Không bao giờ commit secret.** Bao gồm mật khẩu, API key, access token, chứng chỉ và file `.env`. Sao chép [.env.example](.env.example) thành `.env` tại máy và giữ `.env` ngoài Git.
+- **Không commit file cơ sở dữ liệu** (`*.db`, `*.sqlite`, `*.sqlite3`) hoặc dữ liệu sinh tự động. Chỉ fixture đã được duyệt trong `data/samples/` thuộc về Git; giữ dữ liệu lớn hoặc sinh tự động trong `data/raw/` hoặc `data/processed/` tại máy.
+- **Tránh file sinh tự động và binary lớn không cần thiết.** Không thêm build output, cache, log, archive hoặc tài liệu không thuộc hạng mục bàn giao.
+- **Không thêm file của editor, hệ điều hành hoặc môi trường ảo** (`.venv/`, `.vscode/`, `.idea/`, `.DS_Store`). Chúng đã có trong `.gitignore`.
+- **Kiểm tra nội dung stage** trước mỗi commit:
 
   ```bash
   git status --short
   git diff --cached --stat
   ```
 
-If a secret is committed by mistake, revoke or rotate it immediately and notify the maintainers. Deleting it in a later commit does not remove it from the repository history.
+Nếu lỡ commit secret, hãy thu hồi hoặc xoay khóa ngay và thông báo cho người duy trì. Xóa secret trong commit sau không loại bỏ nó khỏi lịch sử repository.
 
 ---
 
-## 8. Related documentation
+## 8. Tài liệu liên quan
 
-| Document | Purpose |
+| Tài liệu | Mục đích |
 | :--- | :--- |
-| [docs/project-overview.md](docs/project-overview.md) | Problem context, scope, and objectives |
-| [docs/architecture.md](docs/architecture.md) | Components, data flow, and technology stack |
-| [docs/api-contract.md](docs/api-contract.md) | Request/response contracts between frontend and backend |
-| [docs/mathematical-model.md](docs/mathematical-model.md) | MILP formulation and constraint definitions |
-| [docs/data-dictionary.md](docs/data-dictionary.md) | Dataset schemas and field definitions |
-| [docs/testing-strategy.md](docs/testing-strategy.md) | Test tiers, invariants, and required edge cases |
-| [.github/pull_request_template.md](.github/pull_request_template.md) | Required PR structure |
-| [data/README.md](data/README.md) | Dataset tracking policy |
+| [docs/project-overview.md](docs/project-overview.md) | Bối cảnh bài toán, phạm vi và mục tiêu |
+| [docs/architecture.md](docs/architecture.md) | Thành phần, luồng dữ liệu và công nghệ |
+| [docs/api-contract.md](docs/api-contract.md) | Hợp đồng yêu cầu/phản hồi giữa frontend và backend |
+| [docs/mathematical-model.md](docs/mathematical-model.md) | Mô hình MILP và định nghĩa ràng buộc |
+| [docs/data-dictionary.md](docs/data-dictionary.md) | Schema bộ dữ liệu và định nghĩa trường |
+| [docs/testing-strategy.md](docs/testing-strategy.md) | Các bậc test, bất biến và edge case bắt buộc |
+| [docs/glossary.md](docs/glossary.md) | Thuật ngữ Việt–Anh dùng thống nhất |
+| [.github/pull_request_template.md](.github/pull_request_template.md) | Cấu trúc PR bắt buộc |
+| [data/README.md](data/README.md) | Quy tắc quản lý bộ dữ liệu |

@@ -1,42 +1,29 @@
-# Source Code Directory: `src/`
+# Thư mục mã nguồn: `src/`
 
-Reserved for the Python application package. **No package source exists yet.**
-The legacy prototype is intentionally kept out of this directory at
-[`scripts/validate_orders.py`](../scripts/validate_orders.py).
+Dành cho package ứng dụng Python. **Chưa có mã nguồn package.** Prototype cũ được cố ý giữ ngoài thư mục này tại [`scripts/validate_orders.py`](../scripts/validate_orders.py).
 
-## Intended layout
+## Cấu trúc dự kiến
 
 ```text
 src/
 └── logimind/
     ├── __init__.py
-    ├── algorithms/        # TV3: baseline heuristics, MILP model, solver adapter, metrics
-    ├── backend/           # TV5: FastAPI application, routes, services, configuration
-    └── data/              # TV2/TV5: schema models, dataset loaders, persistence helpers
+    ├── algorithms/        # TV3: heuristic baseline, mô hình MILP, adapter bộ giải, chỉ số
+    ├── backend/           # TV5: ứng dụng FastAPI, route, service, cấu hình
+    └── data/              # TV2/TV5: model schema, bộ nạp dữ liệu, tiện ích lưu trữ
 ```
 
-The React + Vite frontend is a separate application under `frontend/`. It must
-not be placed inside the Python package.
+Frontend React + Vite là ứng dụng riêng trong `frontend/`. Không đặt frontend bên trong package Python.
 
-## Rules for implementation
+## Quy tắc triển khai
 
-1. **Create the package only when real code is added.** Do not commit empty
-   `__init__.py` files, fake modules, or placeholder services.
-2. **Dependencies:** add a `pyproject.toml` when the package needs packaging,
-   runtime dependencies, or tool configuration. Do not add one for decoration.
-3. **Imports:** use absolute imports rooted at `logimind` (for example
-   `from logimind.algorithms.baseline import allocate`).
-4. **Contracts:** consume the canonical Policy A dataset contract from
-   [`docs/data-dictionary.md`](../docs/data-dictionary.md) and the API contract
-   from [`docs/api-contract.md`](../docs/api-contract.md). Do not invent field
-   names or business rules.
-5. **Determinism:** accept fixed seeds and use a documented tie-breaking rule so
-   benchmark runs are reproducible.
-6. **Testing:** add unit tests under [`tests/unit/`](../tests/README.md) in the
-   same pull request as the implementation.
+1. **Chỉ tạo package khi có code thật.** Không commit `__init__.py` rỗng, module giả hoặc service tạm.
+2. **Dependency:** thêm `pyproject.toml` khi package cần đóng gói, dependency runtime hoặc cấu hình công cụ. Không thêm chỉ để trang trí.
+3. **Import:** dùng import tuyệt đối gốc `logimind` (ví dụ `from logimind.algorithms.baseline import allocate`).
+4. **Hợp đồng:** dùng hợp đồng bộ dữ liệu Policy A chuẩn tại [`docs/data-dictionary.md`](../docs/data-dictionary.md) và hợp đồng API tại [`docs/api-contract.md`](../docs/api-contract.md). Không tự đặt tên trường hoặc quy tắc nghiệp vụ.
+5. **Tất định:** nhận seed cố định và dùng quy tắc phá hòa được ghi rõ để các lần chạy benchmark tái lập được.
+6. **Kiểm thử:** thêm unit test trong [`tests/unit/`](../tests/README.md) cùng Pull Request với phần cài đặt.
 
-## Current status
+## Trạng thái hiện tại
 
-`src/` contains only this README. TV3 (algorithms), TV5 (backend), and shared
-data-access code are not implemented. See
-[`docs/architecture.md`](../docs/architecture.md) for the proposed component map.
+`src/` chỉ chứa README này. TV3 (thuật toán), TV5 (backend) và mã truy cập dữ liệu dùng chung chưa được triển khai. Xem [`docs/architecture.md`](../docs/architecture.md) để biết sơ đồ thành phần đề xuất.

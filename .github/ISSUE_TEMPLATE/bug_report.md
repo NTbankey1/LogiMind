@@ -1,27 +1,27 @@
 ---
-name: Bug Report
-about: Report a software bug, algorithmic violation, or broken test
-title: '[BUG] <Short description>'
+name: Báo lỗi
+about: Báo cáo lỗi phần mềm, vi phạm thuật toán hoặc test bị hỏng
+title: '[BUG] <Mô tả ngắn>'
 labels: ['bug']
 assignees: ''
 ---
 
-### Bug Description
-A clear and concise description of what the bug is.
+### Mô tả lỗi
+Mô tả rõ ràng và ngắn gọn lỗi đang gặp.
 
-### Steps to Reproduce
-1. Execute command: `...`
-2. Provide input dataset: `...`
-3. Observe error or unexpected behavior.
+### Các bước tái hiện
+1. Chạy lệnh: `...`
+2. Cung cấp dataset đầu vào: `...`
+3. Quan sát lỗi hoặc hành vi bất thường.
 
-### Expected Behavior
-What should have happened (e.g. solver returns feasible allocation, capacity not exceeded).
+### Hành vi mong đợi
+Điều gì đáng lẽ phải xảy ra (ví dụ: bộ giải trả về phương án khả thi, không vượt công suất).
 
-### Actual Behavior / Error Log
+### Hành vi thực tế / log lỗi
 ```text
-Paste terminal logs or error tracebacks here.
+Dán log terminal hoặc traceback lỗi tại đây.
 ```
 
-### Environment
-- OS: [e.g. Linux Ubuntu / macOS / Windows]
-- Python version: [e.g. 3.10]
+### Môi trường
+- Hệ điều hành: [ví dụ: Linux Ubuntu / macOS / Windows]
+- Phiên bản Python: [ví dụ: 3.10]

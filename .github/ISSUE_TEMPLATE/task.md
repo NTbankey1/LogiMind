@@ -1,26 +1,26 @@
 ---
-name: Project Task
-about: Track an individual role deliverable or team action item
-title: '[TASK] <Role>: <Short description>'
+name: Nhiệm vụ dự án
+about: Theo dõi một hạng mục bàn giao của vai trò hoặc đầu việc của nhóm
+title: '[TASK] <Vai trò>: <Mô tả ngắn>'
 labels: ['task']
 assignees: ''
 ---
 
-### Objective & Scope
-Describe the deliverable to be completed.
+### Mục tiêu & phạm vi
+Mô tả hạng mục cần hoàn thành.
 
-### Assignee Role
-- [ ] TV1 — Mathematical Modeling
-- [ ] TV2 — Data & Datasets
-- [ ] TV3 — Algorithms (Baseline / MILP)
-- [ ] TV4 — Frontend UI
-- [ ] TV5 — Backend & Database
-- [ ] TV6 — QA & Integration
+### Vai trò phụ trách
+- [ ] TV1 — Mô hình toán học
+- [ ] TV2 — Dữ liệu & bộ dữ liệu
+- [ ] TV3 — Thuật toán (Baseline / MILP)
+- [ ] TV4 — Giao diện người dùng (Frontend)
+- [ ] TV5 — Backend & cơ sở dữ liệu
+- [ ] TV6 — QA & tích hợp
 
-### Deliverables Checklist
-- [ ] Code or document artifact created/updated
-- [ ] Unit or integration tests added
-- [ ] Handoff documentation verified
+### Danh mục bàn giao
+- [ ] Đã tạo/cập nhật code hoặc tài liệu
+- [ ] Đã bổ sung unit test hoặc integration test
+- [ ] Đã xác minh tài liệu bàn giao
 
-### Dependencies
-- Blocking or blocked by: 
+### Phụ thuộc
+- Đang chặn hoặc bị chặn bởi:

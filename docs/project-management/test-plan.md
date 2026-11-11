@@ -1,232 +1,233 @@
-# LogiMind Test Plan
+# Kế hoạch kiểm thử LogiMind
 
-> **Owner:** TV6 (Integration, Testing & Reporting)
-> **Last verified:** 2026-11-09
-> **Baseline:** `origin/main` at `7424ba4`
-> **Principle:** No test is reported as passing unless it was executed and its output was observed. Planned tests are marked as planned, not completed.
-
----
-
-## 1. Objectives and scope
-
-This plan defines how TV6 will verify that LogiMind satisfies the requirements in [requirements.md](../requirements.md) and the invariants/edge cases in [testing-strategy.md](../testing-strategy.md). It covers unit, contract, integration, system, and end-to-end testing. It does **not** redefine business rules, API schemas, or algorithms owned by TV1–TV5.
-
-**In scope:** allocation behavior, mathematical invariants, data validation, API contracts, persistence, solver integration, UI flow, and reporting evidence.
-**Out of scope:** performance tuning beyond recorded benchmark metrics, deployment, and business-rule decisions that remain unapproved.
+> **Chủ sở hữu:** TV6 (Tích hợp, Kiểm thử & Báo cáo)
+> **Kiểm chứng lần cuối:** 2026-11-11
+> **Baseline:** `main` tại `f7f5862`
+> **Nguyên tắc:** Không báo một test là pass nếu chưa thực sự chạy và quan sát output. Test dự kiến được đánh dấu là dự kiến, không phải đã hoàn thành.
 
 ---
 
-## 2. Current test inventory
+## 1. Mục tiêu và phạm vi
 
-| Item | State | Evidence |
+Kế hoạch này định nghĩa cách TV6 kiểm chứng LogiMind đáp ứng yêu cầu trong [requirements.md](../requirements.md) và các bất biến/edge case trong [testing-strategy.md](../testing-strategy.md). Phạm vi gồm unit, contract, integration, system và end-to-end test. Tài liệu **không** định nghĩa lại quy tắc nghiệp vụ, schema API hoặc thuật toán thuộc TV1–TV5.
+
+**Trong phạm vi:** hành vi phân bổ, bất biến toán học, kiểm tra dữ liệu, hợp đồng API, lưu trữ, tích hợp bộ giải, luồng UI và minh chứng báo cáo.
+**Ngoài phạm vi:** tinh chỉnh hiệu năng ngoài các chỉ số benchmark đã ghi, triển khai production và các quyết định quy tắc nghiệp vụ chưa được duyệt.
+
+---
+
+## 2. Hiện trạng kiểm thử
+
+| Hạng mục | Trạng thái | Minh chứng |
 | :--- | :--- | :--- |
-| Automated test suite | **Not implemented** | `tests/` contains only a README |
-| Test framework configuration | **Not present** | No `pytest.ini`, `pyproject.toml`, `conftest.py`, or dependency manifest |
-| CI test execution | **Not present** | [.github/workflows/ci.yml](../../.github/workflows/ci.yml) runs JSON/Markdown/file checks only |
-| JSON syntax validation | **Exists in CI** | `data/samples/*.json` parsed with `python -m json.tool` |
-| Markdown link validation | **Exists in CI** | Internal relative links checked |
-| Essential-file check | **Exists in CI** | README, CLAUDE, CONTRIBUTING, CHANGELOG, `.gitignore`, `.editorconfig`, `.gitattributes` |
-| Prototype smoke run | **Manual only** | `python3 scripts/validate_orders.py` executed; printed assignments; no assertions |
-| Requirement-based tests (T1–T9) | **Not implemented** | Requirements table exists, no test IDs execute |
-| Edge-case tests (EDGE-01–05) | **Not implemented** | Testing-strategy table exists, no test files |
-| API/DB/frontend/solver tests | **Not possible yet** | Modules do not exist |
+| Bộ test tự động | **Đã triển khai (TV2)** | `tests/test_datasets.py`, 60 test; đã chạy pass ngày 2026-11-11 |
+| Cấu hình framework test | **Đã có** | `pyproject.toml` có `[tool.pytest.ini_options]` |
+| CI chạy test | **Đã có (job TV2)** | [.github/workflows/ci.yml](../../.github/workflows/ci.yml) chạy `python -m unittest discover -s tests -v` |
+| Kiểm tra cú pháp JSON | **Có trong CI** | Fixture trong `data/samples/` và `data/legacy/` được parse bằng `python -m json.tool` |
+| Kiểm tra liên kết Markdown | **Có trong CI** | Liên kết tương đối nội bộ được kiểm tra |
+| Kiểm tra file thiết yếu | **Có trong CI** | README, CLAUDE, CONTRIBUTING, CHANGELOG, `.gitignore`, `.editorconfig`, `.gitattributes` |
+| Smoke prototype | **Có trong CI (không assertion)** | `python scripts/validate_orders.py` |
+| Test theo yêu cầu (T1–T9) | **Chưa triển khai** | Bảng yêu cầu tồn tại, chưa có mã test tương ứng |
+| Test edge case (EDGE-01–10) | **Một phần** | Bộ TV2 kiểm chứng trạng thái khả thi của fixture ở mức dữ liệu; chưa có test bộ giải/API cho từng EDGE |
+| Test API/DB/frontend/solver | **Chưa thể thực hiện** | Các module chưa tồn tại |
 
-**Conclusion:** CI is green, but it proves repository hygiene only. It does not prove allocation correctness, constraint satisfaction, or integration behavior.
+**Kết luận:** CI đã chạy bộ test dữ liệu TV2, nhưng chưa chứng minh tính đúng đắn của phân bổ, thỏa mãn ràng buộc ở mức bộ giải hoặc hành vi tích hợp.
 
 ---
 
-## 3. Test levels and responsibilities
+## 3. Các bậc kiểm thử và trách nhiệm
 
-| Level | Purpose | Executed by | Prerequisites | Primary evidence |
+| Bậc | Mục đích | Người thực hiện | Điều kiện tiên quyết | Minh chứng chính |
 | :--- | :--- | :--- | :--- | :--- |
-| **Unit** | Verify functions, validators, heuristics, and cost calculations in isolation | Module owners (TV3/TV5); TV6 reviews evidence | Module code; canonical fixtures | Test command, pass/fail output, coverage report if available |
-| **Contract** | Verify solver adapter and API boundaries against frozen contracts | TV6 with TV3/TV5 | G1 contracts; adapter/API implementation | Contract test output; request/response transcripts |
-| **Integration** | Verify API ↔ solver ↔ SQLite behavior on canonical fixtures | TV6 with TV5 | G2 fixtures; G3 solver; G4 backend | Integration run log; DB read-back evidence |
-| **System** | Verify end-to-end backend behavior, including invalid/infeasible/timeout cases | TV6 | G4 backend; G2 fixtures | System test report; status/HTTP evidence |
-| **E2E** | Verify user flow from dataset selection to results display | TV6 with TV4 | G5 frontend; live backend | Recorded walkthrough; E2E test output |
-| **Benchmark/performance** | Record Baseline vs MILP cost, runtime, status, and utilization | TV3 supplies; TV6 verifies | G3 solver; G2 fixtures | Benchmark table with environment and run configuration |
+| **Unit** | Kiểm tra hàm, validator, heuristic và tính chi phí độc lập | Chủ sở hữu module (TV3/TV5); TV6 review minh chứng | Mã module; fixture chuẩn | Lệnh test, output pass/fail, báo cáo coverage nếu có |
+| **Contract** | Kiểm tra adapter bộ giải và ranh giới API theo hợp đồng đã chốt | TV6 cùng TV3/TV5 | Hợp đồng G1; cài đặt adapter/API | Output contract test; bản ghi request/response |
+| **Integration** | Kiểm tra API ↔ solver ↔ SQLite trên fixture chuẩn | TV6 cùng TV5 | Fixture G2; bộ giải G3; backend G4 | Log lần chạy tích hợp; minh chứng đọc lại DB |
+| **System** | Kiểm tra hành vi backend end-to-end, gồm lỗi/không khả thi/timeout | TV6 | Backend G4; fixture G2 | Báo cáo system test; minh chứng trạng thái/HTTP |
+| **E2E** | Kiểm tra luồng người dùng từ chọn dữ liệu đến hiển thị kết quả | TV6 cùng TV4 | Frontend G5; backend thật | Bản ghi walkthrough; output E2E test |
+| **Benchmark/hiệu năng** | Ghi chi phí Baseline và MILP, thời gian, trạng thái và mức sử dụng | TV3 cung cấp; TV6 kiểm chứng | Bộ giải G3; fixture G2 | Bảng benchmark kèm môi trường và cấu hình chạy |
 
-The testing tiers in [testing-strategy.md §2](../testing-strategy.md) remain the reference. Tooling mentioned there (`pytest`, optional Playwright/request tests) is **proposed**; nothing is installed or configured yet.
+Các bậc trong [testing-strategy.md §3](../testing-strategy.md) vẫn là tham chiếu chính. Công cụ nêu ở đó (`pytest`, Playwright/request test tùy chọn) là **đề xuất**; `pytest` đã có trong extra `dev`, các công cụ còn lại chưa cấu hình.
 
 ---
 
-## 4. Requirements traceability — T1 to T9
+## 4. Truy vết yêu cầu — T1 đến T9
 
-Source: [requirements.md §7](../requirements.md) (T1–T9). “Preparable now” means test design/fixtures can be drafted without module code; execution still requires the prerequisites.
+Nguồn: [requirements.md §7](../requirements.md) (T1–T9). "Có thể chuẩn bị ngay" nghĩa là thiết kế test/fixture có thể soạn mà không cần mã module; việc thực thi vẫn cần điều kiện tiên quyết.
 
-| Test ID | Requirement | Source | Level | Module under test | Preparable now? | Prerequisite | Expected evidence | Status |
+| Mã test | Yêu cầu | Nguồn | Bậc | Module kiểm thử | Chuẩn bị ngay? | Điều kiện tiên quyết | Minh chứng mong đợi | Trạng thái |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **T1** | Small hand-calculated example matches cost and valid allocation, or exhaustive verification | requirements T1 | Unit + System | TV3 solver / independent checker | Test case design only | Approved model; solver; canonical fixture | Reproduced objective and assignment vs. hand calculation | **Blocked** |
-| **T2** | Sufficient stock and capacity; all orders can be assigned | requirements T2 | Unit + Integration | Solver (Policy A) | Test case design only | Solver; canonical fixtures | Every order assigned to one warehouse; objective matches shipping cost | **Blocked** |
-| **T3** | Cheapest warehouse missing one SKU is not assigned the whole order | requirements T3 | Unit | Baseline/MILP | Test case design only | Solver; per-SKU inventory | Assignment avoids invalid warehouse; invariant check | **Blocked** |
-| **T4** | Cheapest warehouse at capacity is not exceeded; use another warehouse | requirements T4 | Unit + Integration | Solver capacity constraint | Test case design only | Capacity semantics; solver | Capacity usage ≤ `capacity_orders`; order assigned to an alternate eligible warehouse | **Blocked** |
-| **T5** | Tight stock and capacity simultaneously respected | requirements T5 | Unit + Invariant | Solver | Test case design only | Solver; validator | All inventory/capacity invariants hold | **Blocked** |
-| **T6** | Inability to fulfill all orders is reported correctly | requirements T6 | Unit + System | Solver + API status | Test case design only | Solver; API; status contract | `INFEASIBLE` only with proof; `NO_SOLUTION_FOUND` on timeout without proof | **Blocked** |
-| **T7** | Invalid data is rejected with correct code/field; execution stops | requirements T7 | Unit + Contract | Data validator/API | Test case design **yes** | Canonical schema; validation implementation | Validation error payload; no solver run | **Blocked** |
-| **T8** | Equal costs break ties by warehouse ID; MILP may return multiple optima | requirements T8 | Unit | Baseline/MILP | Test case design only | Solver; tie-break rule | Deterministic baseline result; valid MILP optima | **Blocked** |
-| **T9** | Larger scale records time, status, and solution quality under a time limit | requirements T9 | Performance/System | Solver/API | Test case design only | Solver; scale fixture; timeout config | Runtime, status (including `FEASIBLE`/`NO_SOLUTION_FOUND`), objective/gap, environment | **Blocked** |
+| **T1** | Ví dụ nhỏ tính tay khớp chi phí và phân bổ hợp lệ, hoặc được kiểm chứng vét cạn | requirements T1 | Unit + System | Bộ giải TV3 / checker độc lập | Chỉ thiết kế test | Mô hình đã duyệt; bộ giải; fixture chuẩn | Mục tiêu và phân bổ tái lập so với tính tay | **Blocked** |
+| **T2** | Đủ tồn kho và công suất; mọi đơn được gán | requirements T2 | Unit + Integration | Bộ giải (Policy A) | Chỉ thiết kế test | Bộ giải; fixture chuẩn | Mọi đơn gán cho một kho; mục tiêu khớp chi phí vận chuyển | **Blocked** |
+| **T3** | Kho rẻ nhất thiếu một SKU không được nhận cả đơn | requirements T3 | Unit | Baseline/MILP | Chỉ thiết kế test | Bộ giải; tồn kho theo SKU | Phân bổ tránh kho không hợp lệ; kiểm tra bất biến | **Blocked** |
+| **T4** | Kho rẻ nhất hết công suất không bị vượt; dùng kho khác | requirements T4 | Unit + Integration | Ràng buộc công suất của bộ giải | Chỉ thiết kế test | Ngữ nghĩa công suất; bộ giải | Mức sử dụng ≤ `capacity_orders`; đơn được gán cho kho khác đủ điều kiện | **Blocked** |
+| **T5** | Tồn kho và công suất cùng căng được tôn trọng | requirements T5 | Unit + Invariant | Bộ giải | Chỉ thiết kế test | Bộ giải; validator | Mọi bất biến tồn kho/công suất đúng | **Blocked** |
+| **T6** | Không thể giao đủ đơn được báo đúng | requirements T6 | Unit + System | Bộ giải + trạng thái API | Chỉ thiết kế test | Bộ giải; API; hợp đồng trạng thái | `INFEASIBLE` chỉ khi có chứng minh; `NO_SOLUTION_FOUND` khi timeout không chứng minh | **Blocked** |
+| **T7** | Dữ liệu lỗi bị từ chối với đúng mã/trường; dừng thực thi | requirements T7 | Unit + Contract | Validator dữ liệu/API | **Có**, thiết kế test | Schema chuẩn; cài đặt kiểm tra | Payload lỗi kiểm tra; không chạy bộ giải | **Blocked** |
+| **T8** | Chi phí bằng nhau phá hòa theo mã kho; MILP có thể có nhiều tối ưu | requirements T8 | Unit | Baseline/MILP | Chỉ thiết kế test | Bộ giải; quy tắc phá hòa | Kết quả baseline tất định; các tối ưu MILP hợp lệ | **Blocked** |
+| **T9** | Quy mô lớn ghi thời gian, trạng thái và chất lượng lời giải trong giới hạn thời gian | requirements T9 | Performance/System | Bộ giải/API | Chỉ thiết kế test | Bộ giải; fixture quy mô; cấu hình timeout | Thời gian chạy, trạng thái (gồm `FEASIBLE`/`NO_SOLUTION_FOUND`), mục tiêu/gap, môi trường | **Blocked** |
 
 ---
 
-## 5. Edge-case mapping — EDGE-01 to EDGE-10
+## 5. Ánh xạ edge case — EDGE-01 đến EDGE-10
 
-Source: [testing-strategy.md §3](../testing-strategy.md).
+Nguồn: [testing-strategy.md §4](../testing-strategy.md).
 
-| Test ID | Edge case | Expected behavior | Level | Preparable now? | Prerequisite | Status |
+| Mã test | Edge case | Hành vi mong đợi | Bậc | Chuẩn bị ngay? | Điều kiện tiên quyết | Trạng thái |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **EDGE-01** | Global stock-out: demand for a SKU exceeds network inventory | `INFEASIBLE` with proof; `NO_SOLUTION_FOUND` if search stopped without proof | System + Invariant | Test data design only | Solver; canonical inventory; status contract | **Blocked** |
-| **EDGE-02** | Warehouse bottleneck: nearest warehouse has stock but zero capacity | Divert to secondary warehouse with capacity | Unit + Integration | Test data design only | Solver; capacity fixture | **Blocked** |
-| **EDGE-03** | Tight combined capacity and inventory: only a specific complete assignment works | Solver finds the assignment or proves `INFEASIBLE`; no split/unassigned fallback | Unit + System | Test data design only | Solver; tight fixtures (`edge_tight_capacity`, `edge_tight_inventory`) | **Blocked** |
-| **EDGE-04** | Zero-demand order | Input validation rejects with documented error (testing-strategy currently says HTTP 400) | Contract | Test case design **yes** | API/schema validation | **Blocked** |
-| **EDGE-05** | Equal cost/capacity tie | Deterministic allocation across repeated runs | Unit | Test case design only | Solver; tie-break rule | **Blocked** |
-| **EDGE-06** | A route is omitted from `shipping_costs` | Omitted warehouse is never used | Unit + Invariant | Test data design only | Solver; canonical fixture | **Blocked** |
-| **EDGE-07** | Only one warehouse has a route and enough stock/capacity | Order is forced to that warehouse | Unit + Integration | Test data design only | Solver; canonical fixture | **Blocked** |
-| **EDGE-08** | Time limit reached with no complete solution | `NO_SOLUTION_FOUND`, not `INFEASIBLE` | System | Test case design only | Solver; timeout configuration | **Blocked** |
-| **EDGE-09** | Time limit reached after a complete solution | `FEASIBLE` with complete allocations | System | Test case design only | Solver; timeout configuration | **Blocked** |
-| **EDGE-10** | Structurally valid but mathematically infeasible dataset | `INFEASIBLE` with proof; dataset remains valid | System + Contract | Test data design **yes** | Canonical fixture; solver/checker | **Blocked** |
+| **EDGE-01** | Hết hàng toàn hệ thống: cầu một SKU vượt tổng tồn kho | `INFEASIBLE` kèm chứng minh; `NO_SOLUTION_FOUND` nếu tìm kiếm dừng mà chưa chứng minh | System + Invariant | Chỉ thiết kế dữ liệu test | Bộ giải; tồn kho chuẩn; hợp đồng trạng thái | **Blocked** |
+| **EDGE-02** | Nghẽn kho: kho gần nhất còn hàng nhưng hết công suất | Chuyển sang kho khác còn công suất | Unit + Integration | Chỉ thiết kế dữ liệu test | Bộ giải; fixture công suất | **Blocked** |
+| **EDGE-03** | Công suất và tồn kho cùng căng: chỉ một phương án đầy đủ cụ thể hoạt động | Bộ giải tìm ra phương án hoặc chứng minh `INFEASIBLE`; không tách đơn/bỏ đơn | Unit + System | Chỉ thiết kế dữ liệu test | Bộ giải; fixture căng (`edge_tight_capacity`, `edge_tight_inventory`) | **Blocked** |
+| **EDGE-04** | Đơn nhu cầu bằng 0 | Kiểm tra đầu vào từ chối với lỗi đã ghi (testing-strategy dùng HTTP 400) | Contract | **Có**, thiết kế test | Kiểm tra API/schema | **Blocked** |
+| **EDGE-05** | Chi phí/công suất bằng nhau | Phân bổ tất định qua các lần chạy lặp lại | Unit | Chỉ thiết kế test | Bộ giải; quy tắc phá hòa | **Blocked** |
+| **EDGE-06** | Một tuyến bị bỏ khỏi `shipping_costs` | Kho bị bỏ không bao giờ được dùng | Unit + Invariant | Chỉ thiết kế dữ liệu test | Bộ giải; fixture chuẩn | **Blocked** |
+| **EDGE-07** | Chỉ một kho có tuyến và đủ tồn kho/công suất | Đơn buộc gán cho kho đó | Unit + Integration | Chỉ thiết kế dữ liệu test | Bộ giải; fixture chuẩn | **Blocked** |
+| **EDGE-08** | Hết thời gian mà chưa có phương án đầy đủ | `NO_SOLUTION_FOUND`, không phải `INFEASIBLE` | System | Chỉ thiết kế test | Bộ giải; cấu hình timeout | **Blocked** |
+| **EDGE-09** | Hết thời gian sau khi đã có phương án đầy đủ | `FEASIBLE` với phân bổ đầy đủ | System | Chỉ thiết kế test | Bộ giải; cấu hình timeout | **Blocked** |
+| **EDGE-10** | Bộ dữ liệu hợp lệ về cấu trúc nhưng không khả thi về toán học | `INFEASIBLE` kèm chứng minh; bộ dữ liệu vẫn hợp lệ | System + Contract | **Có**, thiết kế dữ liệu test | Fixture chuẩn; bộ giải/checker | **Blocked** |
 
-> Policy A is decided in [ADR-004](../decisions/0004-allocation-policy-a.md); split-shipment and penalty test cases are not part of the current strategy.
+> Policy A đã được quyết định tại [ADR-004](../decisions/0004-allocation-policy-a.md); test giao tách đơn và penalty không thuộc chiến lược hiện hành.
 
 ---
 
-## 6. Test data requirements
+## 6. Yêu cầu dữ liệu kiểm thử
 
-| Requirement | Needed data | Current state |
+| Yêu cầu | Dữ liệu cần | Hiện trạng |
 | :--- | :--- | :--- |
-| Canonical input schema | Warehouse, per-SKU inventory, order, order items, shipping costs | Implemented by TV2: `data/schema/dataset.schema.json` + `docs/data-dictionary.md` |
-| Small hand-checkable case | Matches T1/model example | Canonical `data/samples/sample_small.json` (2 warehouses/3 orders/2 SKUs); hand-reviewable but not the same numeric example as the model |
-| Feasible case | Enough stock and capacity | Covered by canonical TV2 fixtures; legacy prototype fixture is non-Policy-A |
-| Infeasible case | Demand exceeds available resources | `sample_infeasible.json`, `edge_infeasible_stock.json` |
-| Tight-resource case | T5 | `edge_tight_capacity.json`, `edge_tight_inventory.json` |
-| Tie-break case | T8 | `edge_equal_costs.json` |
-| Scale case | T9 | Not identified |
-| Invalid-data cases | T7 | Not implemented as fixtures |
+| Schema đầu vào chuẩn | Kho, tồn kho theo SKU, đơn hàng, dòng đơn, chi phí vận chuyển | TV2 đã triển khai: `data/schema/dataset.schema.json` + `docs/data-dictionary.md` |
+| Ca nhỏ tính tay được | Khớp T1/ví dụ mô hình | `data/samples/sample_small.json` (2 kho/3 đơn/2 SKU); xem được bằng tay nhưng không trùng số liệu với ví dụ trong mô hình |
+| Ca khả thi | Đủ tồn kho và công suất | Đã bao phủ bởi fixture chuẩn TV2; fixture prototype là non-Policy-A |
+| Ca không khả thi | Cầu vượt nguồn lực | `sample_infeasible.json`, `edge_infeasible_stock.json` |
+| Ca tài nguyên căng | T5 | `edge_tight_capacity.json`, `edge_tight_inventory.json` |
+| Ca phá hòa | T8 | `edge_equal_costs.json` |
+| Ca quy mô | T9 | Chưa xác định |
+| Ca dữ liệu lỗi | T7 | Chưa triển khai thành fixture |
 
-TV2 owns dataset generation and schema validation. TV6 will independently verify fixtures against the approved schema; TV6 does not create canonical business data unless the team assigns that work.
-
----
-
-## 7. Test prerequisites
-
-### 7.1 Required before any acceptance test
-
-- Approved business rules and a single canonical data schema (G0).
-- Frozen `ProblemInput`/`SolutionOutput` and API contract (G1).
-- Validated fixtures covering T1–T9 and EDGE-01–05 (G2).
-- Solver/API modules with documented start commands (G3/G4).
-- A dependency manifest and reproducible environment.
-- Test evidence format agreed: command, commit SHA, environment, observed output.
-
-### 7.2 Available now
-
-- Python 3.10+ environment (CI uses 3.10; local Python 3.15 observed).
-- Repository hygiene checks already in CI.
-- Existing JSON fixtures for syntax checks only.
-- Requirements/edge-case tables to derive test IDs.
-
-### 7.3 Not available yet
-
-- `pytest` configuration and fixtures.
-- Solver, API, database, and frontend implementations.
-- Mock API/server for early contract tests.
-- CI job that executes tests.
+TV2 sở hữu sinh dữ liệu và kiểm tra schema. TV6 sẽ kiểm chứng độc lập fixture theo schema đã duyệt; TV6 không tự tạo dữ liệu nghiệp vụ chuẩn trừ khi nhóm giao việc.
 
 ---
 
-## 8. Expected evidence and acceptance criteria
+## 7. Điều kiện tiên quyết
 
-### 8.1 Evidence per test
+### 7.1. Bắt buộc trước mọi test nghiệm thu
 
-Every executed test must record:
+- Quy tắc nghiệp vụ được duyệt và một schema dữ liệu chuẩn duy nhất (G0).
+- Hợp đồng `ProblemInput`/`SolutionOutput` và hợp đồng API đã chốt (G1).
+- Fixture đã kiểm tra bao phủ T1–T9 và EDGE-01–10 (G2).
+- Module bộ giải/API có lệnh khởi động được ghi (G3/G4).
+- Dependency manifest và môi trường tái lập được.
+- Định dạng minh chứng test được thống nhất: lệnh, commit SHA, môi trường, output quan sát.
 
-1. Test ID and requirement/edge-case link.
-2. Command and environment.
-3. Commit SHA or PR reference.
-4. Observed output (pass/fail, status, objective, invariants).
-5. For failures: expected vs. actual, reproduction steps, linked bug issue.
-6. For benchmarks: dataset version, algorithm, time limit, runtime, status, cost components, utilization.
+### 7.2. Đã có
 
-### 8.2 Entry criteria for acceptance testing
+- Môi trường Python 3.10+ (CI dùng 3.10).
+- Bộ test TV2 (60 test) và job CI dataset/feasibility.
+- Kiểm tra vệ sinh repository trong CI.
+- Fixture JSON cho kiểm tra cú pháp và kiểm chứng khả thi.
+- Bảng yêu cầu/edge case để sinh mã test.
 
-- G0–G4 exit evidence exists.
-- Test data is validated and versioned.
-- No known P0 business-rule conflict remains.
-- CI can run the test suite.
+### 7.3. Chưa có
 
-### 8.3 Exit criteria for final acceptance
-
-- **T1–T9:** all executed with recorded evidence; any exception is documented and approved.
-- **EDGE-01–10:** all executed, or explicitly deferred with an approved reason per [testing-strategy.md §4](../testing-strategy.md).
-- **Invariants:** exactly one warehouse per order, no split/unassigned order, no inventory or capacity violation.
-- **API:** contract, validation, infeasibility, and timeout behavior match the approved contract.
-- **Persistence:** saved runs reload with identical configuration and metrics.
-- **E2E:** dataset selection → solve → results are demonstrated against the live stack.
-- **Reproducibility:** same input/configuration produces the documented comparable result.
-- **Reporting:** benchmark and final report cite executed evidence, not planned work.
-
-No numeric coverage target is set because the repository does not define one; coverage may be reported as supplementary evidence, not as a substitute for T1–T9/EDGE execution.
+- Fixture cho test quy mô (T9) và dữ liệu lỗi (T7).
+- Bộ giải, API, cơ sở dữ liệu và frontend.
+- Mock API/server cho contract test sớm.
+- Bộ test TV3/TV5/TV4.
 
 ---
 
-## 9. Can prepare now vs. must wait
+## 8. Minh chứng và tiêu chí nghiệm thu
 
-### 9.1 Can prepare now (TV6-owned)
+### 8.1. Minh chứng cho mỗi test
 
-- Traceability matrix maintenance (this document).
-- Detailed test-case descriptions for T1–T9 and EDGE-01–05, including expected outcomes from existing requirements.
-- Invalid-input test design for T7/EDGE-04.
-- CI test-job design (pytest invocation, artifact/report capture).
-- Bug-report and verification workflow using existing issue templates.
-- Fixture-review checklist for TV2 (schema conformance, expected outcome, version).
-- Evidence template and acceptance-report skeleton.
-- Repository hygiene checks (JSON syntax, links, `.gitignore` behavior).
+Mọi test đã chạy phải ghi:
 
-### 9.2 Must wait for other modules
+1. Mã test và liên kết yêu cầu/edge case.
+2. Lệnh và môi trường.
+3. Commit SHA hoặc tham chiếu PR.
+4. Output quan sát (pass/fail, trạng thái, mục tiêu, bất biến).
+5. Với lỗi: mong đợi so với thực tế, bước tái hiện, issue bug liên kết.
+6. Với benchmark: phiên bản bộ dữ liệu, thuật toán, giới hạn thời gian, thời gian chạy, trạng thái, thành phần chi phí, mức sử dụng.
 
-- Unit tests for baseline/MILP (TV3).
-- Contract tests for solver adapter (TV3) and API (TV5).
-- Integration tests for SQLite persistence (TV5).
-- System tests for infeasible/timeout behavior (TV3/TV5).
-- E2E tests (TV4/TV5).
-- Benchmark/performance runs (TV3/TV5).
+### 8.2. Điều kiện vào nghiệm thu
 
-### 9.3 Requires coordination
+- Minh chứng thoát G0–G4 tồn tại.
+- Dữ liệu test được kiểm tra và đánh phiên bản.
+- Không còn xung đột quy tắc nghiệp vụ P0 đã biết.
+- CI chạy được bộ test.
 
-- Status enum and error mapping across model, solver, and API.
-- Canonical fixture format and edge-case definitions with TV2.
-- Mock API availability for TV4 before backend completion.
-- Definition of “done” evidence for each handoff in [integration-guide](../integration-guide.md).
-- Implementation of the Policy A API contract by TV3/TV4/TV5.
+### 8.3. Điều kiện ra nghiệm thu cuối kỳ
 
----
+- **T1–T9:** tất cả được thực thi với minh chứng đã ghi; mọi ngoại lệ được ghi rõ và phê duyệt.
+- **EDGE-01–10:** tất cả được thực thi, hoặc hoãn rõ ràng với lý do được duyệt theo [testing-strategy.md §4](../testing-strategy.md).
+- **Bất biến:** đúng một kho cho mỗi đơn, không tách/không bỏ đơn, không vi phạm tồn kho hoặc công suất.
+- **API:** hợp đồng, kiểm tra, không khả thi và timeout khớp hợp đồng đã duyệt.
+- **Lưu trữ:** lần chạy đã lưu đọc lại với cấu hình và chỉ số giống hệt.
+- **E2E:** chọn dữ liệu → giải → kết quả được minh chứng trên stack thật.
+- **Tái lập:** cùng đầu vào/cấu hình cho kết quả so sánh được như đã ghi.
+- **Báo cáo:** benchmark và báo cáo cuối kỳ trích dẫn minh chứng đã chạy, không phải việc dự kiến.
 
-## 10. Bug tracking and verification
-
-The repository has issue templates but no issues. Until the Project Lead establishes the issue workflow, TV6 records defects in the test report with:
-
-- Test ID and requirement link.
-- Severity: Critical (blocks acceptance), High (blocks a module/gate), Medium (rework), Low (hygiene).
-- Reproduction steps, expected vs. actual, environment.
-- Verification evidence after fix and the reviewer who confirmed it.
-
-A bug is closed only when the fix is verified by a re-run of the failing test or an equivalent reproducible check.
+Không đặt mục tiêu coverage số học vì repository không định nghĩa; coverage có thể báo cáo như minh chứng bổ sung, không thay thế việc thực thi T1–T9/EDGE.
 
 ---
 
-## 11. Traceability maintenance
+## 9. Có thể chuẩn bị ngay và phải chờ
 
-- Update the matrix whenever TV1 changes requirements or a business rule is approved.
-- Link each test ID to a file and test name once the suite exists.
-- Do not mark a test as passing based on code review alone.
-- If a requirement is removed or changed, mark the affected test IDs as retired and record why.
+### 9.1. Có thể chuẩn bị ngay (TV6 sở hữu)
+
+- Duy trì ma trận truy vết (tài liệu này).
+- Mô tả chi tiết test case cho T1–T9 và EDGE-01–10, gồm kết quả mong đợi từ yêu cầu hiện có.
+- Thiết kế test dữ liệu lỗi cho T7/EDGE-04.
+- Thiết kế job CI test (lệnh pytest, thu thập artifact/báo cáo).
+- Quy trình báo lỗi và kiểm chứng dùng mẫu issue hiện có.
+- Checklist review fixture cho TV2 (tuân thủ schema, kết quả mong đợi, phiên bản).
+- Mẫu minh chứng và khung báo cáo nghiệm thu.
+- Kiểm tra vệ sinh repository (cú pháp JSON, liên kết, hành vi `.gitignore`).
+
+### 9.2. Phải chờ module khác
+
+- Unit test cho baseline/MILP (TV3).
+- Contract test cho adapter bộ giải (TV3) và API (TV5).
+- Integration test cho lưu trữ SQLite (TV5).
+- System test cho hành vi không khả thi/timeout (TV3/TV5).
+- E2E test (TV4/TV5).
+- Chạy benchmark/hiệu năng (TV3/TV5).
+
+### 9.3. Cần phối hợp
+
+- Enum trạng thái và ánh xạ lỗi giữa mô hình, bộ giải và API.
+- Định dạng fixture chuẩn và định nghĩa edge case với TV2.
+- Mock API cho TV4 trước khi backend hoàn tất.
+- Định nghĩa minh chứng "done" cho từng handoff trong [integration-guide](../integration-guide.md).
+- TV3/TV4/TV5 cài đặt hợp đồng API Policy A.
 
 ---
 
-## 12. Related documents
+## 10. Bug tracking và kiểm chứng
 
-- [Project Status](project-status.md)
-- [Task Tracker](task-tracker.md)
-- [Integration Plan](integration-plan.md)
-- [Requirements](../requirements.md)
-- [Testing Strategy](../testing-strategy.md)
-- [Integration Guide](../integration-guide.md)
+Repository có mẫu issue nhưng chưa có issue. Cho đến khi Project Lead thiết lập quy trình issue, TV6 ghi lỗi trong báo cáo test với:
+
+- Mã test và liên kết yêu cầu.
+- Mức độ: Critical (chặn nghiệm thu), High (chặn module/cổng), Medium (làm lại), Low (vệ sinh).
+- Bước tái hiện, mong đợi so với thực tế, môi trường.
+- Minh chứng sau khi sửa và người review xác nhận.
+
+Bug chỉ được đóng khi bản sửa được kiểm chứng bằng cách chạy lại test lỗi hoặc kiểm tra tái lập tương đương.
+
+---
+
+## 11. Duy trì truy vết
+
+- Cập nhật ma trận mỗi khi TV1 thay đổi yêu cầu hoặc một quy tắc nghiệp vụ được duyệt.
+- Liên kết mỗi mã test tới file và tên test khi bộ test tồn tại.
+- Không đánh dấu test pass chỉ dựa trên review code.
+- Nếu yêu cầu bị bỏ hoặc thay đổi, đánh dấu các mã test liên quan là retired và ghi lý do.
+
+---
+
+## 12. Tài liệu liên quan
+
+- [Trạng thái dự án](project-status.md)
+- [Theo dõi nhiệm vụ](task-tracker.md)
+- [Kế hoạch tích hợp](integration-plan.md)
+- [Yêu cầu hệ thống](../requirements.md)
+- [Chiến lược kiểm thử](../testing-strategy.md)
+- [Hướng dẫn tích hợp](../integration-guide.md)

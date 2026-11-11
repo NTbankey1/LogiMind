@@ -1,55 +1,56 @@
-# Architecture Decision Records (ADRs)
+# Architecture Decision Records (ADR)
 
-This directory contains records of significant technical and architectural decisions made by the **LogiMind** team.
-
----
-
-## 1. What is an ADR?
-
-An Architecture Decision Record (ADR) captures an important architectural decision made along with its context, options considered, and consequences.
+Thư mục này ghi lại các quyết định kỹ thuật và kiến trúc quan trọng của nhóm **LogiMind**.
 
 ---
 
-## 2. ADR Statuses
-- **PROPOSED:** Under team review and evaluation.
-- **ACCEPTED:** Confirmed and adopted by the team.
-- **REJECTED:** Considered but not selected.
-- **SUPERSEDED:** Replaced by a subsequent ADR.
+## 1. ADR là gì?
+
+Architecture Decision Record (ADR) ghi lại một quyết định kiến trúc quan trọng cùng bối cảnh, các phương án đã xem xét và hệ quả của quyết định.
 
 ---
 
-## 3. ADR Index
+## 2. Trạng thái ADR
 
-| ADR ID | Title | Date | Status | Primary Decision Owner |
+- **PROPOSED:** Đang được nhóm xem xét, đánh giá.
+- **ACCEPTED:** Đã được nhóm xác nhận và áp dụng.
+- **REJECTED:** Đã xem xét nhưng không chọn.
+- **SUPERSEDED:** Đã bị ADR sau thay thế.
+
+---
+
+## 3. Chỉ mục ADR
+
+| Mã ADR | Tiêu đề | Ngày | Trạng thái | Chủ quyết định chính |
 | :--- | :--- | :--- | :--- | :--- |
-| [ADR-001](0001-choice-of-optimization-solver-library.md) | Choice of Optimization Solver Library (PuLP vs. OR-Tools) | 2026-10-29 | PROPOSED | TV3 & TV1 |
-| [ADR-002](0002-choice-of-backend-framework.md) | Choice of Backend API Framework (FastAPI) | 2026-10-29 | PROPOSED | TV5 |
-| [ADR-003](0003-choice-of-database-engine.md) | Choice of Local Persistence Database (SQLite) | 2026-10-29 | PROPOSED | TV5 |
-| [ADR-004](0004-allocation-policy-a.md) | Adoption of Policy A as Canonical Order Allocation Policy | 2026-11-11 | ACCEPTED | TV2 & Lead |
+| [ADR-001](0001-choice-of-optimization-solver-library.md) | Lựa chọn thư viện bộ giải tối ưu (PuLP và OR-Tools) | 2026-10-29 | PROPOSED | TV3 & TV1 |
+| [ADR-002](0002-choice-of-backend-framework.md) | Lựa chọn framework API backend (FastAPI) | 2026-10-29 | PROPOSED | TV5 |
+| [ADR-003](0003-choice-of-database-engine.md) | Lựa chọn cơ sở dữ liệu lưu trữ cục bộ (SQLite) | 2026-10-29 | PROPOSED | TV5 |
+| [ADR-004](0004-allocation-policy-a.md) | Áp dụng Policy A làm chính sách phân bổ đơn chuẩn | 2026-11-11 | ACCEPTED | TV2 & Project Lead |
 
 ---
 
-## 4. ADR Template
+## 4. Mẫu ADR
 
-To create a new ADR, copy the following structure into `docs/decisions/XXXX-short-title.md`:
+Để tạo ADR mới, sao chép cấu trúc sau vào `docs/decisions/XXXX-short-title.md`:
 
 ```markdown
-# ADR-XXXX: [Short Title]
+# ADR-XXXX: [Tiêu đề ngắn]
 
 ## Status
 [PROPOSED | ACCEPTED | REJECTED | SUPERSEDED]
 
 ## Context
-What is the problem or architectural question we are trying to solve? What are the constraints?
+Vấn đề hoặc câu hỏi kiến trúc cần giải quyết là gì? Có ràng buộc nào?
 
 ## Options Considered
-1. **Option A:** [Pros & Cons]
-2. **Option B:** [Pros & Cons]
+1. **Phương án A:** [Ưu & nhược điểm]
+2. **Phương án B:** [Ưu & nhược điểm]
 
 ## Decision
-Which option did we select and why?
+Chọn phương án nào và vì sao?
 
 ## Consequences
-- **Positive:** What benefits do we gain?
-- **Negative / Risks:** What trade-offs or technical debt do we accept?
+- **Tích cực:** Những lợi ích đạt được?
+- **Tiêu cực / Rủi ro:** Những đánh đổi hoặc nợ kỹ thuật nào được chấp nhận?
 ```

@@ -1,116 +1,122 @@
-# Team Responsibilities & Deliverables: LogiMind
+# Phân công & hạng mục bàn giao: LogiMind
 
-> **Project:** LogiMind — Multi-Warehouse Order Allocation & Fulfillment Optimization  
-> **Team Roster:** 6 Functional Member Roles  
-> **Note:** Member identities, GitHub handles, and sprint deadlines are tracked as `TBD` until officially submitted and verified.
+> **Dự án:** LogiMind — Hệ thống tối ưu phân bổ và xử lý đơn hàng đa kho
+> **Đội ngũ:** 6 vai trò chức năng
+> **Lưu ý:** Danh tính thành viên, GitHub handle và deadline sprint được ghi là `TBD` cho đến khi được xác nhận chính thức.
 
 ---
 
-## 1. Role Allocation Matrix
+## 1. Ma trận phân công vai trò
 
-| Role Code | Functional Role | Assignee Name | GitHub Handle | Target Sprint Deadline | Current Status |
+| Mã vai trò | Vai trò chức năng | Người phụ trách | GitHub handle | Deadline sprint | Trạng thái hiện tại |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **TV1** | Business Analysis & Mathematical Modeling | *TBD* | *TBD* | *TBD* | Planning |
-| **TV2** | Data & Test Dataset | *TBD* | *TBD* | *TBD* | Planning |
-| **TV3** | Optimization Algorithms | *TBD* | *TBD* | *TBD* | Planning |
-| **TV4** | Frontend | *TBD* | *TBD* | *TBD* | Planning |
-| **TV5** | Backend & Database | *TBD* | *TBD* | *TBD* | Planning |
-| **TV6** | Integration, Testing & Reporting | *TBD* | *TBD* | *TBD* | Planning |
+| **TV1** | Phân tích nghiệp vụ & mô hình toán học | *TBD* | *TBD* | *TBD* | Đang lập kế hoạch |
+| **TV2** | Dữ liệu & bộ dữ liệu kiểm thử | *TBD* | *TBD* | *TBD* | Đang lập kế hoạch |
+| **TV3** | Thuật toán tối ưu | *TBD* | *TBD* | *TBD* | Đang lập kế hoạch |
+| **TV4** | Frontend | *TBD* | *TBD* | *TBD* | Đang lập kế hoạch |
+| **TV5** | Backend & cơ sở dữ liệu | *TBD* | *TBD* | *TBD* | Đang lập kế hoạch |
+| **TV6** | Tích hợp, kiểm thử & báo cáo | *TBD* | *TBD* | *TBD* | Đang lập kế hoạch |
 
 ---
 
-## 2. Detailed Role Specifications
+## 2. Đặc tả chi tiết từng vai trò
 
-### TV1 — Business Analysis & Mathematical Modeling
-- **Primary Scope:**
-  - Formulate business context, requirements, and logistics constraints.
-  - Define indices, decision variables, parameters, objective functions, and mathematical constraints.
-  - Specify the order-assignment policy (Policy A selected) and handle edge/infeasible conditions.
-- **Key Deliverables:**
-  - `docs/mathematical-model.md` (Formal formulation).
-  - Business rules section in `docs/requirements.md`.
-  - Toy problem hand-calculation proof.
-- **Dependencies:** None (Initiates modeling foundation).
-- **Completion Criteria:**
-  - Mathematical model validated by team and faculty advisor.
-  - All constraints and variables approved by TV3 for computational solvability.
+### TV1 — Phân tích nghiệp vụ & mô hình toán học
+
+- **Phạm vi chính:**
+  - Xây dựng bối cảnh nghiệp vụ, yêu cầu và ràng buộc logistics.
+  - Định nghĩa chỉ số, biến quyết định, tham số, hàm mục tiêu và ràng buộc toán học.
+  - Xác định chính sách phân bổ đơn (đã chọn Policy A) và xử lý trường hợp biên/không khả thi.
+- **Hạng mục bàn giao chính:**
+  - `docs/mathematical-model.md` (đặc tả hình thức).
+  - Phần quy tắc nghiệp vụ trong `docs/requirements.md`.
+  - Chứng minh bằng tính tay trên bài toán nhỏ.
+- **Phụ thuộc:** Không (khởi tạo nền tảng mô hình).
+- **Tiêu chí hoàn thành:**
+  - Mô hình toán học được nhóm và giảng viên hướng dẫn xác nhận.
+  - Toàn bộ ràng buộc và biến được TV3 xác nhận là giải được bằng máy tính.
 
 ---
 
-### TV2 — Data & Test Dataset
-- **Primary Scope:**
-  - Design data schemas for warehouses, SKUs, inventory levels, order lines, and shipping rate matrices.
-  - Generate synthetic benchmark datasets (small, medium, large, and pathological edge cases).
-  - Provide database seed files and data loading scripts.
-- **Key Deliverables:**
+### TV2 — Dữ liệu & bộ dữ liệu kiểm thử
+
+- **Phạm vi chính:**
+  - Thiết kế schema dữ liệu cho kho, SKU, mức tồn kho, dòng đơn hàng và ma trận chi phí vận chuyển.
+  - Sinh bộ dữ liệu benchmark tổng hợp (nhỏ, vừa, lớn và các edge case bất thường).
+  - Cung cấp file seed cơ sở dữ liệu và script nạp dữ liệu.
+- **Hạng mục bàn giao chính:**
   - `docs/data-dictionary.md`.
-  - `data/samples/` (Benchmark datasets in JSON/CSV).
-  - Dataset generator and schema validator scripts (`scripts/`).
-- **Dependencies:** TV1 (Requires mathematical parameter definitions).
-- **Completion Criteria:**
-  - Datasets conform 100% to data dictionary schemas.
-  - Contains at least 1 feasible benchmark and 1 guaranteed infeasible edge-case dataset.
+  - `data/samples/` (bộ dữ liệu benchmark dạng JSON/CSV).
+  - Script sinh dữ liệu và validator schema (`scripts/`).
+- **Phụ thuộc:** TV1 (cần định nghĩa tham số toán học).
+- **Tiêu chí hoàn thành:**
+  - Bộ dữ liệu tuân thủ 100% schema trong từ điển dữ liệu.
+  - Có ít nhất 1 benchmark khả thi và 1 edge case chắc chắn không khả thi.
 
 ---
 
-### TV3 — Optimization Algorithms
-- **Primary Scope:**
-  - Implement Baseline Heuristic algorithm (e.g. Nearest Warehouse, Greedy Single-Warehouse).
-  - Implement MILP Optimization model using Python solver libraries (PuLP / OR-Tools / SciPy).
-  - Measure execution time, optimality gap, and warehouse utilization.
-- **Key Deliverables:**
-  - Algorithm module in `src/logimind/algorithms/`.
-  - Solver abstraction interface / callable adapter.
-  - Benchmark comparison report (Baseline vs. MILP).
-  - Unit tests for optimization correctness.
-- **Dependencies:** TV1 (Mathematical formulation) & TV2 (Benchmark datasets).
-- **Completion Criteria:**
-  - MILP achieves $\le$ cost compared to Baseline on standard benchmarks.
-  - Invariants strictly maintained (zero inventory or capacity violations).
+### TV3 — Thuật toán tối ưu
+
+- **Phạm vi chính:**
+  - Cài đặt thuật toán heuristic Baseline (ví dụ: kho gần nhất, tham lam một kho).
+  - Cài đặt mô hình tối ưu MILP bằng thư viện bộ giải Python (PuLP / OR-Tools / SciPy).
+  - Đo thời gian chạy, khoảng cách tối ưu (optimality gap) và mức sử dụng kho.
+- **Hạng mục bàn giao chính:**
+  - Module thuật toán trong `src/logimind/algorithms/`.
+  - Giao diện trừu tượng/adapter cho bộ giải.
+  - Báo cáo so sánh benchmark (Baseline và MILP).
+  - Unit test cho tính đúng đắn của tối ưu.
+- **Phụ thuộc:** TV1 (mô hình toán học) và TV2 (bộ dữ liệu benchmark).
+- **Tiêu chí hoàn thành:**
+  - MILP đạt chi phí $\le$ Baseline trên các benchmark chuẩn.
+  - Các bất biến được giữ nghiêm ngặt (không vi phạm tồn kho hoặc công suất).
 
 ---
 
 ### TV4 — Frontend
-- **Primary Scope:**
-  - Design and build user interface for scenario configuration and visualization.
-  - Implement order allocation summary dashboard (cost breakdown, warehouse utilization).
-  - Visualize warehouse capacity utilization and order routing.
-- **Key Deliverables:**
-  - Frontend web application in `frontend/` (or UI module).
-  - Interactive allocation dashboard and charts.
-  - Responsive layout and clear error status feedback.
-- **Dependencies:** TV5 (API endpoints and mock responses).
-- **Completion Criteria:**
-  - Users can select a dataset, trigger a solve run, and visually inspect results without manual console commands.
+
+- **Phạm vi chính:**
+  - Thiết kế và xây dựng giao diện cấu hình tình huống và trực quan hóa.
+  - Cài đặt dashboard tổng hợp phân bổ (phân rã chi phí, mức sử dụng kho).
+  - Trực quan hóa mức sử dụng công suất kho và tuyến gán đơn.
+- **Hạng mục bàn giao chính:**
+  - Ứng dụng web frontend trong `frontend/` (hoặc module UI).
+  - Dashboard phân bổ và biểu đồ tương tác.
+  - Bố cục responsive và phản hồi trạng thái lỗi rõ ràng.
+- **Phụ thuộc:** TV5 (endpoint API và phản hồi mock).
+- **Tiêu chí hoàn thành:**
+  - Người dùng có thể chọn bộ dữ liệu, chạy phân bổ và xem kết quả trực quan mà không cần lệnh terminal.
 
 ---
 
-### TV5 — Backend & Database
-- **Primary Scope:**
-  - Build REST API services to manage datasets, orchestrate solver runs, and serve results.
-  - Implement relational database persistence using SQLite.
-  - Implement input data validation, error handling, and solver timeout guards.
-- **Key Deliverables:**
-  - Backend API application in `src/logimind/backend/`.
-  - Database schema models and migration scripts.
-  - Standardized API endpoints adhering to `docs/api-contract.md`.
-- **Dependencies:** TV3 (Algorithm adapter) & TV2 (Data schemas).
-- **Completion Criteria:**
-  - All proposed endpoints in `docs/api-contract.md` implemented, validated, and passing integration tests.
+### TV5 — Backend & cơ sở dữ liệu
+
+- **Phạm vi chính:**
+  - Xây dựng dịch vụ REST API quản lý bộ dữ liệu, điều phối các lần chạy bộ giải và trả kết quả.
+  - Cài đặt lưu trữ quan hệ bằng SQLite.
+  - Cài đặt kiểm tra dữ liệu đầu vào, xử lý lỗi và giới hạn thời gian chạy bộ giải.
+- **Hạng mục bàn giao chính:**
+  - Ứng dụng backend API trong `src/logimind/backend/`.
+  - Model schema cơ sở dữ liệu và script migration.
+  - Endpoint API chuẩn theo `docs/api-contract.md`.
+- **Phụ thuộc:** TV3 (adapter thuật toán) và TV2 (schema dữ liệu).
+- **Tiêu chí hoàn thành:**
+  - Toàn bộ endpoint trong `docs/api-contract.md` được cài đặt, kiểm tra và vượt integration test.
 
 ---
 
-### TV6 — Integration, Testing & Reporting
-- **Primary Scope:**
-  - Establish automated test harness and CI quality gates.
-  - Implement cross-module integration tests and regression suites.
-  - Audit system against functional requirements.
-  - Aggregate final benchmark reports and prepare demonstration slides/materials for faculty.
-- **Key Deliverables:**
-  - Test suites in `tests/` (unit, integration, and end-to-end).
-  - `docs/testing-strategy.md` & `docs/integration-guide.md`.
-  - Final project report and demonstration script.
-- **Dependencies:** TV1 through TV5 (All deliverables).
-- **Completion Criteria:**
-  - 100% pass rate on automated CI test suites.
-  - Successful rehearsal of live end-to-end demo before project presentation.
+### TV6 — Tích hợp, kiểm thử & báo cáo
+
+- **Phạm vi chính:**
+  - Thiết lập bộ kiểm thử tự động và cổng chất lượng CI.
+  - Cài đặt integration test và regression suite giữa các module.
+  - Đối chiếu hệ thống với yêu cầu chức năng.
+  - Tổng hợp báo cáo benchmark và chuẩn bị slide/demo cho giảng viên.
+- **Hạng mục bàn giao chính:**
+  - Bộ kiểm thử trong `tests/` (unit, integration và end-to-end).
+  - `docs/testing-strategy.md` và `docs/integration-guide.md`.
+  - Báo cáo cuối kỳ và kịch bản demo.
+- **Phụ thuộc:** TV1 đến TV5 (toàn bộ hạng mục bàn giao).
+- **Tiêu chí hoàn thành:**
+  - Tỷ lệ pass 100% trên bộ kiểm thử tự động trong CI.
+  - Tổng duyệt thành công demo end-to-end trước buổi bảo vệ.
