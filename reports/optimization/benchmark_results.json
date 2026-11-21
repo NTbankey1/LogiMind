@@ -1,0 +1,64 @@
+{
+  "dataset": "docs/example-input.json",
+  "runs": {
+    "baseline": {
+      "algorithm": "baseline",
+      "status": "FEASIBLE",
+      "assignments": {
+        "A": "K1",
+        "B": "K2"
+      },
+      "unallocated": {},
+      "shipping_cost": 40.0,
+      "penalty_cost": 0.0,
+      "total_cost": 40.0,
+      "runtime_seconds": 2.713899993977975e-05,
+      "mip_gap": null,
+      "warehouse_usage": {
+        "K1": {
+          "used": 1.0,
+          "capacity": 1.0,
+          "utilization_percent": 100.0
+        },
+        "K2": {
+          "used": 1.0,
+          "capacity": 2.0,
+          "utilization_percent": 50.0
+        }
+      },
+      "message": "Greedy is not a proof of global feasibility or optimality",
+      "allocated_count": 2,
+      "unallocated_count": 0
+    },
+    "milp": {
+      "algorithm": "milp",
+      "status": "OPTIMAL",
+      "assignments": {
+        "A": "K2",
+        "B": "K1"
+      },
+      "unallocated": {},
+      "shipping_cost": 21.0,
+      "penalty_cost": 0.0,
+      "total_cost": 21.0,
+      "runtime_seconds": 0.003494340999850465,
+      "mip_gap": 0.0,
+      "warehouse_usage": {
+        "K1": {
+          "used": 1.0,
+          "capacity": 1.0,
+          "utilization_percent": 100.0
+        },
+        "K2": {
+          "used": 1.0,
+          "capacity": 2.0,
+          "utilization_percent": 50.0
+        }
+      },
+      "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+      "allocated_count": 2,
+      "unallocated_count": 0
+    }
+  },
+  "note": "Measured locally; replace with TV2 datasets after integration"
+}
