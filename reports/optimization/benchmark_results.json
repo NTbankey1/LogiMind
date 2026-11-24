@@ -1,0 +1,202 @@
+[
+  {
+    "dataset": "edge_equal_costs.json",
+    "algorithm": "BASELINE",
+    "status": "FEASIBLE",
+    "cost": 12.0,
+    "assigned": 2,
+    "unassigned": 0,
+    "runtime_seconds": 4.129999433644116e-05,
+    "mip_gap": null
+  },
+  {
+    "dataset": "edge_equal_costs.json",
+    "algorithm": "MILP",
+    "status": "OPTIMAL",
+    "cost": 12.0,
+    "assigned": 2,
+    "unassigned": 0,
+    "runtime_seconds": 0.0037687000003643334,
+    "mip_gap": 0.0
+  },
+  {
+    "dataset": "edge_infeasible_stock.json",
+    "algorithm": "BASELINE",
+    "status": "NO_SOLUTION_FOUND",
+    "cost": null,
+    "assigned": 0,
+    "unassigned": 1,
+    "runtime_seconds": 1.9700004486367106e-05,
+    "mip_gap": null
+  },
+  {
+    "dataset": "edge_infeasible_stock.json",
+    "algorithm": "MILP",
+    "status": "INFEASIBLE",
+    "cost": null,
+    "assigned": 0,
+    "unassigned": 1,
+    "runtime_seconds": 1.960000372491777e-05,
+    "mip_gap": null
+  },
+  {
+    "dataset": "edge_tight_capacity.json",
+    "algorithm": "BASELINE",
+    "status": "FEASIBLE",
+    "cost": 16.0,
+    "assigned": 3,
+    "unassigned": 0,
+    "runtime_seconds": 2.9199989512562752e-05,
+    "mip_gap": null
+  },
+  {
+    "dataset": "edge_tight_capacity.json",
+    "algorithm": "MILP",
+    "status": "OPTIMAL",
+    "cost": 16.0,
+    "assigned": 3,
+    "unassigned": 0,
+    "runtime_seconds": 0.003498400008538738,
+    "mip_gap": 0.0
+  },
+  {
+    "dataset": "edge_tight_inventory.json",
+    "algorithm": "BASELINE",
+    "status": "FEASIBLE",
+    "cost": 9.0,
+    "assigned": 2,
+    "unassigned": 0,
+    "runtime_seconds": 3.359999391250312e-05,
+    "mip_gap": null
+  },
+  {
+    "dataset": "edge_tight_inventory.json",
+    "algorithm": "MILP",
+    "status": "OPTIMAL",
+    "cost": 9.0,
+    "assigned": 2,
+    "unassigned": 0,
+    "runtime_seconds": 0.003429099975619465,
+    "mip_gap": 0.0
+  },
+  {
+    "dataset": "edge_unavailable_route.json",
+    "algorithm": "BASELINE",
+    "status": "FEASIBLE",
+    "cost": 10.5,
+    "assigned": 2,
+    "unassigned": 0,
+    "runtime_seconds": 3.0099996365606785e-05,
+    "mip_gap": null
+  },
+  {
+    "dataset": "edge_unavailable_route.json",
+    "algorithm": "MILP",
+    "status": "OPTIMAL",
+    "cost": 10.5,
+    "assigned": 2,
+    "unassigned": 0,
+    "runtime_seconds": 0.0017558000108692795,
+    "mip_gap": 0.0
+  },
+  {
+    "dataset": "edge_zero_stock.json",
+    "algorithm": "BASELINE",
+    "status": "FEASIBLE",
+    "cost": 11.0,
+    "assigned": 2,
+    "unassigned": 0,
+    "runtime_seconds": 1.6900012269616127e-05,
+    "mip_gap": null
+  },
+  {
+    "dataset": "edge_zero_stock.json",
+    "algorithm": "MILP",
+    "status": "OPTIMAL",
+    "cost": 11.0,
+    "assigned": 2,
+    "unassigned": 0,
+    "runtime_seconds": 0.0015866999747231603,
+    "mip_gap": 0.0
+  },
+  {
+    "dataset": "sample_infeasible.json",
+    "algorithm": "BASELINE",
+    "status": "NO_SOLUTION_FOUND",
+    "cost": null,
+    "assigned": 0,
+    "unassigned": 3,
+    "runtime_seconds": 2.6699999580159783e-05,
+    "mip_gap": null
+  },
+  {
+    "dataset": "sample_infeasible.json",
+    "algorithm": "MILP",
+    "status": "INFEASIBLE",
+    "cost": null,
+    "assigned": 0,
+    "unassigned": 3,
+    "runtime_seconds": 0.0013786999916192144,
+    "mip_gap": null
+  },
+  {
+    "dataset": "sample_large.json",
+    "algorithm": "BASELINE",
+    "status": "NO_SOLUTION_FOUND",
+    "cost": null,
+    "assigned": 0,
+    "unassigned": 60,
+    "runtime_seconds": 0.0006003000016789883,
+    "mip_gap": null
+  },
+  {
+    "dataset": "sample_large.json",
+    "algorithm": "MILP",
+    "status": "OPTIMAL",
+    "cost": 406.02,
+    "assigned": 60,
+    "unassigned": 0,
+    "runtime_seconds": 0.08098449997487478,
+    "mip_gap": 0.0
+  },
+  {
+    "dataset": "sample_medium.json",
+    "algorithm": "BASELINE",
+    "status": "FEASIBLE",
+    "cost": 192.82,
+    "assigned": 20,
+    "unassigned": 0,
+    "runtime_seconds": 0.00014980000560171902,
+    "mip_gap": null
+  },
+  {
+    "dataset": "sample_medium.json",
+    "algorithm": "MILP",
+    "status": "OPTIMAL",
+    "cost": 172.14000000000001,
+    "assigned": 20,
+    "unassigned": 0,
+    "runtime_seconds": 0.014485799998510629,
+    "mip_gap": 0.0
+  },
+  {
+    "dataset": "sample_small.json",
+    "algorithm": "BASELINE",
+    "status": "FEASIBLE",
+    "cost": 12.0,
+    "assigned": 3,
+    "unassigned": 0,
+    "runtime_seconds": 1.930000144056976e-05,
+    "mip_gap": null
+  },
+  {
+    "dataset": "sample_small.json",
+    "algorithm": "MILP",
+    "status": "OPTIMAL",
+    "cost": 12.0,
+    "assigned": 3,
+    "unassigned": 0,
+    "runtime_seconds": 0.0016106000111903995,
+    "mip_gap": 0.0
+  }
+]
