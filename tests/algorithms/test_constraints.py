@@ -1,12 +1,14 @@
 import pytest
-from src.algorithms.baseline.allocator import evaluate
-from src.algorithms.result import normalize
+from logimind.algorithms.result import verify
+from logimind.algorithms import optimize
 
-def test_inventory_and_capacity(sample):
-    d=normalize(sample)
-    with pytest.raises(ValueError): evaluate(d,{'A':'K1','B':'K1'},'test','FEASIBLE')
+def test_capacity(tv1):
+    with pytest.raises(ValueError): verify(tv1,{'A':'K1','B':'K1','C':'K1'})
+    tv1['warehouses'][1]['capacity_orders']=0
+    assert optimize(tv1)['status']=='INFEASIBLE'
 
-def test_multi_sku(sample):
-    sample['orders'][0]['items']={'sku':1,'other':2}
-    from src.algorithms import optimize
-    assert optimize(sample,'milp')['status']=='INFEASIBLE'
+def test_stock(tv1):
+    with pytest.raises(ValueError): verify(tv1,{'A':'K1','B':'K2','C':'K1'})
+
+def test_missing(small):
+    with pytest.raises(ValueError): verify(small,{})

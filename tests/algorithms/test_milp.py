@@ -1,13 +1,24 @@
-from src.algorithms import optimize
+import json
+from pathlib import Path
+import pytest
+from logimind.algorithms import optimize
+from logimind.algorithms.result import verify
+from itertools import product
 
-def test_optimal_manual_example(sample):
-    r=optimize(sample,'milp')
-    assert r['status']=='OPTIMAL' and r['shipping_cost']==21
-    assert r['assignments']=={'A':'K2','B':'K1'}
-    assert r['mip_gap'] is not None and r['mip_gap'] < 1e-6
+@pytest.mark.parametrize('path',sorted((Path(__file__).resolve().parents[2]/'data/samples').glob('*.json')))
+def test_tv2(path):
+    d=json.loads(path.read_text()); r=optimize(d)
+    if 'infeasible' in path.stem:
+        assert r['status']=='INFEASIBLE'; assert r['summary']['shipping_cost'] is None; assert not r['allocations']
+    else:
+        assert r['status']=='OPTIMAL'; assert r['diagnostics']['mip_gap']==0
+        a={x['order_id']:x['warehouse_id'] for x in r['allocations']}; assert verify(d,a)[1]==r['summary']['shipping_cost']
+        if len(d['orders'])<=5:
+            costs=[]
+            for js in product([w['warehouse_id'] for w in d['warehouses']],repeat=len(d['orders'])):
+                try: costs.append(verify(d,dict(zip([o['order_id'] for o in d['orders']],js)))[1])
+                except ValueError: pass
+            assert r['summary']['shipping_cost']==min(costs)
 
-def test_infeasible_a(sample):
-    sample['warehouses'][0]['capacity']=0
-    sample['warehouses'][1]['capacity']=1
-    assert optimize(sample,'milp')['status']=='INFEASIBLE'
-
+def test_tv1(tv1):
+    r=optimize(tv1); assert r['status']=='OPTIMAL'; assert r['summary']['shipping_cost']==34
